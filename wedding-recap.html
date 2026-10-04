@@ -1,0 +1,821 @@
+<title>Our Wedding Recap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: stationery-style header, tab bar, then one working panel per tab (overview, guests, thank-yous, costs, to-dos) */
+:root {
+  --paper: #f6f7f4;
+  --surface: #ffffff;
+  --ink: #1d2a2b;
+  --muted: #5d6b69;
+  --line: #dbe2de;
+  --accent: #2c6a58;
+  --accent-ink: #ffffff;
+  --accent-soft: #e2eee8;
+  --brass: #9a7426;
+  --brass-soft: #f4ecd9;
+  --good: #2d7a4c;
+  --good-soft: #e1f1e6;
+  --warn: #a8640a;
+  --warn-soft: #f8ebd6;
+  --bad: #ad3a31;
+  --bad-soft: #f7e2df;
+  --shadow: 0 1px 2px rgba(20,40,35,.06), 0 4px 18px rgba(20,40,35,.06);
+  --display: "Gilda Display", "Cormorant Garamond", Georgia, serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111715; --surface: #18201e; --ink: #e6ece9; --muted: #98a6a1; --line: #2b3633;
+    --accent: #7cc3aa; --accent-ink: #0d1a16; --accent-soft: #1d332c;
+    --brass: #d6ae5e; --brass-soft: #2e2716;
+    --good: #72cf98; --good-soft: #17301f; --warn: #e8a94d; --warn-soft: #33270f; --bad: #ef8178; --bad-soft: #3a1c1a;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 18px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111715; --surface: #18201e; --ink: #e6ece9; --muted: #98a6a1; --line: #2b3633;
+  --accent: #7cc3aa; --accent-ink: #0d1a16; --accent-soft: #1d332c;
+  --brass: #d6ae5e; --brass-soft: #2e2716;
+  --good: #72cf98; --good-soft: #17301f; --warn: #e8a94d; --warn-soft: #33270f; --bad: #ef8178; --bad-soft: #3a1c1a;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 18px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Header */
+.masthead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--brass); font-weight: 600; }
+.masthead h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.05; margin-top: 6px; }
+.masthead h1 .amp { color: var(--brass); font-style: italic; }
+.meta { color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+.sync { display: inline-flex; align-items: center; gap: 6px; }
+.sync i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); display: inline-block; }
+.sync.live i { background: var(--good); }
+.sync.off i { background: var(--warn); }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; overflow-x: auto; margin-block: 18px 22px; scrollbar-width: none; }
+.tab { border: 0; background: none; padding: 9px 14px; border-radius: 999px; cursor: pointer; color: var(--muted); font-weight: 500; white-space: nowrap; }
+.tab:hover { color: var(--ink); background: var(--accent-soft); }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.tab .count { font-size: 12px; opacity: .75; margin-left: 4px; }
+
+/* Generic */
+.panel { display: grid; gap: 22px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); min-width: 0; }
+.section-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.section-head h2 { font-size: 26px; }
+.section-head p { margin: 4px 0 0; color: var(--muted); max-width: 62ch; }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.danger { color: var(--bad); }
+.btn.small { padding: 4px 10px; font-size: 13px; border-radius: 8px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.muted { color: var(--muted); }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.neutral { background: var(--accent-soft); color: var(--accent); }
+.pill.brass { background: var(--brass-soft); color: var(--brass); }
+.notice { padding: 12px 14px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); font-size: 14px; }
+.empty { text-align: center; padding: 34px 16px; color: var(--muted); }
+.empty h3 { color: var(--ink); font-size: 22px; margin-bottom: 6px; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.stat .label { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.stat .value { font-family: var(--display); font-size: 30px; line-height: 1.2; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.stat .sub { font-size: 13px; color: var(--muted); }
+.meter { height: 8px; border-radius: 999px; background: var(--accent-soft); overflow: hidden; margin-top: 8px; }
+.meter b { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+@media (max-width: 820px) { .two { grid-template-columns: 1fr; } }
+.list { list-style: none; margin: 0; padding: 0; display: grid; }
+.list li { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.list li:last-child { border-bottom: 0; }
+
+/* Tables */
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.toolbar input[type="search"], .toolbar select { padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.toolbar input[type="search"] { flex: 1 1 200px; min-width: 0; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; background: var(--surface); }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+tbody tr { cursor: pointer; }
+tbody tr:hover td { background: var(--accent-soft); }
+td.r, th.r { text-align: right; }
+.addr { color: var(--muted); font-size: 13px; line-height: 1.35; }
+.name { font-weight: 600; }
+
+/* Thank-you queue */
+.queue { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.note-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.note-card h3 { font-size: 21px; }
+.note-card .gift { background: var(--brass-soft); border-radius: 8px; padding: 8px 10px; font-size: 14px; }
+.note-card .gift b { color: var(--brass); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; display: block; }
+.note-card pre { margin: 0; font-family: var(--body); font-size: 13px; color: var(--muted); white-space: pre-wrap; }
+.steps { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* Cost bars */
+.bars { display: grid; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: minmax(110px, 180px) 1fr auto; gap: 10px; align-items: center; font-size: 14px; }
+.bar-track { height: 14px; background: var(--accent-soft); border-radius: 4px; overflow: hidden; display: flex; }
+.bar-track .paid { background: var(--accent); }
+.bar-track .owed { background: var(--brass); opacity: .75; }
+.legend { display: flex; gap: 14px; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+@media (max-width: 520px) { .bar-row { grid-template-columns: 1fr auto; } .bar-row .bar-track { grid-column: 1 / -1; grid-row: 2; } }
+.cat-group h3 { font-size: 19px; display: flex; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+
+/* Todos */
+.todo-group { display: grid; gap: 4px; }
+.todo-group h3 { font-size: 19px; margin-bottom: 4px; }
+.todo { display: flex; gap: 10px; align-items: flex-start; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+.todo:last-child { border-bottom: 0; }
+.todo input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); margin-top: 2px; flex: none; }
+.todo .t-body { flex: 1; min-width: 0; }
+.todo.done .t-title { text-decoration: line-through; color: var(--muted); }
+.todo .t-tip { font-size: 13px; color: var(--muted); }
+.todo .x { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0 4px; font-size: 18px; line-height: 1; }
+.todo .x:hover { color: var(--bad); }
+
+/* Modal */
+.scrim { position: fixed; inset: 0; background: rgba(10,20,18,.45); display: flex; align-items: flex-start; justify-content: center; padding: 24px 16px; overflow-y: auto; z-index: 20; }
+.modal { background: var(--surface); border-radius: 16px; width: 100%; max-width: 620px; padding: 22px; box-shadow: 0 20px 60px rgba(0,0,0,.25); display: grid; gap: 16px; }
+.modal h2 { font-size: 26px; }
+.form-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.field { display: grid; gap: 4px; grid-column: span 6; min-width: 0; }
+.field.h { grid-column: span 3; } .field.t { grid-column: span 2; }
+@media (max-width: 520px) { .field.h, .field.t { grid-column: span 6; } }
+.field label { font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.field input, .field select, .field textarea { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
+.field textarea { min-height: 70px; resize: vertical; }
+.fieldset-title { grid-column: span 6; font-family: var(--display); font-size: 18px; border-top: 1px solid var(--line); padding-top: 12px; }
+.modal-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 30; }
+.idea { display: grid; gap: 2px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.idea:last-child { border-bottom: 0; }
+.idea b { font-weight: 600; }
+@media (prefers-reduced-motion: no-preference) { .tab, .btn { transition: background .15s, border-color .15s, filter .15s; } }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">After the wedding</div>
+      <h1 id="couple">Partner 1 <span class="amp">&amp;</span> Partner 2</h1>
+    </div>
+    <div class="meta">
+      <span id="wed-date">Wedding date not set</span>
+      <span class="sync" id="sync"><i></i><span>Connecting…</span></span>
+      <button class="btn small" id="open-settings">Edit details</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" data-tab="overview" aria-selected="true">Overview</button>
+    <button class="tab" role="tab" data-tab="guests">Guests &amp; gifts<span class="count" id="c-guests"></span></button>
+    <button class="tab" role="tab" data-tab="thanks">Thank-you notes<span class="count" id="c-thanks"></span></button>
+    <button class="tab" role="tab" data-tab="costs">Wedding costs</button>
+    <button class="tab" role="tab" data-tab="todos">To-dos<span class="count" id="c-todos"></span></button>
+  </nav>
+
+  <div id="banner"></div>
+
+  <!-- OVERVIEW -->
+  <section class="panel" id="tab-overview">
+    <div class="stats" id="ov-stats"></div>
+    <div class="two">
+      <div class="card">
+        <div class="section-head"><h2>Up next</h2></div>
+        <ul class="list" id="ov-next"></ul>
+      </div>
+      <div class="card">
+        <div class="section-head"><h2>Ideas for this page</h2></div>
+        <div id="ov-ideas">
+          <div class="idea"><b>Log gifts the day you open them.</b><span class="muted">Note who gave what and one detail you want to mention. Thank-yous get much easier to write.</span></div>
+          <div class="idea"><b>Split the writing.</b><span class="muted">Assign each guest to whoever knows them best. The thank-you tab filters by writer.</span></div>
+          <div class="idea"><b>Aim for three months.</b><span class="muted">That is the usual etiquette window after the wedding. The countdown above uses it.</span></div>
+          <div class="idea"><b>Write in batches of five.</b><span class="muted">Move each card from Not started to Written to Mailed so neither of you double-writes.</span></div>
+          <div class="idea"><b>Check the registry completion discount.</b><span class="muted">Most registries give 10 to 20% off remaining items for a few months after the date.</span></div>
+          <div class="idea"><b>Reuse the address list.</b><span class="muted">Copy or download addresses for holiday cards and photo announcements.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GUESTS -->
+  <section class="panel" id="tab-guests" hidden>
+    <div class="section-head">
+      <div>
+        <h2>Guests &amp; gifts</h2>
+        <p>One row per household or invitation. Click a row to edit address, gift and thank-you status.</p>
+      </div>
+      <div class="row">
+        <button class="btn" id="open-import">Paste a list</button>
+        <button class="btn primary" id="add-guest" data-write>Add guest</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <input type="search" id="g-search" placeholder="Search names, gifts, cities…" aria-label="Search guests">
+      <select id="g-filter" aria-label="Filter guests">
+        <option value="all">Everyone</option>
+        <option value="gift">Gave a gift</option>
+        <option value="nogift">No gift logged</option>
+        <option value="attended">Attended</option>
+        <option value="noaddr">Missing address</option>
+        <option value="tyopen">Thank-you not mailed</option>
+      </select>
+      <select id="g-side" aria-label="Filter by side">
+        <option value="all">Both sides</option>
+      </select>
+      <button class="btn" id="copy-addr">Copy addresses</button>
+      <button class="btn" id="dl-csv" hidden>Download CSV</button>
+    </div>
+    <div id="guest-table"></div>
+  </section>
+
+  <!-- THANK YOUS -->
+  <section class="panel" id="tab-thanks" hidden>
+    <div class="section-head">
+      <div>
+        <h2>Thank-you notes</h2>
+        <p id="ty-deadline" class="muted">Set your wedding date to see the three-month thank-you deadline.</p>
+      </div>
+      <div class="toolbar">
+        <select id="ty-writer" aria-label="Filter by writer"><option value="all">Everyone's notes</option></select>
+        <select id="ty-status" aria-label="Filter by status">
+          <option value="open">Still to do</option>
+          <option value="Not started">Not started</option>
+          <option value="Written">Written, not mailed</option>
+          <option value="Mailed">Mailed</option>
+        </select>
+      </div>
+    </div>
+    <div class="card" id="ty-progress"></div>
+    <div class="queue" id="ty-queue"></div>
+  </section>
+
+  <!-- COSTS -->
+  <section class="panel" id="tab-costs" hidden>
+    <div class="section-head">
+      <div>
+        <h2>Wedding costs</h2>
+        <p>Add each bill as a line item. Track what's paid, what's still owed, and who covered it.</p>
+      </div>
+      <button class="btn primary" id="add-cost" data-write>Add expense</button>
+    </div>
+    <div class="stats" id="cost-stats"></div>
+    <div class="two">
+      <div class="card">
+        <div class="section-head"><h2>By category</h2><div class="legend"><span><i style="background:var(--accent)"></i>Paid</span><span><i style="background:var(--brass);opacity:.75"></i>Still owed</span></div></div>
+        <div class="bars" id="cost-bars" style="margin-top:14px"></div>
+      </div>
+      <div class="card">
+        <div class="section-head"><h2>Who paid</h2></div>
+        <ul class="list" id="cost-payers"></ul>
+        <div class="section-head" style="margin-top:18px"><h2>Still owed</h2></div>
+        <ul class="list" id="cost-owed"></ul>
+      </div>
+    </div>
+    <div class="card" id="cost-items"></div>
+  </section>
+
+  <!-- TODOS -->
+  <section class="panel" id="tab-todos" hidden>
+    <div class="section-head">
+      <div>
+        <h2>Post-wedding to-dos</h2>
+        <p>The admin that follows a wedding: name changes, vendor wrap-up, keepsakes and money.</p>
+      </div>
+      <form class="row" id="todo-form">
+        <input id="todo-new" placeholder="Add a to-do" aria-label="New to-do" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);min-width:0;flex:1 1 180px">
+        <select id="todo-new-group" aria-label="Group" style="padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface)"></select>
+        <button class="btn primary" data-write>Add</button>
+      </form>
+    </div>
+    <div class="two" id="todo-groups"></div>
+  </section>
+</div>
+
+<div id="modal-root"></div>
+
+<script>
+(() => {
+  const CATEGORIES = ["Venue","Dress & alterations","Suit / tux","Bridal party","Dinners (rehearsal, welcome, brunch)","Catering & bar","Photo & video","Flowers & decor","Music & entertainment","Cake & desserts","Hair & makeup","Rings","Stationery & postage","Officiant & license","Transportation","Favors & gifts","Honeymoon","Other"];
+  const TY = ["Not started","Written","Mailed","Not needed"];
+  const GIFT_TYPES = ["","Cash / check","Gift card","Registry item","Other gift","Group gift"];
+  const ATTEND = ["Attended","Declined","No response"];
+  const TODO_GROUPS = ["Thank-yous & gifts","Name & legal","Money","Vendors","Keepsakes","Home & life"];
+
+  const S = { guests: [], costs: [], todos: [], settings: {}, live: false, canWrite: true, tab: "overview" };
+  let db = null, downloads = null;
+
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const num = (v) => { const n = parseFloat(String(v ?? "").replace(/[^0-9.\-]/g, "")); return isFinite(n) ? n : 0; };
+  const money = (n) => (n || 0).toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: n % 1 ? 2 : 0 });
+  const A = () => S.settings.partnerA || "Partner 1";
+  const B = () => S.settings.partnerB || "Partner 2";
+  const hasAddr = (g) => !!(g.street && g.city);
+  const hasGift = (g) => !!(g.gift || g.giftType || num(g.giftValue));
+  const tyOpen = (g) => (g.ty || "Not started") !== "Mailed" && g.ty !== "Not needed";
+
+  function toast(msg) {
+    const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+    document.body.appendChild(t); setTimeout(() => t.remove(), 2400);
+  }
+  function fmtDate(d) {
+    if (!d) return "";
+    const dt = new Date(d + "T12:00:00");
+    return isNaN(dt) ? d : dt.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  }
+  function deadline() {
+    if (!S.settings.weddingDate) return null;
+    const d = new Date(S.settings.weddingDate + "T12:00:00"); if (isNaN(d)) return null;
+    d.setMonth(d.getMonth() + 3); return d;
+  }
+  function addrLines(g) {
+    const l2 = [g.city, [g.state, g.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+    return [g.street, g.street2, l2, g.country].filter(Boolean);
+  }
+
+  // ---------- writes ----------
+  async function write(fn, okMsg) {
+    if (!db) { toast("Changes can't be saved here. Open the page on claude.ai while signed in."); return false; }
+    try { await fn(); if (okMsg) toast(okMsg); return true; }
+    catch (e) {
+      if (e && e.code === "invalid_argument") { S.canWrite = false; applyWriteGate(); toast("You have view-only access, so this wasn't saved."); }
+      else if (e && e.code === "quota_exceeded") toast("Storage is full. Delete some rows and try again.");
+      else toast("Couldn't save. Check your connection and try again.");
+      return false;
+    }
+  }
+  const clean = (o) => { const r = {}; for (const k in o) if (o[k] !== undefined) r[k] = o[k]; return r; };
+
+  // ---------- render ----------
+  function render() {
+    $("#couple").innerHTML = `${esc(A())} <span class="amp">&amp;</span> ${esc(B())}`;
+    $("#wed-date").textContent = S.settings.weddingDate ? `Married ${fmtDate(S.settings.weddingDate)}` : "Wedding date not set";
+    const sync = $("#sync");
+    sync.className = "sync " + (S.live ? "live" : db === null && S.ready ? "off" : "");
+    sync.lastElementChild.textContent = S.live ? "Shared & synced" : (S.ready && !db ? "Not syncing" : "Connecting…");
+    const openTy = S.guests.filter(tyOpen).length;
+    $("#c-guests").textContent = S.guests.length ? S.guests.length : "";
+    $("#c-thanks").textContent = openTy ? openTy : "";
+    const openTodos = S.todos.filter(t => !t.done).length;
+    $("#c-todos").textContent = openTodos ? openTodos : "";
+    renderOverview(); renderGuests(); renderThanks(); renderCosts(); renderTodos();
+    applyWriteGate();
+  }
+
+  function costTotals() {
+    let total = 0, paid = 0;
+    const byCat = {}, byPayer = {};
+    for (const c of S.costs) {
+      const amt = num(c.amount), p = Math.min(num(c.paid), amt || num(c.paid));
+      total += amt; paid += p;
+      const cat = c.category || "Other";
+      byCat[cat] = byCat[cat] || { total: 0, paid: 0, n: 0 };
+      byCat[cat].total += amt; byCat[cat].paid += p; byCat[cat].n++;
+      const who = c.payer || "Us";
+      byPayer[who] = (byPayer[who] || 0) + amt;
+    }
+    return { total, paid, owed: Math.max(0, total - paid), byCat, byPayer };
+  }
+  function cashGifts() { return S.guests.filter(g => g.giftType === "Cash / check" || g.giftType === "Gift card").reduce((s, g) => s + num(g.giftValue), 0); }
+
+  function renderOverview() {
+    const n = S.guests.length;
+    const gifts = S.guests.filter(hasGift).length;
+    const needTy = S.guests.filter(g => g.ty !== "Not needed");
+    const mailed = needTy.filter(g => g.ty === "Mailed").length;
+    const pct = needTy.length ? Math.round(mailed / needTy.length * 100) : 0;
+    const ct = costTotals(); const cash = cashGifts();
+    const dl = deadline();
+    const days = dl ? Math.ceil((dl - new Date()) / 864e5) : null;
+    const budget = num(S.settings.budget);
+    $("#ov-stats").innerHTML = `
+      <div class="stat"><div class="label">Guests</div><div class="value">${n}</div><div class="sub">${S.guests.reduce((s,g)=>s+(parseInt(g.size)||1),0)} people · ${S.guests.filter(g=>g.attend==="Attended").length} households attended</div></div>
+      <div class="stat"><div class="label">Gifts logged</div><div class="value">${gifts}</div><div class="sub">${cash ? money(cash) + " in cash & gift cards" : "Add gifts on the guests tab"}</div></div>
+      <div class="stat"><div class="label">Thank-yous mailed</div><div class="value">${mailed}<span class="muted" style="font-size:18px"> / ${needTy.length}</span></div><div class="meter"><b style="width:${pct}%"></b></div></div>
+      <div class="stat"><div class="label">Thank-you deadline</div><div class="value">${days === null ? "—" : days >= 0 ? days + "d" : "Past"}</div><div class="sub">${dl ? dl.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) + " (3 months)" : "Set the wedding date"}</div></div>
+      <div class="stat"><div class="label">Total wedding cost</div><div class="value">${money(ct.total)}</div><div class="sub">${budget ? (ct.total > budget ? `${money(ct.total-budget)} over` : `${money(budget-ct.total)} under`) + ` a ${money(budget)} budget` : `${money(ct.owed)} still owed`}</div></div>
+      <div class="stat"><div class="label">Net after cash gifts</div><div class="value">${money(ct.total - cash)}</div><div class="sub">Cost minus cash &amp; gift cards</div></div>`;
+
+    const items = [];
+    const toWrite = S.guests.filter(g => hasGift(g) && (g.ty || "Not started") === "Not started").length;
+    const toMail = S.guests.filter(g => g.ty === "Written").length;
+    const noAddr = S.guests.filter(g => tyOpen(g) && !hasAddr(g)).length;
+    const noWriter = S.guests.filter(g => tyOpen(g) && !g.writer).length;
+    if (!n) items.push(["Add your guest list", "Paste it from a spreadsheet on the guests tab", "guests"]);
+    if (toWrite) items.push([`Write ${toWrite} thank-you${toWrite>1?"s":""} for gifts`, "Gift logged, note not started", "thanks"]);
+    if (toMail) items.push([`Mail ${toMail} written note${toMail>1?"s":""}`, "Stamp, address and send", "thanks"]);
+    if (noAddr) items.push([`Find ${noAddr} missing address${noAddr>1?"es":""}`, "Needed before you can mail", "guests"]);
+    if (noWriter) items.push([`Assign a writer for ${noWriter} note${noWriter>1?"s":""}`, `${A()} or ${B()}`, "thanks"]);
+    if (ct.owed > 0) items.push([`${money(ct.owed)} still owed to vendors`, "See the costs tab", "costs"]);
+    if (!S.costs.length) items.push(["Add your wedding expenses", "Venue, dress, suit, bridal party, dinners…", "costs"]);
+    if (!S.settings.weddingDate) items.push(["Set your names and wedding date", "Used for the thank-you deadline", "settings"]);
+    S.todos.filter(t => !t.done).sort((a,b)=>(a.order||0)-(b.order||0)).slice(0, Math.max(0, 7 - items.length)).forEach(t => items.push([t.title, t.group, "todos"]));
+    $("#ov-next").innerHTML = items.length ? items.map(([t, s, go]) => `<li><span><span class="name">${esc(t)}</span><br><span class="muted" style="font-size:13px">${esc(s)}</span></span><button class="btn small" data-go="${go}">Open</button></li>`).join("") : `<li class="muted">All caught up.</li>`;
+  }
+
+  function guestRows() {
+    const q = $("#g-search").value.trim().toLowerCase();
+    const f = $("#g-filter").value, side = $("#g-side").value;
+    return S.guests.filter(g => {
+      if (side !== "all" && (g.side || "") !== side) return false;
+      if (f === "gift" && !hasGift(g)) return false;
+      if (f === "nogift" && hasGift(g)) return false;
+      if (f === "attended" && g.attend !== "Attended") return false;
+      if (f === "noaddr" && hasAddr(g)) return false;
+      if (f === "tyopen" && !tyOpen(g)) return false;
+      if (q) { const hay = [g.name, g.gift, g.city, g.state, g.street, g.notes, g.side].join(" ").toLowerCase(); if (!hay.includes(q)) return false; }
+      return true;
+    }).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  }
+  const tyPill = (s) => { s = s || "Not started"; const c = { "Not started": "warn", "Written": "neutral", "Mailed": "good", "Not needed": "brass" }[s]; return `<span class="pill ${c}">${esc(s)}</span>`; };
+
+  function renderGuests() {
+    const sideSel = $("#g-side"), cur = sideSel.value;
+    const sides = [A() + "'s side", B() + "'s side", "Both"];
+    sideSel.innerHTML = `<option value="all">Both sides</option>` + sides.map(s => `<option ${s===cur?"selected":""}>${esc(s)}</option>`).join("");
+    const rows = guestRows();
+    if (!S.guests.length) {
+      $("#guest-table").innerHTML = `<div class="card empty"><h3>Your guest list goes here</h3><p>Paste it straight from a spreadsheet, or add guests one at a time.<br>Each row holds the address, the gift, and the thank-you status.</p><div class="row" style="justify-content:center;margin-top:12px"><button class="btn" data-act="import">Paste a list</button><button class="btn primary" data-act="add-guest" data-write>Add first guest</button></div></div>`;
+      return;
+    }
+    $("#guest-table").innerHTML = `<div class="table-wrap"><table>
+      <thead><tr><th>Guest</th><th>Address</th><th>Gift</th><th class="r">Value</th><th>Thank-you</th><th>Writer</th></tr></thead>
+      <tbody>${rows.map(g => `<tr data-guest="${esc(g.id)}">
+        <td><div class="name">${esc(g.name)}</div><div class="muted" style="font-size:13px">${[g.size>1?g.size+" people":"", g.attend||"", g.side||""].filter(Boolean).map(esc).join(" · ")}</div></td>
+        <td class="addr">${hasAddr(g) ? addrLines(g).map(esc).join("<br>") : `<span class="pill bad">No address</span>`}</td>
+        <td>${hasGift(g) ? `${esc(g.gift || g.giftType)}${g.gift && g.giftType ? `<div class="muted" style="font-size:12px">${esc(g.giftType)}</div>` : ""}` : `<span class="muted">—</span>`}</td>
+        <td class="r num">${num(g.giftValue) ? money(num(g.giftValue)) : ""}</td>
+        <td>${tyPill(g.ty)}</td>
+        <td>${esc(g.writer || "")}</td></tr>`).join("") || `<tr><td colspan="6" class="muted">No guests match these filters.</td></tr>`}</tbody></table></div>
+      <p class="muted" style="font-size:13px;margin:0">${rows.length} of ${S.guests.length} shown · ${money(rows.reduce((s,g)=>s+num(g.giftValue),0))} in gifts shown</p>`;
+  }
+
+  function renderThanks() {
+    const wSel = $("#ty-writer"), cur = wSel.value;
+    wSel.innerHTML = `<option value="all">Everyone's notes</option>` + [A(), B(), "Together", "Unassigned"].map(w => `<option ${w===cur?"selected":""}>${esc(w)}</option>`).join("");
+    const dl = deadline();
+    $("#ty-deadline").textContent = dl ? `Etiquette target: mailed by ${dl.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})}, three months after the wedding.` : "Set your wedding date to see the three-month thank-you deadline.";
+    const pool = S.guests.filter(g => g.ty !== "Not needed");
+    const counts = { "Not started": 0, Written: 0, Mailed: 0 };
+    pool.forEach(g => counts[g.ty || "Not started"]++);
+    const total = pool.length || 1;
+    $("#ty-progress").innerHTML = pool.length ? `<div class="row" style="justify-content:space-between"><strong>${counts.Mailed} of ${pool.length} mailed</strong><span class="muted">${counts["Not started"]} not started · ${counts.Written} written</span></div>
+      <div class="bar-track" style="margin-top:10px;height:12px"><span class="paid" style="width:${counts.Mailed/total*100}%"></span><span class="owed" style="width:${counts.Written/total*100}%"></span></div>
+      <div class="legend" style="margin-top:8px"><span><i style="background:var(--accent)"></i>Mailed</span><span><i style="background:var(--brass);opacity:.75"></i>Written</span></div>`
+      : `<span class="muted">Add guests to start your thank-you list. Every guest shows here until you mark the note mailed or not needed.</span>`;
+    const w = wSel.value, st = $("#ty-status").value;
+    const list = pool.filter(g => {
+      const s = g.ty || "Not started";
+      if (st === "open" ? s === "Mailed" : s !== st) return false;
+      if (w === "Unassigned") return !g.writer;
+      if (w !== "all") return g.writer === w;
+      return true;
+    }).sort((a, b) => (hasGift(b) - hasGift(a)) || (a.name || "").localeCompare(b.name || ""));
+    $("#ty-queue").innerHTML = list.map(g => `<article class="note-card">
+      <div class="row" style="justify-content:space-between"><h3>${esc(g.name)}</h3>${tyPill(g.ty)}</div>
+      ${hasGift(g) ? `<div class="gift"><b>${esc(g.giftType || "Gift")}${num(g.giftValue) ? " · " + money(num(g.giftValue)) : ""}</b>${esc(g.gift || "")}</div>` : `<div class="muted" style="font-size:14px">${g.attend === "Attended" ? "Thanks for celebrating with us" : "No gift logged"}</div>`}
+      ${g.noteIdea ? `<div style="font-size:14px"><span class="muted">Mention: </span>${esc(g.noteIdea)}</div>` : ""}
+      <pre>${hasAddr(g) ? addrLines(g).map(esc).join("\n") : "No address yet"}</pre>
+      <div class="row" style="justify-content:space-between">
+        <span class="muted" style="font-size:13px">${g.writer ? "Writer: " + esc(g.writer) : "No writer"}${g.tyDate ? " · mailed " + esc(fmtDate(g.tyDate)) : ""}</span>
+        <div class="steps">
+          ${(g.ty||"Not started") === "Not started" ? `<button class="btn small" data-ty="Written" data-id="${esc(g.id)}" data-write>Mark written</button>` : ""}
+          ${(g.ty||"Not started") !== "Mailed" ? `<button class="btn small primary" data-ty="Mailed" data-id="${esc(g.id)}" data-write>Mark mailed</button>` : `<button class="btn small" data-ty="Written" data-id="${esc(g.id)}" data-write>Undo</button>`}
+          <button class="btn small" data-edit-guest="${esc(g.id)}">Edit</button>
+        </div>
+      </div></article>`).join("") || (pool.length ? `<div class="card empty" style="grid-column:1/-1"><h3>Nothing here</h3><p>No notes match this filter.</p></div>` : "");
+  }
+
+  function renderCosts() {
+    const ct = costTotals(), cash = cashGifts(), budget = num(S.settings.budget);
+    $("#cost-stats").innerHTML = `
+      <div class="stat"><div class="label">Total cost</div><div class="value">${money(ct.total)}</div><div class="sub">${S.costs.length} line item${S.costs.length===1?"":"s"}</div></div>
+      <div class="stat"><div class="label">Paid</div><div class="value">${money(ct.paid)}</div><div class="meter"><b style="width:${ct.total?ct.paid/ct.total*100:0}%"></b></div></div>
+      <div class="stat"><div class="label">Still owed</div><div class="value">${money(ct.owed)}</div><div class="sub">Final payments &amp; tips</div></div>
+      <div class="stat"><div class="label">${budget ? "Budget" : "Cash gifts"}</div><div class="value">${money(budget || cash)}</div><div class="sub">${budget ? (ct.total > budget ? `<span style="color:var(--bad)">${money(ct.total-budget)} over</span>` : `${money(budget-ct.total)} left`) : `Net cost ${money(ct.total - cash)}`}</div></div>`;
+    const cats = Object.entries(ct.byCat).sort((a, b) => b[1].total - a[1].total);
+    const max = Math.max(1, ...cats.map(c => c[1].total));
+    $("#cost-bars").innerHTML = cats.length ? cats.map(([cat, v]) => `<div class="bar-row"><span>${esc(cat)}</span>
+      <div class="bar-track" title="${esc(cat)}: ${money(v.paid)} paid of ${money(v.total)}"><span class="paid" style="width:${v.paid/max*100}%"></span><span class="owed" style="width:${(v.total-v.paid)/max*100}%"></span></div>
+      <span class="num">${money(v.total)} <span class="muted" style="font-size:12px">${ct.total ? Math.round(v.total/ct.total*100) : 0}%</span></span></div>`).join("")
+      : `<p class="muted" style="margin:0">Categories appear here once you add expenses.</p>`;
+    const payers = Object.entries(ct.byPayer).sort((a, b) => b[1] - a[1]);
+    $("#cost-payers").innerHTML = payers.length ? payers.map(([p, v]) => `<li><span>${esc(p)}</span><span class="num">${money(v)}</span></li>`).join("") : `<li class="muted">Set "Paid by" on an expense to split costs between you and family.</li>`;
+    const owed = S.costs.filter(c => num(c.amount) - num(c.paid) > 0).sort((a,b)=>(a.due||"9").localeCompare(b.due||"9"));
+    $("#cost-owed").innerHTML = owed.length ? owed.map(c => `<li data-cost="${esc(c.id)}" style="cursor:pointer"><span>${esc(c.item || c.category)}${c.due ? `<br><span class="muted" style="font-size:13px">Due ${esc(fmtDate(c.due))}</span>` : ""}</span><span class="num">${money(num(c.amount)-num(c.paid))}</span></li>`).join("") : `<li class="muted">Nothing outstanding.</li>`;
+
+    if (!S.costs.length) {
+      $("#cost-items").innerHTML = `<div class="empty"><h3>No expenses yet</h3><p>Start with the big ones: venue, dress, suit, bridal party and the dinners.<br>Add deposits as "paid" and the rest stays in "still owed".</p><div class="row" style="justify-content:center;margin-top:12px">${["Venue","Dress & alterations","Suit / tux","Bridal party","Dinners (rehearsal, welcome, brunch)"].map(c=>`<button class="btn small" data-quick-cat="${esc(c)}" data-write>+ ${esc(c.split(" (")[0])}</button>`).join("")}</div></div>`;
+      return;
+    }
+    const ordered = CATEGORIES.filter(c => ct.byCat[c]).concat(Object.keys(ct.byCat).filter(c => !CATEGORIES.includes(c)));
+    $("#cost-items").innerHTML = `<div class="section-head" style="margin-bottom:10px"><h2>All expenses</h2></div><div class="table-wrap" style="border:0"><table>
+      <thead><tr><th>Item</th><th>Vendor</th><th>Paid by</th><th class="r">Cost</th><th class="r">Paid</th><th class="r">Owed</th></tr></thead>
+      <tbody>${ordered.map(cat => {
+        const items = S.costs.filter(c => (c.category || "Other") === cat);
+        const v = ct.byCat[cat];
+        return `<tr style="cursor:default"><td colspan="3" style="font-family:var(--display);font-size:17px;padding-top:16px">${esc(cat)}</td><td class="r num" style="padding-top:16px;font-weight:600">${money(v.total)}</td><td class="r num muted" style="padding-top:16px">${money(v.paid)}</td><td class="r num muted" style="padding-top:16px">${money(v.total-v.paid)}</td></tr>` +
+          items.map(c => `<tr data-cost="${esc(c.id)}"><td>${esc(c.item || "—")}${c.notes ? `<div class="muted" style="font-size:12px">${esc(c.notes)}</div>` : ""}</td><td>${esc(c.vendor || "")}</td><td>${esc(c.payer || "")}</td><td class="r num">${money(num(c.amount))}</td><td class="r num">${money(num(c.paid))}</td><td class="r num">${num(c.amount)-num(c.paid) > 0 ? `<span class="pill warn">${money(num(c.amount)-num(c.paid))}</span>` : `<span class="pill good">Paid</span>`}</td></tr>`).join("");
+      }).join("")}
+      <tr style="cursor:default"><td colspan="3" style="font-family:var(--display);font-size:19px;border-top:2px solid var(--ink)">Total</td><td class="r num" style="font-weight:700;border-top:2px solid var(--ink)">${money(ct.total)}</td><td class="r num" style="border-top:2px solid var(--ink)">${money(ct.paid)}</td><td class="r num" style="border-top:2px solid var(--ink)">${money(ct.owed)}</td></tr>
+      </tbody></table></div>`;
+  }
+
+  function renderTodos() {
+    const gs = $("#todo-new-group");
+    if (!gs.options.length) gs.innerHTML = TODO_GROUPS.map(g => `<option>${esc(g)}</option>`).join("");
+    if (!S.todos.length) {
+      $("#todo-groups").innerHTML = `<div class="card empty" style="grid-column:1/-1"><h3>No to-dos yet</h3><p>Add the first one above. Name changes, vendor reviews and dress preservation are good places to start.</p></div>`;
+      return;
+    }
+    const groups = TODO_GROUPS.concat([...new Set(S.todos.map(t => t.group))].filter(g => g && !TODO_GROUPS.includes(g)));
+    $("#todo-groups").innerHTML = groups.map(gr => {
+      const ts = S.todos.filter(t => (t.group || "Home & life") === gr).sort((a,b) => (a.done - b.done) || (a.order||0)-(b.order||0));
+      if (!ts.length) return "";
+      return `<div class="card todo-group"><h3>${esc(gr)} <span class="muted" style="font-family:var(--body);font-size:13px">${ts.filter(t=>t.done).length}/${ts.length}</span></h3>
+        ${ts.map(t => `<div class="todo ${t.done ? "done" : ""}"><input type="checkbox" id="td-${esc(t.id)}" data-todo="${esc(t.id)}" ${t.done ? "checked" : ""} data-write>
+          <label class="t-body" for="td-${esc(t.id)}"><div class="t-title">${esc(t.title)}</div>${t.tip ? `<div class="t-tip">${esc(t.tip)}</div>` : ""}</label>
+          <button class="x" data-del-todo="${esc(t.id)}" aria-label="Delete to-do" data-write>&times;</button></div>`).join("")}</div>`;
+    }).join("");
+  }
+
+  function applyWriteGate() {
+    document.querySelectorAll("[data-write]").forEach(el => { el.disabled = !S.canWrite || !db; });
+    const b = $("#banner");
+    if (S.ready && !db) b.innerHTML = `<div class="notice">Your shared data isn't available in this view. Open the page on claude.ai while signed in to see and edit it.</div>`;
+    else if (!S.canWrite) b.innerHTML = `<div class="notice">You can view this page but not edit it. Ask the owner to share it with you as an Editor.</div>`;
+    else b.innerHTML = "";
+  }
+
+  // ---------- modals ----------
+  function openModal(html, onMount) {
+    const root = $("#modal-root");
+    root.innerHTML = `<div class="scrim"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;
+    const scrim = root.firstElementChild;
+    scrim.addEventListener("mousedown", (e) => { if (e.target === scrim) closeModal(); });
+    onMount && onMount(scrim.firstElementChild);
+    const first = scrim.querySelector("input, select, textarea"); first && first.focus();
+  }
+  function closeModal() { $("#modal-root").innerHTML = ""; }
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+  const opts = (list, val) => list.map(o => `<option value="${esc(o)}" ${o === (val ?? "") ? "selected" : ""}>${esc(o || "—")}</option>`).join("");
+
+  function guestForm(g = {}) {
+    const isNew = !g.id;
+    openModal(`<h2>${isNew ? "Add guest" : esc(g.name)}</h2>
+      <form class="form-grid" id="gform">
+        <div class="field h"><label for="f-name">Name on envelope</label><input id="f-name" required value="${esc(g.name)}" placeholder="Mr. &amp; Mrs. Lee"></div>
+        <div class="field t" style="grid-column:span 1"><label for="f-size">People</label><input id="f-size" type="number" min="1" value="${esc(g.size || 1)}"></div>
+        <div class="field t"><label for="f-side">Side</label><select id="f-side">${opts(["", A()+"'s side", B()+"'s side", "Both"], g.side)}</select></div>
+        <div class="field h"><label for="f-attend">Attendance</label><select id="f-attend">${opts(ATTEND, g.attend || "Attended")}</select></div>
+        <div class="field h"><label for="f-email">Email or phone</label><input id="f-email" value="${esc(g.email)}"></div>
+        <div class="fieldset-title">Mailing address</div>
+        <div class="field"><label for="f-street">Street</label><input id="f-street" value="${esc(g.street)}" autocomplete="off"></div>
+        <div class="field"><label for="f-street2">Apt, suite (optional)</label><input id="f-street2" value="${esc(g.street2)}"></div>
+        <div class="field h"><label for="f-city">City</label><input id="f-city" value="${esc(g.city)}"></div>
+        <div class="field" style="grid-column:span 1"><label for="f-state">State</label><input id="f-state" value="${esc(g.state)}"></div>
+        <div class="field t"><label for="f-zip">ZIP</label><input id="f-zip" value="${esc(g.zip)}" inputmode="numeric"></div>
+        <div class="fieldset-title">Gift</div>
+        <div class="field h"><label for="f-giftType">Type</label><select id="f-giftType">${opts(GIFT_TYPES, g.giftType)}</select></div>
+        <div class="field h"><label for="f-giftValue">Value ($)</label><input id="f-giftValue" inputmode="decimal" value="${num(g.giftValue) || ""}"></div>
+        <div class="field"><label for="f-gift">What they gave</label><input id="f-gift" value="${esc(g.gift)}" placeholder="Le Creuset dutch oven"></div>
+        <div class="fieldset-title">Thank-you note</div>
+        <div class="field t"><label for="f-ty">Status</label><select id="f-ty">${opts(TY, g.ty || "Not started")}</select></div>
+        <div class="field t"><label for="f-writer">Writer</label><select id="f-writer">${opts(["", A(), B(), "Together"], g.writer)}</select></div>
+        <div class="field t"><label for="f-tyDate">Mailed on</label><input id="f-tyDate" type="date" value="${esc(g.tyDate)}"></div>
+        <div class="field"><label for="f-noteIdea">Detail to mention</label><input id="f-noteIdea" value="${esc(g.noteIdea)}" placeholder="Flew in from Denver; led the conga line"></div>
+        <div class="field"><label for="f-notes">Notes</label><textarea id="f-notes">${esc(g.notes)}</textarea></div>
+        <div class="modal-actions" style="grid-column:span 6">
+          <div>${isNew ? "" : `<button type="button" class="btn danger" id="g-del" data-write>Delete guest</button>`}</div>
+          <div class="row"><button type="button" class="btn" id="g-cancel">Cancel</button><button class="btn primary" data-write>${isNew ? "Add guest" : "Save"}</button></div>
+        </div>
+      </form>`, (m) => {
+      $("#g-cancel", m).onclick = closeModal;
+      const del = $("#g-del", m);
+      if (del) del.onclick = async () => {
+        if (del.dataset.armed) { if (await write(() => db.doc("guests/" + g.id).delete(), "Guest deleted")) closeModal(); }
+        else { del.dataset.armed = "1"; del.textContent = "Click again to delete"; }
+      };
+      $("#gform", m).onsubmit = async (e) => {
+        e.preventDefault();
+        const v = (k) => $("#f-" + k, m).value.trim();
+        let ty = v("ty"), tyDate = v("tyDate");
+        if (ty === "Mailed" && !tyDate) tyDate = new Date().toISOString().slice(0, 10);
+        const body = clean({ name: v("name"), size: parseInt(v("size")) || 1, side: v("side"), attend: v("attend"), email: v("email"),
+          street: v("street"), street2: v("street2"), city: v("city"), state: v("state"), zip: v("zip"),
+          giftType: v("giftType"), giftValue: num(v("giftValue")), gift: v("gift"), ty, writer: v("writer"), tyDate, noteIdea: v("noteIdea"), notes: v("notes"),
+          created: g.created || Date.now() });
+        const ref = isNew ? db.collection("guests").doc() : db.doc("guests/" + g.id);
+        if (await write(() => ref.set(body), isNew ? "Guest added" : "Saved")) closeModal();
+      };
+    });
+  }
+
+  function costForm(c = {}) {
+    const isNew = !c.id;
+    openModal(`<h2>${isNew ? "Add expense" : "Edit expense"}</h2>
+      <form class="form-grid" id="cform">
+        <div class="field h"><label for="k-category">Category</label><select id="k-category">${opts(CATEGORIES, c.category || "Venue")}</select></div>
+        <div class="field h"><label for="k-item">Item</label><input id="k-item" value="${esc(c.item)}" placeholder="Venue rental, final balance"></div>
+        <div class="field h"><label for="k-vendor">Vendor</label><input id="k-vendor" value="${esc(c.vendor)}"></div>
+        <div class="field h"><label for="k-payer">Paid by</label><input id="k-payer" list="payers" value="${esc(c.payer || "Us")}"><datalist id="payers">${[...new Set(["Us", A(), B(), "Bride's parents", "Groom's parents", ...S.costs.map(x => x.payer).filter(Boolean)])].map(p => `<option value="${esc(p)}">`).join("")}</datalist></div>
+        <div class="field t"><label for="k-amount">Total cost ($)</label><input id="k-amount" inputmode="decimal" required value="${num(c.amount) || ""}"></div>
+        <div class="field t"><label for="k-paid">Paid so far ($)</label><input id="k-paid" inputmode="decimal" value="${num(c.paid) || ""}"></div>
+        <div class="field t"><label for="k-due">Balance due</label><input id="k-due" type="date" value="${esc(c.due)}"></div>
+        <div class="field"><label for="k-notes">Notes</label><input id="k-notes" value="${esc(c.notes)}" placeholder="Includes 20% gratuity"></div>
+        <div class="modal-actions" style="grid-column:span 6">
+          <div class="row">${isNew ? "" : `<button type="button" class="btn danger" id="c-del" data-write>Delete</button>`}<button type="button" class="btn small" id="c-full">Mark fully paid</button></div>
+          <div class="row"><button type="button" class="btn" id="c-cancel">Cancel</button><button class="btn primary" data-write>${isNew ? "Add expense" : "Save"}</button></div>
+        </div>
+      </form>`, (m) => {
+      $("#c-cancel", m).onclick = closeModal;
+      $("#c-full", m).onclick = () => { $("#k-paid", m).value = $("#k-amount", m).value; };
+      const del = $("#c-del", m);
+      if (del) del.onclick = async () => {
+        if (del.dataset.armed) { if (await write(() => db.doc("costs/" + c.id).delete(), "Expense deleted")) closeModal(); }
+        else { del.dataset.armed = "1"; del.textContent = "Click again to delete"; }
+      };
+      $("#cform", m).onsubmit = async (e) => {
+        e.preventDefault();
+        const v = (k) => $("#k-" + k, m).value.trim();
+        const body = clean({ category: v("category"), item: v("item"), vendor: v("vendor"), payer: v("payer"), amount: num(v("amount")), paid: num(v("paid")), due: v("due"), notes: v("notes"), created: c.created || Date.now() });
+        const ref = isNew ? db.collection("costs").doc() : db.doc("costs/" + c.id);
+        if (await write(() => ref.set(body), isNew ? "Expense added" : "Saved")) closeModal();
+      };
+    });
+  }
+
+  function settingsForm() {
+    const s = S.settings;
+    openModal(`<h2>Your details</h2>
+      <form class="form-grid" id="sform">
+        <div class="field h"><label for="s-a">First name</label><input id="s-a" value="${esc(s.partnerA)}" placeholder="Partner 1"></div>
+        <div class="field h"><label for="s-b">First name</label><input id="s-b" value="${esc(s.partnerB)}" placeholder="Partner 2"></div>
+        <div class="field h"><label for="s-date">Wedding date</label><input id="s-date" type="date" value="${esc(s.weddingDate)}"></div>
+        <div class="field h"><label for="s-budget">Original budget ($, optional)</label><input id="s-budget" inputmode="decimal" value="${num(s.budget) || ""}"></div>
+        <div class="modal-actions" style="grid-column:span 6"><span></span><div class="row"><button type="button" class="btn" id="s-cancel">Cancel</button><button class="btn primary" data-write>Save</button></div></div>
+      </form>`, (m) => {
+      $("#s-cancel", m).onclick = closeModal;
+      $("#sform", m).onsubmit = async (e) => {
+        e.preventDefault();
+        const body = { partnerA: $("#s-a", m).value.trim(), partnerB: $("#s-b", m).value.trim(), weddingDate: $("#s-date", m).value, budget: num($("#s-budget", m).value) };
+        if (await write(() => db.doc("meta/settings").set(body), "Saved")) closeModal();
+      };
+    });
+  }
+
+  function parseRows(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    const tab = lines.some(l => l.includes("\t"));
+    const split = (line) => {
+      if (tab) return line.split("\t").map(s => s.trim());
+      const out = []; let cur = "", q = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { if (q && line[i+1] === '"') { cur += '"'; i++; } else q = !q; }
+        else if (ch === "," && !q) { out.push(cur.trim()); cur = ""; }
+        else cur += ch;
+      }
+      out.push(cur.trim()); return out;
+    };
+    let rows = lines.map(split);
+    if (rows.length && /name/i.test(rows[0][0] || "")) rows = rows.slice(1);
+    return rows.filter(r => r[0]).map(r => clean({ name: r[0], street: r[1] || "", city: r[2] || "", state: r[3] || "", zip: r[4] || "", gift: r[5] || "", giftValue: num(r[6]), size: 1, attend: "Attended", ty: "Not started", created: Date.now() }));
+  }
+  function importForm() {
+    openModal(`<h2>Paste your guest list</h2>
+      <p class="muted" style="margin:0">Copy rows from Excel, Google Sheets or Numbers and paste them here. Columns, in this order:<br><strong>Name, Street, City, State, ZIP, Gift, Gift value</strong>. Only the name is required; a header row is skipped.</p>
+      <div class="field"><label for="imp-text">Rows</label><textarea id="imp-text" style="min-height:180px;font-size:13px" placeholder="Tom &amp; Ann Lee	12 Oak St	Austin	TX	78701	Wine glasses	120"></textarea></div>
+      <p class="muted" id="imp-preview" style="margin:0;font-size:14px">Nothing pasted yet.</p>
+      <div class="modal-actions"><span></span><div class="row"><button class="btn" id="imp-cancel">Cancel</button><button class="btn primary" id="imp-go" data-write disabled>Import</button></div></div>`, (m) => {
+      const ta = $("#imp-text", m), go = $("#imp-go", m);
+      $("#imp-cancel", m).onclick = closeModal;
+      ta.oninput = () => {
+        const rows = parseRows(ta.value);
+        $("#imp-preview", m).textContent = rows.length ? `${rows.length} guest${rows.length>1?"s":""} ready: ${rows.slice(0,3).map(r=>r.name).join(", ")}${rows.length>3?"…":""}` : "Nothing pasted yet.";
+        go.disabled = !rows.length || !S.canWrite || !db;
+      };
+      go.onclick = async () => {
+        const rows = parseRows(ta.value); go.disabled = true;
+        let ok = 0;
+        for (const r of rows) { try { await db.collection("guests").doc().set(r); ok++; } catch (e) { break; } }
+        toast(ok === rows.length ? `Imported ${ok} guests` : `Imported ${ok} of ${rows.length}. The rest couldn't be saved.`);
+        closeModal();
+      };
+    });
+  }
+
+  // ---------- events ----------
+  function setTab(t) {
+    if (t === "settings") { settingsForm(); return; }
+    S.tab = t;
+    document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+    document.querySelectorAll("section.panel").forEach(s => s.hidden = s.id !== "tab-" + t);
+    try { localStorage.setItem("wr-tab", t); } catch (e) {}
+  }
+  document.querySelectorAll(".tab").forEach(b => b.onclick = () => setTab(b.dataset.tab));
+  $("#open-settings").onclick = settingsForm;
+  $("#add-guest").onclick = () => guestForm();
+  $("#open-import").onclick = importForm;
+  $("#add-cost").onclick = () => costForm();
+  ["#g-search", "#g-filter", "#g-side"].forEach(s => $(s).addEventListener("input", renderGuests));
+  ["#ty-writer", "#ty-status"].forEach(s => $(s).addEventListener("input", renderThanks));
+
+  document.addEventListener("click", async (e) => {
+    const t = e.target.closest("[data-go],[data-guest],[data-edit-guest],[data-cost],[data-ty],[data-act],[data-quick-cat],[data-del-todo]");
+    if (!t) return;
+    if (t.dataset.go) return setTab(t.dataset.go);
+    if (t.dataset.act === "import") return importForm();
+    if (t.dataset.act === "add-guest") return guestForm();
+    if (t.dataset.quickCat) return costForm({ category: t.dataset.quickCat });
+    const gid = t.dataset.guest || t.dataset.editGuest;
+    if (gid) { const g = S.guests.find(x => x.id === gid); if (g) guestForm(g); return; }
+    if (t.dataset.cost) { const c = S.costs.find(x => x.id === t.dataset.cost); if (c) costForm(c); return; }
+    if (t.dataset.ty) {
+      const patch = { ty: t.dataset.ty };
+      if (t.dataset.ty === "Mailed") patch.tyDate = new Date().toISOString().slice(0, 10);
+      else patch.tyDate = "";
+      t.disabled = true;
+      await write(() => db.doc("guests/" + t.dataset.id).update(patch), t.dataset.ty === "Mailed" ? "Marked mailed" : "Updated");
+      return;
+    }
+    if (t.dataset.delTodo) {
+      if (t.dataset.armed) await write(() => db.doc("todos/" + t.dataset.delTodo).delete(), "To-do deleted");
+      else { t.dataset.armed = "1"; t.textContent = "Delete?"; t.style.fontSize = "12px"; setTimeout(() => { if (t.isConnected) { delete t.dataset.armed; t.innerHTML = "&times;"; t.style.fontSize = ""; } }, 3000); }
+    }
+  });
+  document.addEventListener("change", async (e) => {
+    const id = e.target.dataset && e.target.dataset.todo;
+    if (!id) return;
+    await write(() => db.doc("todos/" + id).update({ done: e.target.checked }));
+  });
+  $("#todo-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const title = $("#todo-new").value.trim(); if (!title) return;
+    const order = Math.max(0, ...S.todos.map(t => t.order || 0)) + 1;
+    if (await write(() => db.collection("todos").doc().set({ title, group: $("#todo-new-group").value, done: false, order }), "To-do added")) $("#todo-new").value = "";
+  };
+
+  function csv() {
+    const cols = ["name","size","side","attend","street","street2","city","state","zip","email","giftType","gift","giftValue","ty","writer","tyDate","noteIdea","notes"];
+    const q = (v) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+    return [cols.join(",")].concat(guestRows().map(g => cols.map(c => q(g[c])).join(","))).join("\n");
+  }
+  $("#copy-addr").onclick = async () => {
+    const text = guestRows().filter(hasAddr).map(g => [g.name, ...addrLines(g)].join("\n")).join("\n\n");
+    if (!text) { toast("No addresses in this view yet."); return; }
+    try { await navigator.clipboard.writeText(text); toast("Addresses copied"); }
+    catch (err) {
+      openModal(`<h2>Addresses</h2><p class="muted" style="margin:0">Select all and copy.</p><div class="field"><textarea id="addr-out" style="min-height:260px">${esc(text)}</textarea></div><div class="modal-actions"><span></span><button class="btn" id="addr-close">Done</button></div>`, (m) => { $("#addr-close", m).onclick = closeModal; const ta = $("#addr-out", m); setTimeout(() => ta.select(), 0); });
+    }
+  };
+  $("#dl-csv").onclick = async () => {
+    try { await downloads.save({ filename: "wedding-guests.csv", data: csv() }); toast("Download ready"); }
+    catch (e) { if (e && e.code !== "declined") toast("The download couldn't start."); }
+  };
+
+  // ---------- boot ----------
+  try { const t = (location.hash || "").slice(1) || localStorage.getItem("wr-tab"); if (t && $("#tab-" + t)) setTab(t); } catch (e) {}
+  render();
+
+  (async () => {
+    const c = window.claude;
+    if (!c || !c.use) { S.ready = true; render(); return; }
+    const [dbNs, user, dl] = await Promise.all([c.use("db"), c.use("user"), c.use("downloads")]);
+    db = dbNs; downloads = dl; S.ready = true;
+    if (dl) $("#dl-csv").hidden = false;
+    if (user) { try { const w = await user.can("data.write"); if (w === false) S.canWrite = false; } catch (e) {} }
+    if (!db) { render(); return; }
+    const onErr = () => { S.live = false; render(); };
+    const toList = (snap) => snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    db.collection("guests").onSnapshot(s => { S.guests = toList(s); S.live = true; render(); }, onErr);
+    db.collection("costs").onSnapshot(s => { S.costs = toList(s); S.live = true; render(); }, onErr);
+    db.collection("todos").onSnapshot(s => { S.todos = toList(s); S.live = true; render(); }, onErr);
+    db.doc("meta/settings").onSnapshot(s => { S.settings = s.exists ? { ...s.data() } : {}; S.live = true; render(); }, onErr);
+  })();
+})();
+</script>
