@@ -217,8 +217,8 @@
     <div><kbd>W</kbd><kbd>↑</kbd><span>Throttle</span></div>
     <div><kbd>S</kbd><kbd>↓</kbd><span>Brake · hold to reverse</span></div>
     <div><kbd>A</kbd><kbd>D</kbd><span>Steer</span></div>
-    <div><kbd>Space</kbd><span>Handbrake drift</span></div>
-    <div><kbd>T</kbd><span>Counter-steer assist</span></div>
+    <div><kbd>Space</kbd><span>Drift brake (game assist)</span></div>
+    <div><kbd>T</kbd><span>Traction + counter-steer assist</span></div>
     <div class="cones">Cones hit <b id="conesHit">0</b></div>
   </div>
   <div class="gauge" aria-label="Speed and RPM">
@@ -233,8 +233,8 @@
     </svg>
     <div class="readout">
       <span class="speed" id="speed">0</span>
-      <button class="unit" type="button" id="unitBtn">km/h</button>
-      <span class="real" id="realSpeed">real RC ≈ 0.0 km/h</span>
+      <button class="unit" type="button" id="unitBtn">mph</button>
+      <span class="real" id="realSpeed">real 1/10 speed · 0 A</span>
     </div>
     <div class="gear" id="gear">N</div>
     <div class="rpm"><span id="rpmText">0</span> rpm</div>
@@ -1348,7 +1348,7 @@ let skidIndex = 0;
 const skidLast = [null, null, null, null];
 function addSkid(ax, az, bx, bz, y) {
   const dx = bx - ax, dz = bz - az, len = Math.hypot(dx, dz);
-  if (len < 0.05 || len > 6) return;
+  if (len < 0.05 || len > 30) return;
   const o = new THREE.Object3D();
   o.position.set((ax + bx) / 2, y + 0.025, (az + bz) / 2);
   o.rotation.y = Math.atan2(dx, dz);
@@ -1373,23 +1373,39 @@ function spawnSmoke(x, y, z, strength) {
   p.s.position.set(x, y + 0.3, z); p.s.visible = true; p.strength = Math.min(1, strength);
 }
 
-/* ---------- vehicle physics ---------- */
+/* ---------- vehicle physics: true 1/10 scale, SI units ----------
+   The scene is modelled at 1 unit = 100 mm, so physics runs in metres and
+   is multiplied by U when written to the scene. The drivetrain follows a
+   stock Rustler VXL on 3S: Velineon 3500 kV sensorless motor, VXL-3s ESC,
+   25T pinion / 83T spur, 2.72:1 transmission, rear-wheel drive and
+   rear-only motor braking. */
+const U = 10;
 const PHYS = {
-  mass: 1200, a: 1.45, b: 1.45, Iz: 1750, cgH: 0.55, g: 9.81,
-  driveForce: 10500, power: 165000, brakeForce: 17500, reverseForce: 5600, reverseMax: 14,
-  drag: 0.85, rolling: 28, engineBrake: 1400,
-  CsF: 72000, CsR: 86000, muPeak: 1.08, muSlide: 0.8, rearGrip: 1.08, handbrakeGrip: 0.55, handbrakeForce: 4200, yawDamp: 0.35,
-  steerLock: 0.56, steerHighSpeed: 0.1, topSpeed: 52, maxRPM: 40000
+  mass: 2.75, a: 0.165, b: 0.125, Iz: 0.072, cgH: 0.065, g: 9.81, wheelR: 0.0575,
+  kv: 3500, Rtot: 0.028, Imax: 190, Vbat: 11.8, pinion: 25, spur: 83, trans: 2.72, eff: 0.88, Jwheel: 5.5e-4,
+  cdA: 0.018, rho: 1.2, crr: 0.03, driveDrag: 0.25,
+  brakeMax: 30, reverseLimit: 0.35,
+  muPeak: 1.1, muSlide: 0.82, CsPerNF: 15, CsPerNR: 21, rearGrip: 1.18, handbrakeGrip: 0.55,
+  steerLock: 0.52, steerHighSpeed: 0.17, steerRate: 6.2, yawDamp: 1.2,
+  maxRPM: 40000
 };
-const START = { x: -70, z: 110, yaw: 0 };
+PHYS.L = PHYS.a + PHYS.b;
+PHYS.fdr = PHYS.spur / PHYS.pinion * PHYS.trans;               // ≈ 9.03 : 1 final drive
+PHYS.ke = 60 / (2 * Math.PI * PHYS.kv);                         // back-EMF / torque constant (V·s/rad = N·m/A)
+PHYS.topSpeed = PHYS.Vbat / PHYS.ke / PHYS.fdr * PHYS.wheelR;   // no-load road speed (≈ 27 m/s)
+
+const START = { x: -7, z: 11, yaw: 0 };                         // metres (front straight, facing +x)
 const veh = { x: 0, z: 0, y: 0, yaw: 0, vx: 0, vy: 0, r: 0, vv: 0, steer: 0, throttle: 0, brake: 0, handbrake: false, gear: 'D',
-  airborne: false, ax: 0, ay: 0, alphaF: 0, alphaR: 0, beta: 0, wheelspin: false, rpm: 0, impact: 0, landing: 0, airTime: 0 };
+  airborne: false, ax: 0, ay: 0, alphaF: 0, alphaR: 0, beta: 0, spin: 0, rearLocked: false, current: 0, motorRPM: 0, cmd: 0,
+  impact: 0, landing: 0, airTime: 0 };
 const input = { throttle: 0, brake: 0, steer: 0 };
 const keys = {};
 let assistOn = true, conesHit = 0, simAcc = 0;
 
+const groundM = (x, z) => groundHeight(x * U, z * U) / U;
 function resetVehicle() {
-  Object.assign(veh, { x: START.x, z: START.z, y: 0, yaw: START.yaw, vx: 0, vy: 0, r: 0, vv: 0, steer: 0, throttle: 0, brake: 0, gear: 'D', airborne: false, ax: 0, ay: 0, rpm: 0, impact: 0, landing: 0 });
+  Object.assign(veh, { x: START.x, z: START.z, y: 0, yaw: START.yaw, vx: 0, vy: 0, r: 0, vv: 0, steer: 0, throttle: 0, brake: 0, gear: 'D',
+    airborne: false, ax: 0, ay: 0, spin: 0, rearLocked: false, current: 0, motorRPM: 0, cmd: 0, impact: 0, landing: 0 });
   input.throttle = input.brake = input.steer = 0;
   drift.score = 0; drift.time = 0; drift.idle = 9; drift.banked = 0;
   skidLast.fill(null);
@@ -1406,73 +1422,101 @@ function setWorldVel(wx, wz) {
 const smoothSat = u => u < 1 ? 1.5 * u - 0.5 * u * u * u : 1;
 function tireForce(alpha, C, N, muScale) {
   const peak = PHYS.muPeak * N * muScale;
-  const u = Math.abs(C * alpha) / Math.max(peak, 1);
+  const u = Math.abs(C * alpha) / Math.max(peak, 1e-3);
   const mag = u < 1 ? peak * smoothSat(u) : peak * (1 - (1 - PHYS.muSlide / PHYS.muPeak) * Math.min(1, (u - 1) / 1.4));
   return -Math.sign(alpha) * mag;
 }
+// Brushless motor + ESC: PWM duty scales the applied voltage, back-EMF rises with rpm,
+// current is limited by winding/pack resistance and the ESC limit (no regeneration on throttle).
+function motorDrive(duty, wheelSurfaceSpeed) {
+  const wm = Math.abs(wheelSurfaceSpeed) / PHYS.wheelR * PHYS.fdr;
+  const I = Math.max(0, Math.min(PHYS.Imax, (duty * PHYS.Vbat - PHYS.ke * wm) / PHYS.Rtot));
+  return { F: PHYS.ke * I * PHYS.fdr * PHYS.eff / PHYS.wheelR, I, wm };
+}
 
 function physicsStep(h) {
-  const m = PHYS.mass, g = PHYS.g, L = PHYS.a + PHYS.b, d = veh.steer;
-  const ground = groundHeight(veh.x, veh.z);
+  const m = PHYS.mass, g = PHYS.g, L = PHYS.L, d = veh.steer;
+  const ground = groundM(veh.x, veh.z);
 
   // ---- vertical: ramps, jumps, landings ----
   if (!veh.airborne) {
     const prevY = veh.y;
-    if (ground >= veh.y - 0.05) { veh.y = ground; veh.vv = (ground - prevY) / h; }
+    if (ground >= veh.y - 0.005) { veh.y = ground; veh.vv = (ground - prevY) / h; }
     else { veh.airborne = true; veh.airTime = 0; }
   }
   if (veh.airborne) {
-    veh.vv -= g * 1.6 * h;                       // a little extra gravity keeps jumps punchy
+    veh.vv -= g * h;
     veh.y += veh.vv * h;
     veh.airTime += h;
-    if (veh.y <= ground) { veh.landing = Math.min(1.2, -veh.vv * 0.08); veh.y = ground; veh.vv = 0; veh.airborne = false; }
+    if (veh.y <= ground) { veh.landing = Math.min(1.2, -veh.vv * 0.35); veh.y = ground; veh.vv = 0; veh.airborne = false; }
   }
 
-  const sgn = veh.vx > 0.05 ? 1 : veh.vx < -0.05 ? -1 : 0;
-  // ---- longitudinal forces from the driver ----
-  let drive = 0, brake = 0;
-  if (veh.gear === 'D') {
-    drive = veh.throttle * Math.min(PHYS.driveForce, PHYS.power / Math.max(Math.abs(veh.vx), 1));
-    brake = veh.brake;
-  } else {
-    drive = veh.vx > -PHYS.reverseMax ? -veh.brake * PHYS.reverseForce : 0;
-    brake = veh.throttle;
+  // ---- driver commands → motor duty and brake ----
+  const dirSign = veh.gear === 'R' ? -1 : 1;
+  let duty = veh.gear === 'D' ? veh.throttle : veh.brake * PHYS.reverseLimit;
+  const brakeCmd = veh.gear === 'D' ? veh.brake : veh.throttle;
+  if (assistOn) {                                   // TSM-style traction control: hold wheelspin near the grip peak
+    const allowed = 0.5 + 0.15 * Math.abs(veh.vx);
+    if (Math.abs(veh.spin) > allowed) duty *= Math.max(0.2, allowed / Math.abs(veh.spin));
   }
-  const Fbrake = -sgn * brake * PHYS.brakeForce;
-  const Fhb = veh.handbrake ? -sgn * PHYS.handbrakeForce : 0;
-  const coasting = veh.throttle < 0.02 && veh.brake < 0.02;
-  const Fres = -PHYS.rolling * veh.vx - PHYS.drag * veh.vx * Math.abs(veh.vx) - (coasting ? Math.sign(veh.vx) * Math.min(PHYS.engineBrake, 120 * Math.abs(veh.vx)) : 0);
+  veh.cmd = duty;
+  const mot = motorDrive(duty, veh.vx + veh.spin);
+  veh.current = mot.I;
+  veh.motorRPM = mot.wm * 60 / (2 * Math.PI);
+  const Fmotor = mot.F * dirSign;
+  const sgn = veh.vx > 0.02 ? 1 : veh.vx < -0.02 ? -1 : 0;
+  const Fres = -PHYS.crr * m * g * Math.sign(veh.vx) * Math.min(1, Math.abs(veh.vx) / 0.3)
+               - 0.5 * PHYS.rho * PHYS.cdA * veh.vx * Math.abs(veh.vx) - PHYS.driveDrag * veh.vx;
 
   if (veh.airborne) {
-    veh.vx += Fres / m * h * 0.5;
-    veh.r *= 1 - 0.6 * h;
+    // wheels spin freely in the air: the motor revs the rear wheels up
+    veh.spin += (Fmotor * PHYS.wheelR ** 2 / PHYS.Jwheel - 2 * veh.spin) * h;
+    veh.spin = Math.max(-30, Math.min(30, veh.spin));
+    veh.vx += Fres / m * h;
+    veh.r *= 1 - 0.8 * h;
     veh.yaw += veh.r * h;
+    veh.rearLocked = false;
   } else {
-    // ---- load transfer and tyre forces (bicycle model) ----
+    // ---- axle loads with longitudinal weight transfer ----
     let Nf = m * g * PHYS.b / L - m * veh.ax * PHYS.cgH / L;
     let Nr = m * g * PHYS.a / L + m * veh.ax * PHYS.cgH / L;
-    Nf = Math.max(Nf, 0.12 * m * g); Nr = Math.max(Nr, 0.12 * m * g);
+    Nf = Math.max(Nf, 0.1 * m * g); Nr = Math.max(Nr, 0.1 * m * g);
     const muR = veh.handbrake ? PHYS.handbrakeGrip : PHYS.rearGrip;
-    const peakR = PHYS.muPeak * Nr * muR;
-    let Fxr = drive + Fbrake * 0.4 + Fhb;
-    veh.wheelspin = Math.abs(drive) > peakR * 0.92;
-    Fxr = Math.max(-peakR, Math.min(peakR, Fxr));
-    const peakF = PHYS.muPeak * Nf;
-    const Fxf = Math.max(-peakF, Math.min(peakF, Fbrake * 0.6));
-    const frontCircle = Math.sqrt(Math.max(0.1, 1 - (Fxf / peakF) ** 2));
-    const rearCircle = Math.sqrt(Math.max(0.2, 1 - 0.6 * (Fxr / peakR) ** 2));   // friction circle: drive force eats some lateral grip (power oversteer)
+    const tractionR = PHYS.muPeak * Nr * muR;
 
+    // ---- rear (driven) wheels: ESC brake, or stick/slip traction ----
+    let Fxr;
+    if (brakeCmd > 0.02 && Math.abs(veh.vx) > 0.05) {
+      let demand = brakeCmd * PHYS.brakeMax;              // motor braking acts on the rear wheels only
+      if (assistOn) demand = Math.min(demand, tractionR * 0.97);   // ABS-style assist keeps the rears rolling
+      veh.rearLocked = demand > tractionR * 1.05;
+      Fxr = -sgn * Math.min(demand, tractionR * (veh.rearLocked ? PHYS.muSlide / PHYS.muPeak : 1));
+      veh.spin = veh.rearLocked ? -veh.vx : 0;
+    } else {
+      veh.rearLocked = false;
+      if (Math.abs(veh.spin) < 0.05 && Math.abs(Fmotor) <= tractionR) { Fxr = Fmotor; veh.spin = 0; }
+      else {
+        const slipDir = Math.sign(veh.spin) || Math.sign(Fmotor);
+        Fxr = slipDir * tractionR * 0.93;                    // spinning tyre: kinetic grip
+        veh.spin += ((Fmotor - Fxr) * PHYS.wheelR ** 2 / PHYS.Jwheel - veh.ax) * h;
+        if (Math.sign(veh.spin) !== slipDir) veh.spin = 0;   // slip velocity crossed zero: tyre hooks up again
+      }
+    }
+    if (veh.handbrake && Math.abs(veh.vx) > 0.3) { Fxr += -sgn * tractionR * 0.5; veh.spin = Math.min(veh.spin, 0); }
+
+    // ---- lateral tyre forces (bicycle model with friction circle on the rear) ----
+    const rearCircle = Math.sqrt(Math.max(0.15, 1 - 0.7 * (Fxr / tractionR) ** 2));
     const vfLat = (veh.vy + PHYS.a * veh.r) * Math.cos(d) - veh.vx * Math.sin(d);
     const vfLong = veh.vx * Math.cos(d) + (veh.vy + PHYS.a * veh.r) * Math.sin(d);
     const vrLat = veh.vy - PHYS.b * veh.r;
-    veh.alphaF = Math.atan2(vfLat, Math.max(Math.abs(vfLong), 0.8));
-    veh.alphaR = Math.atan2(vrLat, Math.max(Math.abs(veh.vx), 0.8));
-    const Fyf = tireForce(veh.alphaF, PHYS.CsF, Nf, 1) * frontCircle;
-    const Fyr = tireForce(veh.alphaR, PHYS.CsR, Nr, muR) * rearCircle;
+    veh.alphaF = Math.atan2(vfLat, Math.max(Math.abs(vfLong), 0.4));
+    veh.alphaR = Math.atan2(vrLat, Math.max(Math.abs(veh.vx), 0.4));
+    const Fyf = tireForce(veh.alphaF, PHYS.CsPerNF * Nf, Nf, 1);
+    const Fyr = tireForce(veh.alphaR, PHYS.CsPerNR * Nr, Nr, muR) * rearCircle;
 
-    const Fx = Fxr + Fxf * Math.cos(d) - Fyf * Math.sin(d) + Fres;
-    const Fy = Fyf * Math.cos(d) + Fxf * Math.sin(d) + Fyr;
-    const Mz = PHYS.a * (Fyf * Math.cos(d) + Fxf * Math.sin(d)) - PHYS.b * Fyr;
+    const Fx = Fxr - Fyf * Math.sin(d) + Fres;
+    const Fy = Fyf * Math.cos(d) + Fyr;
+    const Mz = PHYS.a * Fyf * Math.cos(d) - PHYS.b * Fyr;
 
     const prevVx = veh.vx;
     veh.ax = Fx / m;
@@ -1481,32 +1525,33 @@ function physicsStep(h) {
     veh.vy += (veh.ay - prevVx * veh.r) * h;
     veh.r += (Mz / PHYS.Iz) * h;
 
-    // braking never pushes the car backwards on its own
-    if ((brake > 0 || veh.handbrake) && Math.sign(veh.vx) !== Math.sign(prevVx) && Math.abs(drive) < 1) veh.vx = 0;
+    if ((brakeCmd > 0.02 || veh.handbrake) && sgn !== 0 && Math.sign(veh.vx) !== sgn) { veh.vx = 0; veh.spin = 0; }
 
-    // low-speed blend to kinematic steering (tyre models are unstable near 0 m/s)
+    // low-speed blend to kinematic steering (slip-angle tyre models are singular at rest)
     const vabs = Math.abs(veh.vx);
-    if (vabs < 3) {
-      const w = 1 - vabs / 3;
-      const rKin = veh.vx * Math.tan(d) / L;
-      veh.r += (rKin - veh.r) * Math.min(1, w * 12 * h);
-      veh.vy *= 1 - Math.min(1, w * 10 * h);
+    if (vabs < 0.6) {
+      const w = 1 - vabs / 0.6;
+      veh.r += (veh.vx * Math.tan(d) / L - veh.r) * Math.min(1, w * 40 * h);
+      veh.vy *= 1 - Math.min(1, w * 30 * h);
     }
-    if (vabs < 0.04 && Math.abs(drive) < 1) { veh.vx = 0; veh.vy *= 0.9; veh.r *= 0.9; }
-    veh.r *= 1 - PHYS.yawDamp * h;                     // tyre relaxation / chassis damping keeps the slide catchable
-    veh.r = Math.max(-4, Math.min(4, veh.r));
+    if (vabs < 0.01 && Math.abs(Fmotor) < 0.5) { veh.vx = 0; veh.vy *= 0.9; veh.r *= 0.9; }
+    veh.r *= 1 - PHYS.yawDamp * h;
+    veh.r = Math.max(-12, Math.min(12, veh.r));
     veh.yaw += veh.r * h;
   }
 
-  // ---- integrate position ----
   const [wx, wz] = worldVel();
   veh.x += wx * h;
   veh.z += wz * h;
   collideStatic();
 }
 
-/* ---------- collisions ---------- */
-const CAR_R = 1.15, CAR_OFF = 1.55;
+/* ---------- collisions (metres) ---------- */
+const CAR_R = 0.115, CAR_OFF = 0.155;
+const AX = ARENA.X / U, AZ = ARENA.Z / U;
+const BLOCKS_M = BLOCKS.map(b => b.map(v => v / U));
+const RAMPS_M = RAMPS.map(r => ({ cx: r.cx / U, cz: r.cz / U, len: r.len / U, wid: r.wid / U, h: r.h / U, dir: r.dir }));
+const TYRES_M = TYRES.map(t => t.map(v => v / U));
 function carCircles() {
   const c = Math.cos(veh.yaw), s = Math.sin(veh.yaw);
   return [[veh.x + c * CAR_OFF, veh.z - s * CAR_OFF], [veh.x - c * CAR_OFF, veh.z + s * CAR_OFF]];
@@ -1516,78 +1561,69 @@ function resolveContact(nx, nz, pen, px, pz) {
   let [wx, wz] = worldVel();
   const vn = wx * nx + wz * nz;
   if (vn < 0) {
-    const e = 0.3;
+    const e = 0.35;
     wx -= (1 + e) * vn * nx; wz -= (1 + e) * vn * nz;
     const tx = -nz, tz = nx, vt = wx * tx + wz * tz;
-    wx -= vt * 0.15 * tx; wz -= vt * 0.15 * tz;
+    wx -= vt * 0.2 * tx; wz -= vt * 0.2 * tz;
     setWorldVel(wx, wz);
     const rx = px - veh.x, rz = pz - veh.z;
-    veh.r += (rz * nx - rx * nz) * vn * 0.01;
+    veh.r += (rz * nx - rx * nz) * vn * 20;
     veh.impact = Math.max(veh.impact, -vn);
-    if (-vn > 4) drift.crash = true;
+    if (-vn > 2) drift.crash = true;
   }
 }
 function collideStatic() {
   for (const [cx, cz] of carCircles()) {
-    // arena walls
-    if (cx > ARENA.X - CAR_R) resolveContact(-1, 0, cx - (ARENA.X - CAR_R), cx, cz);
-    if (cx < -ARENA.X + CAR_R) resolveContact(1, 0, (-ARENA.X + CAR_R) - cx, cx, cz);
-    if (cz > ARENA.Z - CAR_R) resolveContact(0, -1, cz - (ARENA.Z - CAR_R), cx, cz);
-    if (cz < -ARENA.Z + CAR_R) resolveContact(0, 1, (-ARENA.Z + CAR_R) - cz, cx, cz);
-    // concrete blocks
-    for (const [bx, bz, hx, hz] of BLOCKS) {
-      if (veh.y > 1.4) continue;
-      circleVsBox(cx, cz, bx, bz, hx, hz);
-    }
-    // ramp sides and lips are solid when the car is below the deck
-    for (const r of RAMPS) {
+    if (cx > AX - CAR_R) resolveContact(-1, 0, cx - (AX - CAR_R), cx, cz);
+    if (cx < -AX + CAR_R) resolveContact(1, 0, (-AX + CAR_R) - cx, cx, cz);
+    if (cz > AZ - CAR_R) resolveContact(0, -1, cz - (AZ - CAR_R), cx, cz);
+    if (cz < -AZ + CAR_R) resolveContact(0, 1, (-AZ + CAR_R) - cz, cx, cz);
+    for (const [bx, bz, hx, hz] of BLOCKS_M) if (veh.y < 0.14) circleVsBox(cx, cz, bx, bz, hx, hz);
+    for (const r of RAMPS_M) {
       const hx = r.len / 2, hz = r.wid / 2;
       if (Math.abs(cx - r.cx) > hx + CAR_R || Math.abs(cz - r.cz) > hz + CAR_R) continue;
       const t = ((cx - r.cx) * r.dir + r.len / 2) / r.len;
-      const deck = r.h * Math.max(0, Math.min(1, t));
-      if (veh.y < deck - 0.6) circleVsBox(cx, cz, r.cx, r.cz, hx, hz);
+      if (veh.y < r.h * Math.max(0, Math.min(1, t)) - 0.06) circleVsBox(cx, cz, r.cx, r.cz, hx, hz);
     }
-    // tyre stacks
-    for (const [tx, tz] of TYRES) {
-      const dx = cx - tx, dz = cz - tz, dist = Math.hypot(dx, dz), R = CAR_R + 1.45;
-      if (dist < R && dist > 1e-4 && veh.y < 2.4) resolveContact(dx / dist, dz / dist, R - dist, cx, cz);
+    for (const [tx, tz] of TYRES_M) {
+      const dx = cx - tx, dz = cz - tz, dist = Math.hypot(dx, dz), R = CAR_R + 0.145;
+      if (dist < R && dist > 1e-5 && veh.y < 0.24) resolveContact(dx / dist, dz / dist, R - dist, cx, cz);
     }
   }
 }
 function circleVsBox(cx, cz, bx, bz, hx, hz) {
   const qx = Math.max(bx - hx, Math.min(cx, bx + hx)), qz = Math.max(bz - hz, Math.min(cz, bz + hz));
-  let dx = cx - qx, dz = cz - qz, dist = Math.hypot(dx, dz);
+  const dx = cx - qx, dz = cz - qz, dist = Math.hypot(dx, dz);
   if (dist >= CAR_R) return;
-  if (dist < 1e-4) {                                      // centre inside the box: push out along the shallowest axis
+  if (dist < 1e-5) {
     const ox = hx - Math.abs(cx - bx), oz = hz - Math.abs(cz - bz);
-    if (ox < oz) { dx = Math.sign(cx - bx) || 1; dz = 0; dist = 0; resolveContact(dx, 0, ox + CAR_R, cx, cz); }
-    else { dz = Math.sign(cz - bz) || 1; resolveContact(0, dz, oz + CAR_R, cx, cz); }
+    if (ox < oz) resolveContact(Math.sign(cx - bx) || 1, 0, ox + CAR_R, cx, cz);
+    else resolveContact(0, Math.sign(cz - bz) || 1, oz + CAR_R, cx, cz);
     return;
   }
   resolveContact(dx / dist, dz / dist, CAR_R - dist, cx, cz);
 }
 function updateCones(dt) {
-  const circles = carCircles();
-  const [wx, wz] = worldVel();
+  const circles = carCircles().map(([x, z]) => [x * U, z * U]);
+  const [wxm, wzm] = worldVel(), wx = wxm * U, wz = wzm * U;
   for (const c of cones) {
-    if (veh.y < 1.2) for (const [cx, cz] of circles) {
-      const dx = c.x - cx, dz = c.z - cz, dist = Math.hypot(dx, dz), R = CAR_R + 0.45;
+    if (veh.y < 0.12) for (const [cx, cz] of circles) {
+      const dx = c.x - cx, dz = c.z - cz, dist = Math.hypot(dx, dz), R = CAR_R * U + 0.45;
       if (dist < R && dist > 1e-4) {
         const nx = dx / dist, nz = dz / dist;
         c.x += nx * (R - dist); c.z += nz * (R - dist);
         const speed = Math.hypot(wx, wz);
-        if (c.tilt === 0 && speed > 1) conesHit++;
-        c.vx = wx * 1.1 + nx * (2 + speed * 0.3); c.vz = wz * 1.1 + nz * (2 + speed * 0.3);
-        c.spin = (Math.random() - 0.5) * 12;
+        if (c.tilt === 0 && speed > 5) conesHit++;
+        c.vx = wx * 1.05 + nx * (6 + speed * 0.2); c.vz = wz * 1.05 + nz * (6 + speed * 0.2);
+        c.spin = (Math.random() - 0.5) * 14;
         c.tiltAxis.set(-nz, 0, nx).normalize();
-        if (speed > 2) c.tilt = Math.max(c.tilt, 0.01);
-        veh.vx *= 0.995;
+        if (speed > 8) c.tilt = Math.max(c.tilt, 0.01);
+        veh.vx *= 0.99;
       }
     }
-    const sp = Math.hypot(c.vx, c.vz);
-    if (sp > 0.01 || c.tilt > 0) {
+    if (Math.hypot(c.vx, c.vz) > 0.01 || c.tilt > 0) {
       c.x += c.vx * dt; c.z += c.vz * dt;
-      const f = Math.exp(-dt * (c.tilt > 1.3 ? 3.5 : 1.6));
+      const f = Math.exp(-dt * (c.tilt > 1.3 ? 6 : 3));
       c.vx *= f; c.vz *= f; c.spin *= Math.exp(-dt * 2);
       if (c.tilt > 0 && c.tilt < Math.PI / 2) c.tilt = Math.min(Math.PI / 2, c.tilt + dt * 6);
       c.x = Math.max(-ARENA.X + 0.5, Math.min(ARENA.X - 0.5, c.x));
@@ -1603,13 +1639,12 @@ function updateCones(dt) {
 const drift = { score: 0, time: 0, idle: 9, banked: 0, best: 0, crash: false };
 function updateDrift(dt) {
   const speed = Math.hypot(veh.vx, veh.vy);
-  veh.beta = Math.atan2(veh.vy, Math.max(Math.abs(veh.vx), 0.5));
-  const drifting = !veh.airborne && speed > 8 && Math.abs(veh.beta) > 0.2 && veh.gear === 'D';
+  veh.beta = Math.atan2(veh.vy, Math.max(Math.abs(veh.vx), 0.3));
+  const drifting = !veh.airborne && speed > 3 && Math.abs(veh.beta) > 0.2 && veh.gear === 'D';
   if (drift.crash) { drift.score = 0; drift.time = 0; drift.crash = false; drift.idle = 9; }
   if (drifting) {
     drift.time += dt; drift.idle = 0;
-    const mult = 1 + Math.min(4, drift.time * 0.6);
-    drift.score += speed * Math.abs(veh.beta) * dt * 18 * mult;
+    drift.score += speed * Math.abs(veh.beta) * dt * 60 * (1 + Math.min(4, drift.time * 0.6));
   } else {
     drift.idle += dt;
     if (drift.idle > 1.6 && drift.score > 0) { drift.banked = Math.round(drift.score); drift.best = Math.max(drift.best, drift.banked); drift.score = 0; drift.time = 0; }
@@ -1626,7 +1661,7 @@ window.addEventListener('keydown', e => {
   keys[e.code] = true;
   ensureAudio();
   if (!e.repeat) {
-    if (e.code === 'KeyR') { resetVehicle(); resetCones(); clearSkids(); }
+    if (e.code === 'KeyR') { resetVehicle(); resetCones(); clearSkids(); snapCamera(); }
     if (e.code === 'KeyC') cycleCamera();
     if (e.code === 'KeyM') toggleSound();
     if (e.code === 'KeyT') { assistOn = !assistOn; updateAssistLabel(); }
@@ -1640,79 +1675,77 @@ function readInputs(dt) {
   const down = keys.KeyS || keys.ArrowDown || touch.brake;
   const left = keys.KeyA || keys.ArrowLeft || touch.left;
   const right = keys.KeyD || keys.ArrowRight || touch.right;
-  input.throttle = approach(input.throttle, up ? 1 : 0, dt * (up ? 5 : 9));
-  input.brake = approach(input.brake, down ? 1 : 0, dt * (down ? 7 : 10));
+  // a keyboard is all-or-nothing: ramp the trigger like a thumb squeezing a pistol-grip radio
+  input.throttle = approach(input.throttle, up ? 1 : 0, dt * (up ? 4 : 12));
+  input.brake = approach(input.brake, down ? 1 : 0, dt * (down ? 6 : 12));
   const st = (left ? 1 : 0) - (right ? 1 : 0);
-  input.steer = approach(input.steer, st, dt * (st === 0 ? 5.5 : (Math.sign(st) !== Math.sign(input.steer) && input.steer !== 0 ? 7 : 3.4)));
+  input.steer = approach(input.steer, st, dt * (st === 0 ? 7 : 5));
 
-  // automatic gear selection: hold brake at a standstill to engage reverse
-  if (veh.gear === 'D' && down && !up && veh.vx < 0.6) veh.gear = 'R';
-  else if (veh.gear === 'R' && up && !down && veh.vx > -0.6) veh.gear = 'D';
+  if (veh.gear === 'D' && down && !up && veh.vx < 0.15) veh.gear = 'R';
+  else if (veh.gear === 'R' && up && !down && veh.vx > -0.15) veh.gear = 'D';
 
-  // speed-sensitive steering lock: full lock when parked, tight at speed
   const v = Math.abs(veh.vx);
-  const lock = PHYS.steerHighSpeed + (PHYS.steerLock - PHYS.steerHighSpeed) / (1 + (v / 13) ** 2);
+  // speed-sensitive steering: at speed a 1/10 car only needs a degree or two before the tyres saturate
+  const gripLock = 1.2 * PHYS.L * PHYS.muPeak * PHYS.g / Math.max(v * v, 0.01);
+  const lock = Math.max(0.03, Math.min(PHYS.steerLock, assistOn ? gripLock : gripLock * 2.2));
   let target = input.steer * lock;
-  if (assistOn && v > 6 && !veh.airborne) target += veh.beta * 0.5 * (1 - 0.5 * Math.abs(input.steer));   // counter-steer assist
-  veh.steer = approach(veh.steer, Math.max(-PHYS.steerLock, Math.min(PHYS.steerLock, target)), dt * 4.2);
+  if (assistOn && v > 2 && !veh.airborne) target += veh.beta * 0.5 * (1 - 0.5 * Math.abs(input.steer));
+  veh.steer = approach(veh.steer, Math.max(-PHYS.steerLock, Math.min(PHYS.steerLock, target)), dt * PHYS.steerRate);   // servo speed
   veh.throttle = input.throttle;
   veh.brake = input.brake;
   veh.handbrake = !!(keys.Space || touch.hb);
 }
 
-/* ---------- vehicle visuals: wheels, body roll and pitch ---------- */
+/* ---------- vehicle visuals ---------- */
 const bodyAnim = { pitch: 0, roll: 0, squish: 0 };
 function updateVehicleVisuals(dt) {
-  carRoot.position.set(veh.x, veh.y, veh.z);
+  carRoot.position.set(veh.x * U, veh.y * U, veh.z * U);
   carRoot.rotation.set(0, veh.yaw, 0);
   const c = Math.cos(veh.yaw), s = Math.sin(veh.yaw);
   let slopePitch;
-  if (veh.airborne) slopePitch = Math.atan2(veh.vv, Math.max(Math.abs(veh.vx), 2)) * 0.55;
+  if (veh.airborne) slopePitch = Math.atan2(veh.vv, Math.max(Math.abs(veh.vx), 1)) * 0.55;
   else {
-    const hF = groundHeight(veh.x + c * PHYS.a, veh.z - s * PHYS.a), hR = groundHeight(veh.x - c * PHYS.b, veh.z + s * PHYS.b);
-    slopePitch = Math.atan2(hF - hR, PHYS.a + PHYS.b);
+    const hF = groundM(veh.x + c * PHYS.a, veh.z - s * PHYS.a), hR = groundM(veh.x - c * PHYS.b, veh.z + s * PHYS.b);
+    slopePitch = Math.atan2(hF - hR, PHYS.L);
   }
-  const k = 1 - Math.exp(-dt * 8);
-  const accelPitch = veh.airborne ? 0 : Math.max(-0.05, Math.min(0.05, veh.ax * 0.0045));
-  const roll = veh.airborne ? 0 : Math.max(-0.07, Math.min(0.07, veh.ay * 0.0065));
+  const k = 1 - Math.exp(-dt * 10);
+  const accelPitch = veh.airborne ? 0 : Math.max(-0.06, Math.min(0.08, veh.ax * 0.006));      // squat on launch, dive under brakes
+  const roll = veh.airborne ? 0 : Math.max(-0.08, Math.min(0.08, veh.ay * 0.0075));
   bodyAnim.pitch += (slopePitch + accelPitch - bodyAnim.pitch) * k;
   bodyAnim.roll += (roll - bodyAnim.roll) * k;
   bodyAnim.squish = Math.max(bodyAnim.squish, veh.landing); veh.landing = 0;
   bodyAnim.squish *= Math.exp(-dt * 7);
   carBody.rotation.set(bodyAnim.roll, 0, bodyAnim.pitch);
   carBody.position.y = -Math.min(0.25, bodyAnim.squish * 0.2);
-
-  const rearSpin = veh.wheelspin && !veh.airborne ? Math.max(Math.abs(veh.vx), 22 * veh.throttle) * Math.sign(veh.gear === 'R' ? -1 : 1) : veh.vx;
+  const rearSurface = veh.rearLocked ? 0 : veh.vx + veh.spin;
   wheelRigs.forEach(w => {
     if (w.front) w.pivot.rotation.y = veh.steer;
-    const omega = (w.front ? veh.vx : (veh.handbrake && !veh.airborne ? 0 : rearSpin)) / TIRE_R;
+    const omega = (w.front ? veh.vx : rearSurface) / PHYS.wheelR;
     w.wheel.rotation.z += (w.side > 0 ? -1 : 1) * omega * dt;
   });
 }
 
-/* ---------- skid marks + smoke emitters ---------- */
+/* ---------- skid marks + smoke ---------- */
 let smokeTimer = 0;
 function updateEffects(dt) {
   const c = Math.cos(veh.yaw), s = Math.sin(veh.yaw);
   const speed = Math.hypot(veh.vx, veh.vy);
-  const rearSlide = Math.abs(veh.alphaR) > 0.14 && speed > 5;
-  const frontSlide = Math.abs(veh.alphaF) > 0.2 && speed > 6;
-  const hardBrake = veh.brake > 0.8 && Math.abs(veh.vx) > 9 && veh.gear === 'D';
-  const spin = veh.wheelspin && veh.throttle > 0.6 && Math.abs(veh.vx) < 14;
-  const contacts = [[PHYS.a, TRACK / 2, true], [PHYS.a, -TRACK / 2, true], [-PHYS.b, TRACK / 2, false], [-PHYS.b, -TRACK / 2, false]];
+  const rearSlide = Math.abs(veh.alphaR) > 0.12 && speed > 1.5;
+  const frontSlide = Math.abs(veh.alphaF) > 0.18 && speed > 2;
+  const spinning = Math.abs(veh.spin) > 1.5;
+  const halfTrack = TRACK / 2 / U;
+  const contacts = [[PHYS.a, halfTrack, true], [PHYS.a, -halfTrack, true], [-PHYS.b, halfTrack, false], [-PHYS.b, -halfTrack, false]];
   contacts.forEach(([lx, lz, front], i) => {
-    const wx = veh.x + c * lx + s * lz, wz = veh.z - s * lx + c * lz;
-    const marking = !veh.airborne && (front ? (frontSlide || hardBrake) : (rearSlide || hardBrake || spin || (veh.handbrake && speed > 3)));
-    if (marking) {
-      if (skidLast[i]) addSkid(skidLast[i][0], skidLast[i][1], wx, wz, veh.y);
-      skidLast[i] = [wx, wz];
-    } else skidLast[i] = null;
+    const wx = (veh.x + c * lx + s * lz) * U, wz = (veh.z - s * lx + c * lz) * U;
+    const marking = !veh.airborne && (front ? frontSlide : (rearSlide || spinning || veh.rearLocked || (veh.handbrake && speed > 1)));
+    if (marking) { if (skidLast[i]) addSkid(skidLast[i][0], skidLast[i][1], wx, wz, veh.y * U); skidLast[i] = [wx, wz]; }
+    else skidLast[i] = null;
   });
   smokeTimer -= dt;
-  const intensity = Math.max(rearSlide ? Math.abs(veh.alphaR) * 2.5 : 0, spin ? 0.8 : 0, veh.handbrake && speed > 6 ? 0.6 : 0);
+  const intensity = Math.max(rearSlide ? Math.abs(veh.alphaR) * 2.5 : 0, spinning ? Math.min(1, Math.abs(veh.spin) / 6) : 0, veh.rearLocked && speed > 3 ? 0.5 : 0);
   if (!veh.airborne && intensity > 0.3 && smokeTimer <= 0) {
     smokeTimer = 0.035;
-    [[-PHYS.b, TRACK / 2], [-PHYS.b, -TRACK / 2]].forEach(([lx, lz]) => spawnSmoke(veh.x + c * lx + s * lz, veh.y, veh.z - s * lx + c * lz, intensity));
+    [[-PHYS.b, halfTrack], [-PHYS.b, -halfTrack]].forEach(([lx, lz]) => spawnSmoke((veh.x + c * lx + s * lz) * U, veh.y * U, (veh.z - s * lx + c * lz) * U, intensity));
   }
   smoke.forEach(p => {
     if (p.life <= 0) { p.s.visible = false; return; }
@@ -1721,56 +1754,54 @@ function updateEffects(dt) {
     p.s.position.x += p.vx * dt; p.s.position.y += p.vy * dt; p.s.position.z += p.vz * dt;
     const sc = 1.2 + t * 6;
     p.s.scale.set(sc, sc, sc);
-    p.s.material.opacity = Math.max(0, (1 - t) * 0.42 * p.strength);
+    p.s.material.opacity = Math.max(0, (1 - t) * 0.4 * p.strength);
   });
 }
 
-/* ---------- chase camera ---------- */
+/* ---------- chase camera: offset relative to the car, lag on heading only ---------- */
 const CAMS = [
   { name: 'Chase', dist: 10.5, height: 3.4, look: 4, fov: 58 },
-  { name: 'Far chase', dist: 17, height: 6.2, look: 5, fov: 52 },
+  { name: 'Far chase', dist: 18, height: 6.5, look: 5, fov: 52 },
   { name: 'Bumper', dist: -2.6, height: 1.25, look: 40, fov: 72 }
 ];
-let camIndex = 0, camYaw = 0, shake = 0;
+let camIndex = 0, camYaw = 0, camLift = 0, shake = 0;
 const camLook = new THREE.Vector3();
 function cycleCamera() { camIndex = (camIndex + 1) % CAMS.length; document.getElementById('camLabel').textContent = CAMS[camIndex].name; }
 function snapCamera() {
-  camYaw = veh.yaw;
+  camYaw = veh.yaw; camLift = 0;
   const C = CAMS[camIndex];
-  camera.position.set(veh.x - Math.cos(camYaw) * C.dist, veh.y + C.height, veh.z + Math.sin(camYaw) * C.dist);
-  camLook.set(veh.x + Math.cos(camYaw) * C.look, veh.y + 1, veh.z - Math.sin(camYaw) * C.look);
+  camera.position.set(veh.x * U - Math.cos(camYaw) * C.dist, veh.y * U + C.height, veh.z * U + Math.sin(camYaw) * C.dist);
+  camLook.set(veh.x * U + Math.cos(camYaw) * C.look, veh.y * U + 1, veh.z * U - Math.sin(camYaw) * C.look);
   camera.lookAt(camLook);
 }
 function updateCamera(dt) {
   const C = CAMS[camIndex];
-  const speed = Math.hypot(veh.vx, veh.vy);
-  // follow heading, nudged toward the direction of travel while sliding
-  const travelYaw = speed > 4 && veh.vx > 0 ? veh.yaw + Math.atan2(veh.vy, veh.vx) * 0.35 : veh.yaw;
+  const speed = Math.hypot(veh.vx, veh.vy), sf = Math.min(1, speed / PHYS.topSpeed);
+  const travelYaw = speed > 1.5 && veh.vx > 0 ? veh.yaw + Math.atan2(veh.vy, veh.vx) * 0.35 : veh.yaw;
   let dy = travelYaw - camYaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
-  camYaw += dy * (C.dist < 0 ? 1 : 1 - Math.exp(-dt * 3.4));
+  camYaw += dy * (C.dist < 0 ? 1 : 1 - Math.exp(-dt * 4.5));                   // elastic swing behind the car
+  camLift += (veh.y * U - camLift) * (1 - Math.exp(-dt * 5));                   // soft vertical follow over jumps
+  const dist = C.dist < 0 ? C.dist : C.dist * (1 + sf * 0.25);                  // pulls back slightly with speed
   const bx = -Math.cos(camYaw), bz = Math.sin(camYaw);
-  const target = new THREE.Vector3(veh.x + bx * C.dist, veh.y + C.height, veh.z + bz * C.dist);
-  target.y = Math.max(target.y, 0.9);
-  if (C.dist < 0) camera.position.copy(target);
-  else camera.position.lerp(target, 1 - Math.exp(-dt * 6.5));         // elastic lag behind the car
-  const look = new THREE.Vector3(veh.x - bx * C.look, veh.y + (C.dist < 0 ? 1.1 : 1.2), veh.z - bz * C.look);
-  camLook.lerp(look, C.dist < 0 ? 1 : 1 - Math.exp(-dt * 12));
-  shake = Math.max(shake * Math.exp(-dt * 6), Math.min(1, veh.impact * 0.06));
+  const cx = veh.x * U, cz = veh.z * U;
+  camera.position.set(cx + bx * dist, Math.max(0.9, (C.dist < 0 ? veh.y * U : camLift) + C.height), cz + bz * dist);
+  const look = new THREE.Vector3(cx - bx * C.look, (C.dist < 0 ? veh.y * U : camLift) + 1.1, cz - bz * C.look);
+  camLook.lerp(look, C.dist < 0 ? 1 : 1 - Math.exp(-dt * 14));
+  shake = Math.max(shake * Math.exp(-dt * 6), Math.min(1, veh.impact * 0.15));
   veh.impact = 0;
-  const jitter = shake * 0.35 + Math.min(1, speed / PHYS.topSpeed) ** 2 * 0.02;
+  const jitter = shake * 0.4 + sf * sf * 0.03;
   camera.position.x += (Math.random() - 0.5) * jitter; camera.position.y += (Math.random() - 0.5) * jitter;
   camera.lookAt(camLook);
-  const targetFov = C.fov + Math.min(1, speed / PHYS.topSpeed) * 16 + (veh.throttle > 0.9 && speed > 25 ? 2 : 0);
+  const targetFov = C.fov + sf * 18;
   camera.fov += (targetFov - camera.fov) * (1 - Math.exp(-dt * 3));
   camera.updateProjectionMatrix();
 }
-
-/* ---------- lights follow the car in the arena ---------- */
 function updateSimLights(t) {
-  key.position.set(veh.x + 28, veh.y + 50, veh.z + 22);
-  key.target.position.set(veh.x, veh.y, veh.z);
-  cyanPoint.position.set(veh.x + Math.cos(t * 0.5) * 6, veh.y + 3, veh.z + Math.sin(t * 0.5) * 6);
-  warmPoint.position.set(veh.x - Math.cos(t * 0.5) * 6, veh.y + 2.5, veh.z - Math.sin(t * 0.5) * 6);
+  const x = veh.x * U, y = veh.y * U, z = veh.z * U;
+  key.position.set(x + 28, y + 50, z + 22);
+  key.target.position.set(x, y, z);
+  cyanPoint.position.set(x + Math.cos(t * 0.5) * 6, y + 3, z + Math.sin(t * 0.5) * 6);
+  warmPoint.position.set(x - Math.cos(t * 0.5) * 6, y + 2.5, z - Math.sin(t * 0.5) * 6);
 }
 
 /* ---------- HUD ---------- */
@@ -1781,7 +1812,8 @@ const hud = {
   drift: document.getElementById('drift'), driftScore: document.getElementById('driftScore'), driftMult: document.getElementById('driftMult'),
   driftBank: document.getElementById('driftBank'), cones: document.getElementById('conesHit'), air: document.getElementById('airTime')
 };
-let useMph = false;
+let useMph = true;
+hud.unitBtn.textContent = 'mph';
 const TACH_C = 2 * Math.PI * 100;
 (function buildTach() {
   const ticks = document.getElementById('tachTicks');
@@ -1797,29 +1829,26 @@ const TACH_C = 2 * Math.PI * 100;
   document.getElementById('tachRed').setAttribute('stroke-dasharray', `0 ${TACH_C * 0.75 * 0.85} ${TACH_C * 0.75 * 0.15} ${TACH_C}`);
 })();
 hud.unitBtn.addEventListener('click', () => { useMph = !useMph; hud.unitBtn.textContent = useMph ? 'mph' : 'km/h'; });
+let rpmShown = 0;
 function updateHUD(dt) {
   const speed = Math.hypot(veh.vx, veh.vy);
-  // brushless motor: rpm follows wheel speed through a fixed reduction, flares with wheelspin or in the air
-  let target = Math.min(1, Math.abs(veh.vx) / PHYS.topSpeed);
-  if (veh.wheelspin || veh.airborne) target = Math.max(target, veh.throttle * 0.92);
-  veh.rpm += (target - veh.rpm) * (1 - Math.exp(-dt * 9));
-  const f = Math.max(0, Math.min(1, veh.rpm));
+  rpmShown += (veh.motorRPM - rpmShown) * (1 - Math.exp(-dt * 14));
+  const f = Math.max(0, Math.min(1, rpmShown / PHYS.maxRPM));
   hud.tachVal.setAttribute('stroke-dasharray', `${TACH_C * 0.75 * f} ${TACH_C}`);
   hud.tachVal.classList.toggle('hot', f > 0.85);
   hud.needle.setAttribute('transform', `rotate(${-135 + 270 * f} 120 120)`);
   const kmh = speed * 3.6;
   hud.speed.textContent = Math.round(useMph ? kmh * 0.621371 : kmh);
-  hud.real.textContent = `real RC ≈ ${useMph ? (kmh * 0.0621371).toFixed(1) + ' mph' : (kmh / 10).toFixed(1) + ' km/h'}`;
-  hud.rpm.textContent = Math.round(f * PHYS.maxRPM).toLocaleString();
-  hud.gear.textContent = veh.gear === 'R' ? 'R' : (speed < 0.3 && veh.throttle < 0.05 ? 'N' : 'D');
+  hud.real.textContent = `real 1/10 speed · ${Math.round(veh.current)} A`;
+  hud.rpm.textContent = Math.round(rpmShown).toLocaleString();
+  hud.gear.textContent = veh.gear === 'R' ? 'R' : (speed < 0.1 && veh.throttle < 0.05 ? 'N' : 'D');
   hud.gear.classList.toggle('rev', veh.gear === 'R');
-  hud.thr.style.width = (veh.gear === 'D' ? veh.throttle : veh.brake) * 100 + '%';
+  hud.thr.style.width = veh.cmd * 100 + '%';
   hud.brk.style.width = (veh.gear === 'D' ? veh.brake : veh.throttle) * 100 + '%';
   hud.cones.textContent = conesHit;
-  if (veh.airborne && veh.airTime > 0.25) hud.air.textContent = `AIR ${veh.airTime.toFixed(1)}s`;
-  hud.air.hidden = !(veh.airborne && veh.airTime > 0.25);
-  const showDrift = drift.score > 5 || drift.idle < 2.4;
-  hud.drift.hidden = !showDrift;
+  if (veh.airborne && veh.airTime > 0.2) hud.air.textContent = `AIR ${veh.airTime.toFixed(2)}s`;
+  hud.air.hidden = !(veh.airborne && veh.airTime > 0.2);
+  hud.drift.hidden = !(drift.score > 5 || drift.idle < 2.4);
   if (drift.score > 5) {
     hud.driftScore.textContent = Math.round(drift.score).toLocaleString();
     hud.driftMult.textContent = '×' + (1 + Math.min(4, drift.time * 0.6)).toFixed(1);
@@ -1832,36 +1861,71 @@ function updateHUD(dt) {
   }
 }
 
-/* ---------- synthesised motor audio (Web Audio, no files) ---------- */
+/* ---------- drivetrain sound, synthesised from the real noise sources ----------
+   1. Commutation whine: a sensorless 2-pole brushless motor is switched 6 times
+      per revolution, so the dominant tone is rpm/60 × 6 (≈ 3.3 kHz near top speed).
+   2. Pinion/spur mesh: 25 straight-cut teeth pass per motor revolution, giving
+      the metallic "zing" an octave-plus above the motor tone.
+   3. ESC PWM: the VXL-3s switches at 12 kHz, heard as a faint high squeal on
+      part throttle and under braking, fading as the motor speeds up.
+   4. Sensorless cogging: below ~2,500 rpm the ESC has no rotor feedback, so the
+      launch has a rough, stuttering "brrrt".
+   5. Tyres: rolling roar from the asphalt texture, and a band-passed squeal
+      when they slide or spin up. */
 let audio = null, soundOn = true;
 function ensureAudio() {
-  if (audio || !soundOn) { if (audio && audio.ctx.state === 'suspended') audio.ctx.resume(); return; }
+  if (audio) { if (audio.ctx.state === 'suspended') audio.ctx.resume(); return; }
+  if (!soundOn) return;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const master = ctx.createGain(); master.gain.value = 0.6; master.connect(ctx.destination);
-    const filter = ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 1800; filter.Q.value = 3; filter.connect(master);
-    const motorGain = ctx.createGain(); motorGain.gain.value = 0; motorGain.connect(filter);
-    const o1 = ctx.createOscillator(); o1.type = 'sawtooth'; o1.connect(motorGain); o1.start();
-    const o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.connect(motorGain); o2.start();
-    const noise = ctx.createBufferSource(); const buf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
-    const data = buf.getChannelData(0); for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-    noise.buffer = buf; noise.loop = true;
-    const band = ctx.createBiquadFilter(); band.type = 'bandpass'; band.frequency.value = 2400; band.Q.value = 1.4;
-    const skidGain = ctx.createGain(); skidGain.gain.value = 0;
-    noise.connect(band); band.connect(skidGain); skidGain.connect(master); noise.start();
-    audio = { ctx, master, motorGain, o1, o2, skidGain, filter };
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 4; comp.connect(ctx.destination);
+    const master = ctx.createGain(); master.gain.value = 0.9; master.connect(comp);
+    const osc = (type, gainNode) => { const o = ctx.createOscillator(); o.type = type; o.connect(gainNode); o.start(); return o; };
+    const gain = (to, v = 0) => { const g = ctx.createGain(); g.gain.value = v; g.connect(to); return g; };
+    const filt = (type, f, q, to) => { const n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f; n.Q.value = q; n.connect(to); return n; };
+    const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const nd = noiseBuf.getChannelData(0); let last = 0;
+    for (let i = 0; i < nd.length; i++) { const w = Math.random() * 2 - 1; last = (last + 0.04 * w) / 1.04; nd[i] = w * 0.6 + last * 3; }
+    const noise = to => { const n = ctx.createBufferSource(); n.buffer = noiseBuf; n.loop = true; n.connect(to); n.start(); return n; };
+
+    const whineGain = gain(master);
+    const whineTone = filt('peaking', 3000, 1.2, whineGain); whineTone.gain.value = 6;
+    const whineBus = gain(whineTone, 1);
+    const w1 = osc('triangle', whineBus);                     // commutation fundamental
+    const w2g = gain(whineBus, 0.35); const w2 = osc('sine', w2g);       // 2nd harmonic
+    const w3g = gain(filt('lowpass', 6000, 0.7, whineBus), 0.12); const w3 = osc('square', w3g);   // odd-harmonic buzz
+    const mechGain = gain(filt('lowpass', 700, 1, master)); const mech = osc('sawtooth', mechGain);   // shaft rotation grit
+    const gearGain = gain(filt('bandpass', 4000, 5, master)); const gear = osc('sawtooth', gearGain); // pinion mesh
+    const pwmGain = gain(master); const pwm = osc('sine', pwmGain); pwm.frequency.value = 12000;     // ESC switching
+    const cogGain = gain(filt('lowpass', 500, 2, master)); const cog = osc('square', cogGain);        // sensorless stutter
+    const roadLP = filt('lowpass', 300, 0.7, master); const roadGain = gain(roadLP); noise(roadGain);
+    const squealBP = filt('bandpass', 2200, 4, master); const squealGain = gain(squealBP); noise(squealGain);
+    audio = { ctx, master, whineGain, whineTone, w1, w2, w3, mechGain, mech, gearGain, gear, pwmGain, cogGain, cog, roadGain, roadLP, squealGain, squealBP };
   } catch (err) { audio = null; soundOn = false; updateSoundLabel(); }
 }
 function updateAudio() {
   if (!audio) return;
-  const t = audio.ctx.currentTime, f = Math.max(0, Math.min(1, veh.rpm));
-  audio.o1.frequency.setTargetAtTime(55 + f * 780, t, 0.05);
-  audio.o2.frequency.setTargetAtTime(110 + f * 1560, t, 0.05);
-  audio.filter.frequency.setTargetAtTime(700 + f * 2600, t, 0.08);
+  const t = audio.ctx.currentTime, set = (p, v, tc = 0.03) => p.setTargetAtTime(v, t, tc);
   const on = MODE === 'sim' && soundOn;
-  audio.motorGain.gain.setTargetAtTime(on ? 0.02 + f * 0.05 + veh.throttle * 0.03 : 0, t, 0.06);
-  const slide = Math.max(0, Math.abs(veh.alphaR) - 0.14) * 2 + (veh.handbrake && Math.abs(veh.vx) > 4 ? 0.4 : 0);
-  audio.skidGain.gain.setTargetAtTime(on && !veh.airborne ? Math.min(0.12, slide * 0.12) : 0, t, 0.05);
+  const rpm = Math.max(0, veh.motorRPM), shaft = rpm / 60;
+  const comm = Math.max(30, shaft * 6), mesh = Math.max(60, shaft * PHYS.pinion);
+  const load = Math.min(1, veh.current / PHYS.Imax);
+  const rf = Math.min(1, rpm / PHYS.maxRPM);
+  const speed = Math.hypot(veh.vx, veh.vy);
+  set(audio.w1.frequency, comm); set(audio.w2.frequency, comm * 2); set(audio.w3.frequency, comm);
+  set(audio.whineTone.frequency, Math.min(9000, comm * 1.1));
+  set(audio.whineGain.gain, on ? (0.012 + rf * 0.05) * (0.45 + load * 0.9) : 0);
+  set(audio.mech.frequency, Math.max(20, shaft)); set(audio.mechGain.gain, on ? rf * 0.05 : 0);
+  set(audio.gear.frequency, Math.min(9000, mesh * 0.5));
+  set(audio.gearGain.gain, on ? (0.004 + rf * 0.03) * (0.6 + load) : 0);
+  const pwmLevel = (veh.cmd > 0.02 ? veh.cmd * (1 - rf) : 0) + (veh.brake > 0.05 && speed > 0.3 ? 0.4 * veh.brake : 0);
+  set(audio.pwmGain.gain, on ? 0.006 * pwmLevel : 0);
+  const cogLevel = veh.cmd > 0.05 && rpm < 2500 && !veh.airborne ? veh.cmd * (1 - rpm / 2500) : 0;
+  set(audio.cog.frequency, Math.max(18, comm * 0.5)); set(audio.cogGain.gain, on ? 0.09 * cogLevel : 0, 0.015);
+  set(audio.roadLP.frequency, 180 + speed * 60); set(audio.roadGain.gain, on && !veh.airborne ? Math.min(0.12, speed * 0.006) : 0);
+  const slide = Math.max(0, Math.abs(veh.alphaR) - 0.12) * 2.2 + Math.max(0, Math.abs(veh.alphaF) - 0.2) * 1.5 + Math.min(1, Math.abs(veh.spin) / 8) + (veh.rearLocked ? 0.6 : 0);
+  set(audio.squealBP.frequency, 1700 + Math.min(1, speed / 15) * 1100);
+  set(audio.squealGain.gain, on && !veh.airborne && speed > 0.5 ? Math.min(0.16, slide * 0.12) : 0, 0.05);
 }
 function toggleSound() {
   soundOn = !soundOn;
@@ -1871,7 +1935,7 @@ function toggleSound() {
 function updateSoundLabel() { document.getElementById('soundBtn').textContent = soundOn ? 'Sound on' : 'Sound off'; }
 function updateAssistLabel() { document.getElementById('assistBtn').textContent = assistOn ? 'Assist on' : 'Assist off'; }
 
-/* ---------- touch controls ---------- */
+/* ---------- touch controls and buttons ---------- */
 document.querySelectorAll('[data-touch]').forEach(btn => {
   const k = btn.dataset.touch;
   const on = e => { e.preventDefault(); touch[k] = true; btn.classList.add('on'); ensureAudio(); };
@@ -1895,7 +1959,6 @@ function setMode(mode) {
   document.body.classList.toggle('sim', mode === 'sim');
   document.getElementById('simUI').hidden = mode !== 'sim';
   tipEl.hidden = true; hovered = null;
-  // snap every module back onto the chassis before driving
   explodeToggle.checked = false; explodeTarget = 0; explodeValue = 0;
   parts.forEach(p => p.pieces.forEach(g => g.position.copy(g.userData.base)));
   if (mode === 'sim') {
@@ -1917,7 +1980,7 @@ function setMode(mode) {
     canvas.classList.remove('hovering');
     canvas.focus();
   } else {
-    if (audio) audio.motorGain.gain.value = 0;
+    if (audio) audio.master.gain.setTargetAtTime(0.9, audio.ctx.currentTime, 0.05);
     arena.visible = false;
     studioObjects.forEach(o => o.visible = true);
     scene.background.set('#0d0d11');
@@ -1935,18 +1998,19 @@ function setMode(mode) {
     camera.position.copy(HOME_POS); controls.target.copy(HOME_TARGET);
     setAutoRotate(true);
     renderOverview();
+    updateAudio();
   }
 }
 document.querySelectorAll('.mode button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
 
 function updateSim(dt, t) {
   readInputs(dt);
-  const H = 1 / 120;
+  const H = 1 / 480;                       // small, stiff vehicle: fine fixed timestep
   simAcc += dt;
   let steps = 0;
-  while (simAcc >= H && steps < 12) { physicsStep(H); simAcc -= H; steps++; }
-  if (steps === 12) simAcc = 0;
-  if (![veh.x, veh.z, veh.vx, veh.vy, veh.r, veh.yaw, veh.y].every(Number.isFinite)) resetVehicle();   // never let bad numbers through
+  while (simAcc >= H && steps < 40) { physicsStep(H); simAcc -= H; steps++; }
+  if (steps === 40) simAcc = 0;
+  if (![veh.x, veh.z, veh.vx, veh.vy, veh.r, veh.yaw, veh.y, veh.spin].every(Number.isFinite)) resetVehicle();
   updateCones(dt);
   updateDrift(dt);
   updateVehicleVisuals(dt);
