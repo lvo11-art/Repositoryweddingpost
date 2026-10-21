@@ -106,6 +106,10 @@ def encode(cls, paint):
     rgb = np.zeros(cls.shape + (3,), np.uint8)
     rgb[..., 0] = cls * 40           # class id
     rgb[..., 1] = paint.astype(np.uint8) * 255
+    # curbs: the edge of the pavement wherever it meets landscaping or sidewalk
+    asph = (cls == ASPH).astype(np.uint8)
+    other = ((cls == DIRT) | (cls == GRASS) | (cls == CONC)).astype(np.uint8)
+    rgb[..., 2] = ((cv2.dilate(asph, np.ones((3, 3), np.uint8)) > 0) & (other > 0)).astype(np.uint8) * 255
     ok, buf = cv2.imencode('.png', rgb[..., ::-1], [cv2.IMWRITE_PNG_COMPRESSION, 9])
     return 'data:image/png;base64,' + base64.b64encode(buf.tobytes()).decode()
 
@@ -158,6 +162,10 @@ def cory():
     preview('cory', im, cls, buildings, carports, trees, paint)
     return {'name': "Cory's house", 'mpp': mpp, 'W': W, 'H': H, 'png': encode(cls, paint), 'buildings': buildings,
             'carports': carports, 'trees': trees, 'fences': fences, 'start': {'px': [985, 650], 'yaw': 1.5708}, 'pin': [790, 435],
+            # cars visible in open stalls of the photo [x, y, heading°]
+            'cars': [[302, 742, 90], [316, 742, 90], [486, 746, 90], [681, 752, 90], [1036, 760, 90], [1216, 760, 90], [1241, 762, 90],
+                     [1076, 697, 90], [1091, 697, 90], [1106, 697, 90], [1131, 697, 90], [1181, 697, 90], [955, 621, 0], [955, 641, 0],
+                     [1018, 607, 0], [404, 60, 70], [417, 55, 70], [430, 49, 70], [443, 44, 70], [1212, 236, 0], [1273, 392, 0], [57, 128, 0], [338, 123, 95]],
             'wall': '#d8c2a2', 'trim': '#efe4d0'}
 
 # ---------------- Templink office park (traced by hand: flat roofs are too close to concrete in colour) ----------------
@@ -190,6 +198,7 @@ def templink():
     preview('templink', im, cls, buildings, carports, trees, paint)
     return {'name': 'Templink', 'mpp': mpp, 'W': W, 'H': H, 'png': encode(cls, paint), 'buildings': buildings, 'rooftop': rooftop,
             'carports': carports, 'trees': trees, 'fences': [], 'start': {'px': [420, 416], 'yaw': 0}, 'pin': [560, 640],
+            'cars': [[1004, 352, 90], [1058, 352, 90], [1112, 470, 90], [1031, 480, 90], [880, 248, 90], [500, 248, 90], [258, 236, 90], [31, 470, 0], [31, 512, 0], [1245, 260, 0], [700, 590, 90], [905, 590, 90]],
             'wall': '#cfc5b4', 'trim': '#e9e4da'}
 
 if __name__ == '__main__':
