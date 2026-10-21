@@ -235,7 +235,7 @@
     <button class="btn" type="button" id="gfxBtn">Graphics: Ultra</button>
     <button class="btn" type="button" id="simReset">Reset car <kbd>R</kbd></button>
     <button class="btn" type="button" id="camBtn"><span id="camLabel">Chase</span> <kbd>C</kbd></button>
-    <button class="btn" type="button" id="assistBtn">Assist on</button>
+    <button class="btn" type="button" id="assistBtn">TSM off</button>
     <button class="btn" type="button" id="soundBtn">Sound on</button>
   </div>
   <div class="minimap" aria-label="Track map"><canvas id="miniMap" width="220" height="140"></canvas><span id="trackName">Warehouse arena</span></div>
@@ -246,7 +246,7 @@
     <div><kbd>S</kbd><kbd>↓</kbd><span>Brake · hold to reverse</span></div>
     <div><kbd>A</kbd><kbd>D</kbd><span>Steer</span></div>
     <div><kbd>Space</kbd><span>Drift brake (game assist)</span></div>
-    <div><kbd>T</kbd><span>Traction + counter-steer assist</span></div>
+    <div><kbd>T</kbd><span>TSM stability (real Traxxas feature)</span></div>
     <div class="cones">Cones hit <b id="conesHit">0</b></div>
   </div>
   <div class="gauge" aria-label="Speed and RPM">
@@ -1460,8 +1460,8 @@ const PHYS = {
   kv: 3500, Rtot: 0.028, Imax: 190, Vbat: 11.8, pinion: 25, spur: 83, trans: 2.72, eff: 0.88, Jwheel: 5.5e-4,
   cdA: 0.018, rho: 1.2, crr: 0.03, driveDrag: 0.25,
   brakeMax: 30, reverseLimit: 0.35,
-  muPeak: 1.1, muSlide: 0.82, CsPerNF: 15, CsPerNR: 21, rearGrip: 1.18, handbrakeGrip: 0.55,
-  steerLock: 0.52, steerHighSpeed: 0.17, steerRate: 6.2, yawDamp: 1.2,
+  muPeak: 1.1, muSlide: 0.82, CsPerNF: 15, CsPerNR: 21, rearGrip: 1.3, handbrakeGrip: 0.55,
+  steerLock: 0.52, steerRate: 6.2, yawDamp: 0.3,
   maxRPM: 40000
 };
 PHYS.L = PHYS.a + PHYS.b;
@@ -1475,7 +1475,7 @@ const veh = { x: 0, z: 0, y: 0, yaw: 0, vx: 0, vy: 0, r: 0, vv: 0, steer: 0, thr
   impact: 0, landing: 0, airTime: 0, surface: 0, surfF: 0, gF: 1, gR: 1 };
 const input = { throttle: 0, brake: 0, steer: 0 };
 const keys = {};
-let assistOn = true, conesHit = 0, simAcc = 0;
+let assistOn = false, conesHit = 0, simAcc = 0;   // TSM off by default: the raw truck
 
 const groundM = (x, z) => groundHeight(x * U, z * U) / U;
 function resetVehicle() {
@@ -1498,7 +1498,7 @@ const smoothSat = u => u < 1 ? 1.5 * u - 0.5 * u * u * u : 1;
 function tireForce(alpha, C, N, muScale, slide = PHYS.muSlide / PHYS.muPeak) {
   const peak = PHYS.muPeak * N * muScale;
   const u = Math.abs(C * alpha) / Math.max(peak, 1e-3);
-  const mag = u < 1 ? peak * smoothSat(u) : peak * (1 - (1 - slide) * Math.min(1, (u - 1) / 1.4));
+  const mag = u < 1 ? peak * smoothSat(u) : peak * (1 - (1 - slide) * Math.min(1, (u - 1) / 3));   // grip fades gradually past the peak, so slides can be caught
   return -Math.sign(alpha) * mag;
 }
 // Brushless motor + ESC: PWM duty scales the applied voltage, back-EMF rises with rpm,
@@ -1538,9 +1538,20 @@ function physicsStep(h) {
   const dirSign = veh.gear === 'R' ? -1 : 1;
   let duty = veh.gear === 'D' ? veh.throttle : veh.brake * PHYS.reverseLimit;
   const brakeCmd = veh.gear === 'D' ? veh.brake : veh.throttle;
-  if (assistOn) {                                   // TSM-style traction control: hold wheelspin near the grip peak
-    const allowed = 0.5 + 0.15 * Math.abs(veh.vx);
+  if (assistOn && veh.gear === 'D') {
+    // Traxxas Stability Management: a yaw sensor in the receiver trims throttle when the truck rotates more
+    // than the steering asks for, and limits wheelspin. It never steers for you, so too much steering
+    // at speed still spins the truck, just less easily than with TSM off.
+    const allowed = (0.4 + 0.12 * Math.abs(veh.vx)) * (1 - 0.75 * Math.min(1, Math.abs(d) / 0.1));   // tighter while steering
     if (Math.abs(veh.spin) > allowed) duty *= Math.max(0.2, allowed / Math.abs(veh.spin));
+    const v = Math.abs(veh.vx);
+    if (v > 1.5 && !veh.airborne) {
+      const rWant = veh.vx * Math.tan(d) / L, rMax = PHYS.muPeak * g / v;
+      const excess = Math.abs(veh.r) - Math.min(Math.abs(rWant), rMax) * 1.1;
+      const slide = Math.abs(Math.atan2(veh.vy, v));
+      const cut = Math.max(excess / Math.max(rMax, 0.5) * 1.5, (slide - 0.06) * 4);
+      if (cut > 0) duty *= Math.max(0.1, 1 - cut);
+    }
   }
   veh.cmd = duty;
   const mot = motorDrive(duty, veh.vx + veh.spin);
@@ -1588,7 +1599,9 @@ function physicsStep(h) {
     if (veh.handbrake && Math.abs(veh.vx) > 0.3) { Fxr += -sgn * tractionR * 0.5; veh.spin = Math.min(veh.spin, 0); }
 
     // ---- lateral tyre forces (bicycle model with friction circle on the rear) ----
-    const rearCircle = Math.sqrt(Math.max(0.15, 1 - 0.7 * (Fxr / tractionR) ** 2));
+    // friction circle: the more of the rear tyres' grip goes into driving (or braking), the less is left
+    // to hold the tail sideways, and a spinning tyre holds almost nothing (power oversteer)
+    const rearCircle = Math.sqrt(Math.max(0.1, 1 - 0.96 * (Fxr / tractionR) ** 2)) * (Math.abs(veh.spin) > 1 ? 0.75 : 1);
     const vfLat = (veh.vy + PHYS.a * veh.r) * Math.cos(d) - veh.vx * Math.sin(d);
     const vfLong = veh.vx * Math.cos(d) + (veh.vy + PHYS.a * veh.r) * Math.sin(d);
     const vrLat = veh.vy - PHYS.b * veh.r;
@@ -2628,18 +2641,19 @@ function readInputs(dt) {
   input.throttle = approach(input.throttle, up ? 1 : 0, dt * (up ? 4 : 12));
   input.brake = approach(input.brake, down ? 1 : 0, dt * (down ? 6 : 12));
   const st = (left ? 1 : 0) - (right ? 1 : 0);
-  input.steer = approach(input.steer, st, dt * (st === 0 ? 7 : 5));
+  // a held key winds the wheel on progressively, slower at speed (like easing a transmitter wheel);
+  // keep holding and it still reaches full lock, which is what spins the truck
+  const windRate = 5 / (1 + Math.abs(veh.vx) / 5);
+  input.steer = approach(input.steer, st, dt * (st === 0 ? 7 : Math.sign(st) !== Math.sign(input.steer) && input.steer !== 0 ? 9 : windRate));
 
   if (veh.gear === 'D' && down && !up && veh.vx < 0.15) veh.gear = 'R';
   else if (veh.gear === 'R' && up && !down && veh.vx > -0.15) veh.gear = 'D';
 
   const v = Math.abs(veh.vx);
-  // speed-sensitive steering: at speed a 1/10 car only needs a degree or two before the tyres saturate
-  const gripLock = 1.2 * PHYS.L * PHYS.muPeak * Math.min(veh.gF, veh.gR) * PHYS.g / Math.max(v * v, 0.01);
-  const lock = Math.max(0.03, Math.min(PHYS.steerLock, assistOn ? gripLock : gripLock * 2.2));
-  let target = input.steer * lock;
-  if (assistOn && v > 2 && !veh.airborne) target += veh.beta * 0.5 * (1 - 0.5 * Math.abs(input.steer));
-  veh.steer = approach(veh.steer, Math.max(-PHYS.steerLock, Math.min(PHYS.steerLock, target)), dt * PHYS.steerRate);   // servo speed
+  // the servo always gets the full command, like a real transmitter: at speed, full lock is far more than
+  // the tyres can use, so the front washes out or (on the throttle) the rear steps out and spins
+  const target = input.steer * PHYS.steerLock;
+  veh.steer = approach(veh.steer, target, dt * PHYS.steerRate);   // servo speed (2075: 0.17 s / 60°)
   veh.throttle = input.throttle;
   veh.brake = input.brake;
   veh.handbrake = !!(keys.Space || touch.hb);
@@ -2901,7 +2915,7 @@ function toggleSound() {
   updateSoundLabel();
 }
 function updateSoundLabel() { document.getElementById('soundBtn').textContent = soundOn ? 'Sound on' : 'Sound off'; }
-function updateAssistLabel() { document.getElementById('assistBtn').textContent = assistOn ? 'Assist on' : 'Assist off'; }
+function updateAssistLabel() { document.getElementById('assistBtn').textContent = assistOn ? 'TSM on' : 'TSM off'; }
 
 /* ---------- touch controls and buttons ---------- */
 document.querySelectorAll('[data-touch]').forEach(btn => {
