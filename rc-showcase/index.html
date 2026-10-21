@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>APEX VX-10 — Showcase &amp; Driving Simulator</title>
+<title>Traxxas Rustler 2WD VXL — Showcase &amp; Driving Simulator</title>
 <style>
   :root{
     --bg:#0d0d11;
@@ -12,8 +12,8 @@
     --line:rgba(255,255,255,.09);
     --ink:#eceef4;
     --muted:#8d93a5;
-    --accent:#ff3b55;
-    --accent-soft:rgba(255,59,85,.16);
+    --accent:#6fd62a;
+    --accent-soft:rgba(111,214,42,.16);
     --ok:#3ddc97;
     --radius:14px;
     --font:"SF Pro Display","Segoe UI Variable","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
@@ -169,13 +169,13 @@
 </script>
 </head>
 <body>
-<canvas id="scene" tabindex="0" aria-label="Interactive 3D model of the APEX VX-10 RC buggy"></canvas>
+<canvas id="scene" tabindex="0" aria-label="Interactive 3D model of a Traxxas Rustler 2WD VXL"></canvas>
 
 <header class="hud-top">
   <div class="brand">
-    <span class="kicker">Procedural 3D showcase</span>
-    <h1>APEX VX-10</h1>
-    <p>1/10 electric off-road buggy · every part generated in code</p>
+    <span class="kicker">Traxxas · model 37076-74</span>
+    <h1>Rustler 2WD VXL</h1>
+    <p>1/10 brushless stadium truck · your build, every part generated in code</p>
   </div>
   <div class="mode" role="tablist" aria-label="Mode">
     <button type="button" role="tab" data-mode="inspect" aria-selected="true">Inspection</button>
@@ -187,8 +187,9 @@
     <label class="switch"><input type="checkbox" id="spinToggle" checked><span class="track"></span>Auto-rotate</label>
     <span class="sep"></span>
     <div class="swatches" role="group" aria-label="Body paint">
-      <button class="swatch" data-paint="red" aria-pressed="true" aria-label="Candy red paint" style="background:#b0001a"></button>
-      <button class="swatch" data-paint="blue" aria-pressed="false" aria-label="Electric blue paint" style="background:#0a46e0"></button>
+      <button class="swatch" data-paint="black" aria-pressed="true" aria-label="Gloss black paint (your body)" title="Gloss black (yours)" style="background:#15171a;box-shadow:inset 0 0 0 1px #3a3d42"></button>
+      <button class="swatch" data-paint="green" aria-pressed="false" aria-label="Traxxas green paint" title="Traxxas green" style="background:#4fb81a"></button>
+      <button class="swatch" data-paint="blue" aria-pressed="false" aria-label="Riptide blue paint" title="Riptide blue" style="background:#1a55d6"></button>
     </div>
     <button class="btn" id="resetBtn" type="button">Reset view</button>
   </div>
@@ -381,40 +382,55 @@ const batteryLabel = canvasTexture(1024, (ctx, s) => {
   const g = ctx.createLinearGradient(0, 0, s, 0);
   g.addColorStop(0, '#15161c'); g.addColorStop(1, '#22242c');
   ctx.fillStyle = g; ctx.fillRect(0, 0, s, s);
-  ctx.fillStyle = '#ff3b55';
+  ctx.fillStyle = '#e8242c';
   ctx.beginPath(); ctx.moveTo(s * 0.55, 0); ctx.lineTo(s * 0.7, 0); ctx.lineTo(s * 0.45, s); ctx.lineTo(s * 0.3, s); ctx.fill();
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 120px system-ui, sans-serif';
-  ctx.fillText('APEX', 60, 300);
+  ctx.fillText('Gens ace', 60, 300);
   ctx.font = '600 70px system-ui, sans-serif';
-  ctx.fillText('LiPo 2S · 7.4V', 60, 430);
+  ctx.fillText('3S1P · 11.1V · 55.5Wh', 60, 430);
   ctx.font = 'bold 150px system-ui, sans-serif';
-  ctx.fillText('6200', 560, 760);
+  ctx.fillText('5000', 560, 760);
   ctx.font = '600 56px system-ui, sans-serif';
-  ctx.fillText('mAh · 100C', 580, 840);
+  ctx.fillText('mAh · 60C', 580, 840);
 });
 
 /* ================================================================
    MATERIALS
    ================================================================ */
 const PAINTS = {
-  red:  { color: '#a3000f', sheen: '#ff2a3f', accent: '#ff3b55', soft: 'rgba(255,59,85,.16)' },
-  blue: { color: '#0637c4', sheen: '#3f8bff', accent: '#3f8bff', soft: 'rgba(63,139,255,.18)' }
+  black: { color: '#08090a', sheen: '#2a2d33', sheenAmt: 0.0, flake: 0.02, metal: 0.0, env: 0.55 },
+  green: { color: '#3c9a12', sheen: '#8cff4a', sheenAmt: 0.3, flake: 0.08, metal: 0.25, env: 1.0 },
+  blue:  { color: '#0f3fb8', sheen: '#4f8dff', sheenAmt: 0.3, flake: 0.08, metal: 0.3, env: 1.0 }
 };
+const ACCENT = '#6fd62a';
+// 3D-printed PLA: fine horizontal layer lines
+const printedMap = canvasTexture(256, (ctx, s) => {
+  ctx.fillStyle = '#d9cfb3'; ctx.fillRect(0, 0, s, s);
+  for (let y = 0; y < s; y += 4) { ctx.fillStyle = `rgba(90,75,40,${0.08 + Math.random() * 0.05})`; ctx.fillRect(0, y, s, 1.5); }
+}, { repeat: [3, 3] });
 const MAT = {
   paint: new THREE.MeshPhysicalMaterial({
-    color: PAINTS.red.color, metalness: 0.55, roughness: 0.22,
-    clearcoat: 1.0, clearcoatRoughness: 0.03,
-    normalMap: flakeNormal, normalScale: new THREE.Vector2(0.12, 0.12),
-    sheen: 0.4, sheenColor: new THREE.Color(PAINTS.red.sheen), sheenRoughness: 0.4,
-    envMapIntensity: 1.35, side: THREE.DoubleSide
+    color: PAINTS.black.color, metalness: PAINTS.black.metal, roughness: 0.3,
+    clearcoat: 1.0, clearcoatRoughness: 0.04,
+    normalMap: flakeNormal, normalScale: new THREE.Vector2(PAINTS.black.flake, PAINTS.black.flake),
+    sheen: PAINTS.black.sheenAmt, sheenColor: new THREE.Color(PAINTS.black.sheen), sheenRoughness: 0.5,
+    envMapIntensity: PAINTS.black.env, side: THREE.DoubleSide
   }),
   glass: new THREE.MeshPhysicalMaterial({ color: '#0b0f16', metalness: 0.2, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.6, side: THREE.DoubleSide }),
   carbon: new THREE.MeshPhysicalMaterial({ map: carbonMap, roughnessMap: carbonRough, roughness: 0.6, metalness: 0.15, clearcoat: 0.15, clearcoatRoughness: 0.6 }),
   chrome: new THREE.MeshStandardMaterial({ color: '#f2f4f7', metalness: 1.0, roughness: 0.1, envMapIntensity: 1.6 }),
   silver: new THREE.MeshStandardMaterial({ color: '#c9ced6', metalness: 1.0, roughness: 0.22, envMapIntensity: 1.3 }),
   gunmetal: new THREE.MeshStandardMaterial({ color: '#3a3d45', metalness: 0.9, roughness: 0.32 }),
-  anodRed: new THREE.MeshStandardMaterial({ color: '#d4142e', metalness: 0.85, roughness: 0.28 }),
+  anodRed: new THREE.MeshStandardMaterial({ color: '#141518', metalness: 0.1, roughness: 0.5 }),   // black nylon accents
+  greenNylon: new THREE.MeshStandardMaterial({ color: '#5fd11c', roughness: 0.48, metalness: 0.0 }),
+  greyNylon: new THREE.MeshStandardMaterial({ color: '#80857f', roughness: 0.62, metalness: 0.0 }),
+  blackNylon: new THREE.MeshStandardMaterial({ color: '#141518', roughness: 0.55, metalness: 0.0 }),
+  teal: new THREE.MeshStandardMaterial({ color: '#13a598', roughness: 0.45, metalness: 0.0 }),
+  blueAlu: new THREE.MeshStandardMaterial({ color: '#1f5fe0', metalness: 0.85, roughness: 0.3 }),
+  escBlue: new THREE.MeshStandardMaterial({ color: '#1d4fd0', roughness: 0.42, metalness: 0.05 }),
+  shockBody: new THREE.MeshStandardMaterial({ color: '#26292a', metalness: 0.6, roughness: 0.35 }),
+  printed: new THREE.MeshStandardMaterial({ map: printedMap, roughness: 0.7, metalness: 0.0 }),
   rubber: new THREE.MeshStandardMaterial({ color: '#2b2c30', roughness: 0.94, metalness: 0.0, bumpMap: rubberBump, bumpScale: 0.6 }),
   rubberKnob: new THREE.MeshStandardMaterial({ color: '#303136', roughness: 0.96, metalness: 0.0 }),
   composite: new THREE.MeshStandardMaterial({ color: '#17181c', roughness: 0.55, metalness: 0.05 }),
@@ -424,7 +440,7 @@ const MAT = {
   wireBlack: new THREE.MeshStandardMaterial({ color: '#111114', roughness: 0.45 }),
   fanBlade: new THREE.MeshStandardMaterial({ color: '#202228', roughness: 0.5 })
 };
-const ACCENT_EMISSIVE = new THREE.Color('#ff3b55');
+const ACCENT_EMISSIVE = new THREE.Color(ACCENT);
 
 /* ================================================================
    PART REGISTRY — every clickable component with specs and explode vectors
@@ -526,10 +542,10 @@ const SIDES = [1, -1];
    CHASSIS — carbon fibre plate
    ================================================================ */
 {
-  const part = createPart('chassis', 'Carbon chassis plate', 'Structure',
-    'A single CNC-cut plate of 3K twill carbon fibre that every other module bolts to. Countersunk holes keep the underside flush for clean landings.',
-    [['Material', '3K twill carbon, 2.5 mm'], ['Length', '412 mm'], ['Max width', '118 mm'], ['Mass', '86 g'], ['Flex rating', 'Medium-stiff']],
-    { Strength: 88, Weight: 92, Stiffness: 80 });
+  const part = createPart('chassis', 'Chassis tub', 'Structure',
+    'The stock grey composite tub that every module bolts to. Molded side rails hold the battery; check the front bulkhead area after hard crashes.',
+    [['Traxxas part', '3722R chassis'], ['Material', 'Grey nylon composite'], ['Wheelbase', '330 mm'], ['Battery bay', 'Fits 3S hard-case (Gens ace 5000)'], ['Front bumper', '3735 / 2735 mount']],
+    { Strength: 74, Weight: 70, Stiffness: 66 });
   const piece = createPiece(part, [0, -0.35, 0]);
   const outline = new THREE.Shape();
   const pts = [[-2.1, -0.38], [-1.2, -0.5], [1.0, -0.5], [1.85, -0.34], [2.15, -0.22], [2.15, 0.22], [1.85, 0.34], [1.0, 0.5], [-1.2, 0.5], [-2.1, 0.38]];
@@ -549,9 +565,9 @@ const SIDES = [1, -1];
   }
   const geo = new THREE.ExtrudeGeometry(outline, { depth: 0.04, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.008, bevelSegments: 2, curveSegments: 24 });
   geo.rotateX(-Math.PI / 2);
-  addMesh(part, piece, geo, MAT.carbon, { position: [0, CHASSIS_Y - 0.02, 0] });
+  addMesh(part, piece, geo, MAT.greyNylon, { position: [0, CHASSIS_Y - 0.02, 0] });
   // side rails
-  SIDES.forEach(s => addMesh(part, piece, roundedBox(3.0, 0.12, 0.05, 0.02), MAT.carbon, { position: [-0.1, CHASSIS_Y + 0.08, s * 0.52] }));
+  SIDES.forEach(s => addMesh(part, piece, roundedBox(3.0, 0.12, 0.05, 0.02), MAT.greyNylon, { position: [-0.1, CHASSIS_Y + 0.08, s * 0.52] }));
   // countersunk screw heads
   const screwGeo = new THREE.CylinderGeometry(0.028, 0.02, 0.012, 16);
   [[-1.8, 0.25], [-1.8, -0.25], [1.8, 0.2], [1.8, -0.2], [0, 0.42], [0, -0.42], [-0.9, 0.0], [0.9, 0.0]].forEach(([x, z]) =>
@@ -561,11 +577,8 @@ const SIDES = [1, -1];
 /* ================================================================
    SHOCK TOWERS (carbon)
    ================================================================ */
-function buildTower(id, name, x, dir) {
-  const part = createPart(id, name, 'Suspension',
-    'Machined carbon tower carrying the upper shock mounts. Three mounting holes per side let you change the shock angle for more or less progression.',
-    [['Material', '3K carbon, 4 mm'], ['Width', '180 mm'], ['Mount holes', '3 per side'], ['Mass', '24 g']],
-    { Strength: 82, Weight: 90, Stiffness: 86 });
+function buildTower(id, name, x, dir, mat, desc, specs, ratings) {
+  const part = createPart(id, name, 'Suspension', desc, specs, ratings);
   const piece = createPiece(part, [dir * 0.7, 1.1, 0]);
   const s = new THREE.Shape();
   s.moveTo(-0.86, 1.14); s.lineTo(0.86, 1.14); s.lineTo(0.9, 1.05); s.lineTo(0.36, 0.6); s.lineTo(-0.36, 0.6); s.lineTo(-0.9, 1.05); s.lineTo(-0.86, 1.14);
@@ -573,20 +586,27 @@ function buildTower(id, name, x, dir) {
   const win = new THREE.Path(); win.moveTo(-0.2, 0.74); win.lineTo(0.2, 0.74); win.lineTo(0.42, 0.96); win.lineTo(-0.42, 0.96); win.lineTo(-0.2, 0.74); s.holes.push(win);
   const geo = new THREE.ExtrudeGeometry(s, { depth: 0.04, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.006, bevelSegments: 2, curveSegments: 20 });
   geo.rotateY(Math.PI / 2);
-  addMesh(part, piece, geo, MAT.carbon, { position: [x - 0.02, 0, 0] });
+  addMesh(part, piece, geo, mat, { position: [x - 0.02, 0, 0] });
   addMesh(part, piece, roundedBox(0.18, 0.3, 0.5, 0.03), MAT.anodRed, { position: [x - dir * 0.08, 0.5, 0] });
 }
-buildTower('towerF', 'Front shock tower', AXLE_F + 0.12, 1);
-buildTower('towerR', 'Rear shock tower', AXLE_R - 0.12, -1);
+buildTower('towerF', 'Front shock tower', AXLE_F + 0.12, 1, MAT.blackNylon,
+  'Stock black composite tower carrying the upper front shock mounts. It flexes on impact instead of cracking the bulkhead.',
+  [['Traxxas part', '1914R'], ['Material', 'Black nylon composite'], ['Mount holes', '3 per side'], ['Status', 'Stock']],
+  { Strength: 66, Weight: 80, Stiffness: 60 });
+buildTower('towerR', 'Rear shock tower — blue aluminum', AXLE_R - 0.12, -1, MAT.blueAlu,
+  'Blue anodized aluminum rear tower you installed. It is much stiffer than the stock plastic, so the rear shocks hold their angle on hard landings. Check the screws now and then; aluminum can loosen into plastic.',
+  [['Replaces', 'Traxxas 3638 (stock plastic)'], ['Material', '6061 aluminum, blue anodized'], ['Mount holes', '3 per side'], ['Status', 'Upgrade · installed by you'], ['Tip', 'Blue thread-locker on metal-to-metal screws']],
+  { Strength: 92, Weight: 74, Stiffness: 94 });
 
 /* ================================================================
    SUSPENSION ARMS
    ================================================================ */
-function buildArms(id, name, axleX) {
+function buildArms(id, name, axleX, specs) {
+  const front = axleX > 0;
   const part = createPart(id, name, 'Suspension',
-    'Lower A-arms in glass-filled composite with hard-anodised hinge-pin blocks. Long arms give 85 mm of usable wheel travel.',
-    [['Material', 'PA66 + 30% glass fibre'], ['Hinge pins', '3 mm hardened steel'], ['Travel', '85 mm'], ['Camber range', '−3° to +1°']],
-    { Strength: 78, Weight: 80, Travel: 85 });
+    front ? 'Green Traxxas front A-arms with black steering knuckles and teal camber links. The front arms take the hit in most crashes, so check the hinge pins and knuckles if steering feels stiff.'
+          : 'Green Traxxas rear A-arms with black hub carriers and teal camber links. The rear driveshafts run through the carriers to the 12 mm hexes.',
+    specs, { Strength: 72, Weight: 80, Travel: 80 });
   SIDES.forEach(side => {
     const piece = createPiece(part, [0, 0.15, side * 0.65]);
     const shape = new THREE.Shape();
@@ -597,33 +617,36 @@ function buildArms(id, name, axleX) {
     shape.holes.push(hole);
     const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 3 });
     geo.rotateX(Math.PI / 2);
-    addMesh(part, piece, geo, MAT.composite, { position: [0, CHASSIS_Y + 0.02, 0] });
-    addMesh(part, piece, new THREE.CylinderGeometry(0.035, 0.035, 0.6, 20).rotateZ(Math.PI / 2), MAT.anodRed, { position: [axleX, CHASSIS_Y - 0.01, side * 0.36] });
+    addMesh(part, piece, geo, MAT.greenNylon, { position: [0, CHASSIS_Y + 0.02, 0] });
+    addMesh(part, piece, new THREE.CylinderGeometry(0.035, 0.035, 0.6, 20).rotateZ(Math.PI / 2), MAT.greenNylon, { position: [axleX, CHASSIS_Y - 0.01, side * 0.36] });
     addMesh(part, piece, new THREE.CylinderGeometry(0.012, 0.012, 0.66, 12).rotateZ(Math.PI / 2), MAT.chrome, { position: [axleX, CHASSIS_Y - 0.01, side * 0.36] });
     // hub carrier / knuckle
-    addMesh(part, piece, roundedBox(0.16, 0.42, 0.1, 0.03), MAT.gunmetal, { position: [axleX, TIRE_R, side * 0.7] });
+    addMesh(part, piece, roundedBox(0.16, 0.42, 0.1, 0.03), MAT.blackNylon, { position: [axleX, TIRE_R, side * 0.7] });
     // driveshaft / axle
     const { geo: axleGeo, mid, quat } = cylinderBetween([axleX, TIRE_R, side * 0.25], [axleX, TIRE_R, side * 0.78], 0.028);
     const axle = addMesh(part, piece, axleGeo, MAT.silver);
     axle.position.copy(mid); axle.quaternion.copy(quat);
     // camber link with rod ends
     const { geo: lGeo, mid: lMid, quat: lQ } = cylinderBetween([axleX, 0.98, side * 0.16], [axleX, 0.86, side * 0.68], 0.018);
-    const link = addMesh(part, piece, lGeo, MAT.chrome);
+    const link = addMesh(part, piece, lGeo, MAT.teal);
     link.position.copy(lMid); link.quaternion.copy(lQ);
-    [[axleX, 0.98, side * 0.16], [axleX, 0.86, side * 0.68]].forEach(p => addMesh(part, piece, new THREE.SphereGeometry(0.038, 20, 14), MAT.composite, { position: p }));
+    [[axleX, 0.98, side * 0.16], [axleX, 0.86, side * 0.68]].forEach(p => addMesh(part, piece, new THREE.SphereGeometry(0.038, 20, 14), MAT.blackNylon, { position: p }));
   });
 }
-buildArms('armsF', 'Front suspension arms', AXLE_F);
-buildArms('armsR', 'Rear suspension arms', AXLE_R);
+buildArms('armsF', 'Front suspension arms', AXLE_F,
+  [['Arms', 'Traxxas 3631 (green)'], ['Steering blocks', '3636 / 3637 (black)'], ['Camber links', 'Teal turnbuckles'], ['Bellcranks', '3743'], ['Hinge pins', 'Steel, 3 mm']]);
+buildArms('armsR', 'Rear suspension arms', AXLE_R,
+  [['Arms', 'Traxxas 3655X (green)'], ['Hub carriers', '3652 (black)'], ['Camber links', 'Teal turnbuckles'], ['Driveshafts', '3654 half shafts'], ['Hinge pins', 'Steel, 3 mm']]);
 
 /* ================================================================
    SHOCK ABSORBERS — chrome coil-overs
    ================================================================ */
 function buildShock(id, name, axleX, towerX, side) {
+  const front = axleX > 0;
   const part = createPart(id, name, 'Suspension',
-    'Big-bore, threaded-body coil-over damper. A polished chrome shaft rides in a bladder-sealed oil chamber, and the progressive chrome spring stiffens as it compresses.',
-    [['Body bore', '16 mm'], ['Shaft', '3.5 mm hard chrome'], ['Stroke', '42 mm'], ['Spring rate', '2.8 → 3.6 lb/in'], ['Oil', '35 wt silicone'], ['Length (eye to eye)', '118 mm']],
-    { Damping: 84, Travel: 78, Durability: 80 });
+    'Stock Traxxas Ultra Shock: dark composite body, chrome shaft, oil-filled and sprung by a green coil. If one feels bouncy or the shaft is wet, it has lost oil.',
+    [['Traxxas part', front ? '3760A (front, long)' : '3762A (rear, xx-long)'], ['Body', 'Composite, threaded collar'], ['Shaft', 'Chrome steel'], ['Spring', front ? 'Green, front rate' : 'Green, rear rate'], ['Oil', '30 wt silicone (stock)']],
+    { Damping: 70, Travel: 76, Durability: 72 });
   const piece = createPiece(part, [0, 0.55, side * 0.95]);
   const A = V3(axleX, CHASSIS_Y + 0.05, side * 0.6);
   const B = V3(towerX, 1.07, side * 0.7);
@@ -635,13 +658,13 @@ function buildShock(id, name, axleX, towerX, side) {
   const at = y => ({ position: [0, y, 0] });
   addMesh(part, holder, new THREE.SphereGeometry(0.045, 20, 14), MAT.composite, at(0));
   addMesh(part, holder, new THREE.CylinderGeometry(0.022, 0.022, L * 0.48, 24), MAT.chrome, at(L * 0.26));
-  addMesh(part, holder, new THREE.CylinderGeometry(0.08, 0.08, L * 0.5, 40), MAT.chrome, at(L * 0.7));
-  addMesh(part, holder, new THREE.CylinderGeometry(0.092, 0.092, 0.06, 40), MAT.anodRed, at(L * 0.95));
+  addMesh(part, holder, new THREE.CylinderGeometry(0.08, 0.08, L * 0.5, 40), MAT.shockBody, at(L * 0.7));
+  addMesh(part, holder, new THREE.CylinderGeometry(0.092, 0.092, 0.06, 40), MAT.blackNylon, at(L * 0.95));
   for (let i = 0; i < 9; i++) addMesh(part, holder, new THREE.TorusGeometry(0.081, 0.004, 8, 40).rotateX(Math.PI / 2), MAT.silver, at(L * 0.5 + i * 0.022));
-  addMesh(part, holder, new THREE.CylinderGeometry(0.115, 0.115, 0.025, 40), MAT.anodRed, at(L * 0.47));
-  addMesh(part, holder, new THREE.CylinderGeometry(0.11, 0.11, 0.02, 40), MAT.anodRed, at(L * 0.12));
+  addMesh(part, holder, new THREE.CylinderGeometry(0.115, 0.115, 0.025, 40), MAT.greenNylon, at(L * 0.47));
+  addMesh(part, holder, new THREE.CylinderGeometry(0.11, 0.11, 0.02, 40), MAT.greenNylon, at(L * 0.12));
   const coil = new THREE.TubeGeometry(new HelixCurve(0.1, L * 0.38, 8), 600, 0.013, 12, false);
-  addMesh(part, holder, coil, MAT.chrome, at(L * 0.12));
+  addMesh(part, holder, coil, MAT.greenNylon, at(L * 0.12));
   addMesh(part, holder, new THREE.SphereGeometry(0.045, 20, 14), MAT.composite, at(L));
 }
 SIDES.forEach(side => {
@@ -665,10 +688,12 @@ const rimFaceGeo = (() => {
   return g;
 })();
 function buildWheel(id, name, axleX, side) {
+  const knobby = axleX > 0;                   // knobby fronts, ribbed street rears (as on your truck)
   const part = createPart(id, name, 'Wheels',
-    'A 2.2-inch six-spoke forged rim with a beadlock-style outer lip, wrapped in a soft-compound knobby tyre. Staggered knobs bite on loose dirt; shoulder lugs keep grip mid-corner.',
-    [['Rim', '2.2" forged 7075 aluminium'], ['Tyre OD', '116 mm'], ['Width', '50 mm'], ['Compound', 'Soft (Shore 32A)'], ['Hex', '12 mm'], ['Mass', '118 g']],
-    { Grip: 86, Wear: 64, Weight: 72 });
+    knobby ? 'Front 2.8" wheel with a green barrel and black six-spoke face, on a knobby tyre that bites in dirt and grass. Held on a 12 mm hex by a serrated nut.'
+           : 'Rear 2.8" wheel with a green barrel and black six-spoke face, on a ribbed street tyre. It grips on pavement but spins easily in loose dirt.',
+    [['Wheel', '2.8" Traxxas, green / black'], ['Tyre', knobby ? 'Knobby off-road' : 'Ribbed street'], ['Hex', '12 mm'], ['Wheel nut', 'Traxxas 3647 (serrated, 4 mm)'], ['Position', knobby ? 'Front (steering)' : 'Rear (driven)']],
+    knobby ? { Grip: 74, Wear: 70, Weight: 76 } : { Grip: 62, Wear: 84, Weight: 74 });
   const piece = createPiece(part, [0, 0, side * 1.45]);
   const pivot = new THREE.Group();            // steering pivot (front wheels turn about Y)
   pivot.position.set(axleX, TIRE_R, side * TRACK / 2);
@@ -699,18 +724,21 @@ function buildWheel(id, name, axleX, side) {
       dummy.quaternion.copy(qz).multiply(qx); dummy.updateMatrix(); sh.push(dummy.matrix.clone());
     });
   }
-  addInstanced(part, wheel, knobGeo, MAT.rubberKnob, mats);
-  addInstanced(part, wheel, shoulderGeo, MAT.rubberKnob, sh);
+  if (knobby) {
+    addInstanced(part, wheel, knobGeo, MAT.rubberKnob, mats);
+    addInstanced(part, wheel, shoulderGeo, MAT.rubberKnob, sh);
+  } else {
+    // ribbed street tread: circumferential ribs
+    [-0.15, -0.075, 0, 0.075, 0.15].forEach(z => addMesh(part, wheel, new THREE.TorusGeometry(R0 + 0.004, 0.02, 10, 128), MAT.rubberKnob, { position: [0, 0, z] }));
+  }
   // rim: barrel, beadlock ring with bolts, spoked face, hex nut
   const barrel = new THREE.LatheGeometry([[0.35, -hw + 0.02], [0.375, -hw + 0.02], [0.375, -hw + 0.05], [0.345, -hw + 0.07], [0.345, hw - 0.07], [0.375, hw - 0.05], [0.38, hw], [0.36, hw + 0.01]]
     .map(([r, y]) => new THREE.Vector2(r, y)), 96).rotateX(Math.PI / 2);
-  addMesh(part, wheel, barrel, new THREE.MeshStandardMaterial({ color: '#c9ced6', metalness: 1, roughness: 0.22, side: THREE.DoubleSide }));
-  addMesh(part, wheel, new THREE.TorusGeometry(0.37, 0.022, 16, 96), MAT.silver, { position: [0, 0, hw + 0.005] });
-  const boltGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.02, 6).rotateX(Math.PI / 2);
-  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; addMesh(part, wheel, boltGeo, MAT.gunmetal, { position: [Math.cos(a) * 0.37, Math.sin(a) * 0.37, hw + 0.03] }); }
-  addMesh(part, wheel, rimFaceGeo, MAT.silver, { position: [0, 0, hw - 0.09] });
-  addMesh(part, wheel, new THREE.CylinderGeometry(0.135, 0.135, 0.06, 48).rotateX(Math.PI / 2), MAT.silver, { position: [0, 0, hw - 0.07] });
-  addMesh(part, wheel, new THREE.CylinderGeometry(0.06, 0.06, 0.05, 6).rotateX(Math.PI / 2), MAT.anodRed, { position: [0, 0, hw - 0.02] });
+  addMesh(part, wheel, barrel, new THREE.MeshStandardMaterial({ color: '#5fd11c', roughness: 0.45, metalness: 0.0, side: THREE.DoubleSide }));
+  addMesh(part, wheel, new THREE.TorusGeometry(0.37, 0.016, 16, 96), MAT.greenNylon, { position: [0, 0, hw + 0.005] });
+  addMesh(part, wheel, rimFaceGeo, MAT.blackNylon, { position: [0, 0, hw - 0.09] });
+  addMesh(part, wheel, new THREE.CylinderGeometry(0.135, 0.135, 0.06, 6).rotateX(Math.PI / 2), MAT.greenNylon, { position: [0, 0, hw - 0.07] });
+  addMesh(part, wheel, new THREE.CylinderGeometry(0.06, 0.06, 0.05, 6).rotateX(Math.PI / 2), MAT.silver, { position: [0, 0, hw - 0.02] });
   return part;
 }
 SIDES.forEach(side => {
@@ -723,25 +751,25 @@ SIDES.forEach(side => {
    POWERTRAIN — battery, motor, ESC, servo
    ================================================================ */
 {
-  const part = createPart('battery', 'LiPo battery pack', 'Power',
-    'Hard-case 2S lithium-polymer pack mounted low and central to keep the centre of gravity between the axles.',
-    [['Chemistry', 'LiPo, hard case'], ['Voltage', '7.4 V nominal (8.4 V full)'], ['Capacity', '6200 mAh'], ['Discharge', '100C'], ['Size', '139 × 47 × 25 mm'], ['Mass', '322 g']],
-    { Power: 86, Runtime: 82, Weight: 50 });
+  const part = createPart('battery', 'Gens ace 3S LiPo', 'Power',
+    'Your 3S hard-case LiPo. 3S is what unlocks the VXL system\'s full speed. Charge on a LiPo balance setting at 5 A or less, and never run it below 3.3 V per cell.',
+    [['Pack', 'Gens ace 3S1P hard case'], ['Voltage', '11.1 V nominal (12.6 V full)'], ['Capacity', '5000 mAh · 55.5 Wh'], ['Discharge', '60C'], ['Connector', 'Traxxas iD / XT60 adapter'], ['Storage', '3.8 V per cell']],
+    { Power: 92, Runtime: 78, Weight: 52 });
   const piece = createPiece(part, [0, 1.1, 0]);
   addMesh(part, piece, roundedBox(1.39, 0.25, 0.47, 0.04), MAT.battery, { position: [-0.15, CHASSIS_Y + 0.155, 0] });
   addMesh(part, piece, roundedBox(0.1, 0.42, 0.62, 0.02), MAT.composite, { position: [0.3, CHASSIS_Y + 0.31, 0] });
 }
 {
-  const part = createPart('motor', 'Brushless motor', 'Power',
-    'Sensored 4-pole brushless can with a finned aluminium heat-sink sleeve. The 5 mm hardened shaft drives a 48-pitch steel pinion.',
-    [['Type', 'Sensored brushless, 4-pole'], ['Kv', '3300 rpm/V'], ['Can', '36 × 52 mm'], ['Max power', '820 W'], ['Shaft', '5 mm'], ['Mass', '228 g']],
-    { Power: 90, Efficiency: 84, Heat: 62 });
+  const part = createPart('motor', 'Velineon 3500 motor', 'Power',
+    'Stock Velineon 3500 kV sensorless brushless motor wearing a silver finned Integy heat sink. Keep it under about 160 °F (70 °C); the heat sink helps on long 3S runs.',
+    [['Traxxas part', '3351R Velineon 3500'], ['Type', 'Sensorless brushless, 4-pole'], ['Kv', '3500 rpm/V'], ['Gearing', '25T pinion / 83T spur (48P)'], ['Heat sink', 'Integy finned, silver'], ['Max RPM (3S)', '≈ 41,000']],
+    { Power: 84, Efficiency: 80, Heat: 66 });
   const piece = createPiece(part, [-0.75, 1.0, -0.4]);
   const mx = -1.25, mz = -0.18, my = CHASSIS_Y + 0.22;
   addMesh(part, piece, new THREE.CylinderGeometry(0.18, 0.18, 0.52, 64).rotateZ(Math.PI / 2), MAT.gunmetal, { position: [mx, my, mz] });
   for (let i = 0; i < 14; i++) {
     const a = i / 14 * Math.PI * 2;
-    addMesh(part, piece, new THREE.BoxGeometry(0.44, 0.05, 0.012), MAT.anodRed, { position: [mx, my + Math.cos(a) * 0.2, mz + Math.sin(a) * 0.2], rotation: [a, 0, 0] });
+    addMesh(part, piece, new THREE.BoxGeometry(0.44, 0.05, 0.012), MAT.silver, { position: [mx, my + Math.cos(a) * 0.2, mz + Math.sin(a) * 0.2], rotation: [a, 0, 0] });
   }
   addMesh(part, piece, new THREE.CylinderGeometry(0.16, 0.18, 0.06, 64).rotateZ(Math.PI / 2), MAT.silver, { position: [mx - 0.29, my, mz] });
   addMesh(part, piece, new THREE.CylinderGeometry(0.025, 0.025, 0.2, 16).rotateZ(Math.PI / 2), MAT.chrome, { position: [mx + 0.34, my, mz] });
@@ -751,14 +779,14 @@ SIDES.forEach(side => {
   addMesh(part, piece, new THREE.CylinderGeometry(0.3, 0.3, 0.06, 64).rotateX(Math.PI / 2), MAT.composite, { position: [mx + 0.3, my + 0.12, mz + 0.14] });
 }
 {
-  const part = createPart('esc', 'Electronic speed controller', 'Power',
-    'Waterproof brushless ESC with an aluminium heat-sink case and a 30 mm cooling fan. It converts battery DC into three-phase drive for the motor.',
-    [['Continuous', '150 A'], ['Burst', '950 A'], ['Input', '2–3S LiPo'], ['BEC', '6.0 / 7.4 V, 6 A'], ['Cooling', '30 mm ball-bearing fan'], ['Mass', '96 g']],
-    { Power: 88, Cooling: 80, Weight: 70 });
+  const part = createPart('esc', 'VXL-3s speed control', 'Power',
+    'The blue waterproof Traxxas VXL-3s ESC. It turns battery power into three-phase drive for the motor and runs Training mode, Sport (no reverse delay) and Race profiles. Low-voltage detection must be ON for LiPo.',
+    [['Traxxas part', '3355R VXL-3s'], ['Input', '2S–3S LiPo'], ['PWM', '12 kHz'], ['Profiles', 'Sport · Race · Training'], ['Waterproof', 'Yes'], ['LVD', 'ON for LiPo']],
+    { Power: 86, Cooling: 70, Weight: 72 });
   const piece = createPiece(part, [0.3, 1.25, 0.65]);
   const ex = 0.6, ez = 0.3, ey = CHASSIS_Y + 0.15;
-  addMesh(part, piece, roundedBox(0.5, 0.26, 0.42, 0.04), MAT.gunmetal, { position: [ex, ey, ez] });
-  for (let i = 0; i < 7; i++) addMesh(part, piece, new THREE.BoxGeometry(0.46, 0.06, 0.015), MAT.silver, { position: [ex, ey + 0.16, ez - 0.18 + i * 0.06] });
+  addMesh(part, piece, roundedBox(0.5, 0.26, 0.42, 0.04), MAT.escBlue, { position: [ex, ey, ez] });
+  for (let i = 0; i < 7; i++) addMesh(part, piece, new THREE.BoxGeometry(0.46, 0.06, 0.015), MAT.escBlue, { position: [ex, ey + 0.16, ez - 0.18 + i * 0.06] });
   addMesh(part, piece, roundedBox(0.34, 0.06, 0.34, 0.03), MAT.composite, { position: [ex, ey + 0.21, ez] });
   for (let i = 0; i < 7; i++) addMesh(part, piece, new THREE.BoxGeometry(0.13, 0.008, 0.04), MAT.fanBlade, { position: [ex, ey + 0.245, ez], rotation: [0, i / 7 * Math.PI * 2, 0.35] });
   addMesh(part, piece, new THREE.CylinderGeometry(0.04, 0.04, 0.02, 24), MAT.anodRed, { position: [ex, ey + 0.255, ez] });
@@ -771,13 +799,13 @@ SIDES.forEach(side => {
 }
 {
   const part = createPart('servo', 'Steering servo', 'Control',
-    'High-torque digital servo with titanium gears, linked to the front knuckles through an aluminium servo saver.',
-    [['Torque', '25 kg·cm @ 7.4 V'], ['Speed', '0.08 s / 60°'], ['Gears', 'Titanium'], ['Case', 'Aluminium centre'], ['Mass', '72 g']],
-    { Torque: 88, Speed: 90, Durability: 84 });
+    'Stock Traxxas 2075 waterproof digital servo driving the bellcranks through a 3744 servo saver. If the truck pulls one way after a crash, check the servo saver and the bellcrank screws first.',
+    [['Traxxas part', '2075 (waterproof, digital)'], ['Torque', '≈ 9 kg·cm @ 6 V'], ['Speed', '0.17 s / 60°'], ['Servo saver', '3744'], ['Bellcranks', '3743']],
+    { Torque: 62, Speed: 64, Durability: 70 });
   const piece = createPiece(part, [0.6, 0.9, -0.6]);
   const sx = 0.95, sz = -0.3, sy = CHASSIS_Y + 0.17;
   addMesh(part, piece, roundedBox(0.4, 0.34, 0.2, 0.03), MAT.composite, { position: [sx, sy, sz] });
-  addMesh(part, piece, roundedBox(0.52, 0.04, 0.2, 0.015), MAT.anodRed, { position: [sx, sy + 0.1, sz] });
+  addMesh(part, piece, roundedBox(0.52, 0.04, 0.2, 0.015), MAT.blackNylon, { position: [sx, sy + 0.1, sz] });
   addMesh(part, piece, new THREE.CylinderGeometry(0.05, 0.05, 0.05, 24), MAT.silver, { position: [sx + 0.1, sy + 0.2, sz] });
   const { geo, mid, quat } = cylinderBetween([sx + 0.1, sy + 0.22, sz], [AXLE_F + 0.15, CHASSIS_Y + 0.25, 0.65], 0.016);
   const link = addMesh(part, piece, geo, MAT.chrome); link.position.copy(mid); link.quaternion.copy(quat);
@@ -865,36 +893,36 @@ function buildBodyGeometry() {
 }
 let bodyPaintMaterial;
 {
-  const part = createPart('body', 'Aero body shell', 'Bodywork',
-    'Vacuum-formed polycarbonate shell painted from the inside, then finished with a 2K clear coat over metallic flake. Sculpted wheel arches vent air out of the wheel wells.',
-    [['Material', '1 mm polycarbonate'], ['Finish', 'Candy over metallic flake + 2K clear'], ['Length', '425 mm'], ['Width', '196 mm'], ['Mass', '138 g']],
-    { Aero: 82, Durability: 70, Weight: 78 });
+  const part = createPart('body', 'Rustler body shell', 'Bodywork',
+    'Your gloss-black polycarbonate Rustler shell. The rear body-clip holes are torn, so reinforce them with drywall tape or Shoe Goo on the inside, or the body can come off in a jump.',
+    [['Material', 'Polycarbonate, painted inside'], ['Colour', 'Gloss black'], ['Damage', 'Torn rear clip holes'], ['Fix', 'Shoe Goo + drywall tape inside'], ['Bumper', 'Traxxas 2735 front']],
+    { Aero: 64, Durability: 52, Weight: 78 });
   const piece = createPiece(part, [0, 2.2, 0]);
   const { geometry, deck } = buildBodyGeometry();
   const mesh = new THREE.Mesh(geometry, [MAT.paint.clone(), MAT.glass.clone()]);
   mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.partId = part.id;
   piece.add(mesh); part.meshes.push(mesh); part.materials.push(...mesh.material); pickables.push(mesh);
   bodyPaintMaterial = mesh.material[0];
-  addMesh(part, piece, roundedBox(0.5, 0.06, 0.5, 0.025), MAT.gunmetal, { position: [1.45, deck(1.45) + 0.02, 0] });
-  addMesh(part, piece, roundedBox(0.3, 0.07, 1.25, 0.03), MAT.carbon, { position: [2.12, 0.62, 0] });
+  addMesh(part, piece, roundedBox(0.5, 0.06, 0.5, 0.025), MAT.blackNylon, { position: [1.45, deck(1.45) + 0.02, 0] });
+  addMesh(part, piece, roundedBox(0.3, 0.07, 1.25, 0.03), MAT.blackNylon, { position: [2.12, 0.62, 0] });
   SIDES.forEach(s => addMesh(part, piece, new THREE.CircleGeometry(0.07, 32).rotateY(Math.PI / 2 + 0.5), new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: '#fff4d6', emissiveIntensity: 1.2 }), { position: [2.17, 0.84, s * 0.44], castShadow: false }));
 }
 {
-  const part = createPart('wing', 'Rear wing', 'Bodywork',
-    'Twin-element carbon wing on aluminium uprights. Adds rear downforce at speed and keeps the buggy level through jumps.',
-    [['Material', 'Carbon fibre + 6061 uprights'], ['Span', '240 mm'], ['Chord', '62 mm'], ['Angle', 'Adjustable 0–12°'], ['Mass', '41 g']],
-    { Aero: 90, Durability: 76, Weight: 84 });
+  const part = createPart('wing', '3D-printed rear wing', 'Bodywork',
+    'A beige 3D-printed wing with matching endplates in place of the stock Rustler wing. It adds a little rear stability at speed. PLA is brittle in the cold, so PETG or ABS is a stronger reprint.',
+    [['Material', '3D-printed PLA, beige'], ['Replaces', 'Stock Rustler wing'], ['Mount', 'Two uprights to the rear tower'], ['Reprint tip', 'PETG / ABS, 4 walls']],
+    { Aero: 72, Durability: 50, Weight: 82 });
   const piece = createPiece(part, [-0.6, 3.0, 0]);
   const af = new THREE.Shape();
   af.moveTo(-0.33, 0); af.quadraticCurveTo(-0.26, 0.085, 0, 0.085); af.quadraticCurveTo(0.22, 0.075, 0.3, 0.02); af.lineTo(0.3, 0); af.quadraticCurveTo(0, 0.02, -0.33, -0.01); af.lineTo(-0.33, 0);
   const wingGeo = new THREE.ExtrudeGeometry(af, { depth: 2.3, bevelEnabled: true, bevelThickness: 0.01, bevelSize: 0.008, bevelSegments: 3, curveSegments: 20 }).translate(0, 0, -1.15);
-  addMesh(part, piece, wingGeo, MAT.carbon, { position: [-1.95, 1.62, 0], rotation: [0, 0, -0.14] });
+  addMesh(part, piece, wingGeo, MAT.printed, { position: [-1.95, 1.62, 0], rotation: [0, 0, -0.14] });
   SIDES.forEach(s => {
     const ep = new THREE.Shape(); ep.moveTo(-0.45, -0.12); ep.lineTo(0.12, -0.15); ep.lineTo(0.2, 0.2); ep.lineTo(-0.38, 0.24); ep.lineTo(-0.45, -0.12);
     const epGeo = new THREE.ExtrudeGeometry(ep, { depth: 0.025, bevelEnabled: true, bevelThickness: 0.005, bevelSize: 0.005, bevelSegments: 2 }).translate(0, 0, -0.0125);
-    addMesh(part, piece, epGeo, MAT.anodRed, { position: [-1.95, 1.65, s * 1.16] });
+    addMesh(part, piece, epGeo, MAT.printed, { position: [-1.95, 1.65, s * 1.16] });
     const { geo, mid, quat } = cylinderBetween([-1.86, 1.06, s * 0.36], [-1.92, 1.6, s * 0.36], 0.025);
-    const up = addMesh(part, piece, geo, MAT.silver); up.position.copy(mid); up.quaternion.copy(quat);
+    const up = addMesh(part, piece, geo, MAT.blackNylon); up.position.copy(mid); up.quaternion.copy(quat);
   });
 }
 
@@ -972,15 +1000,17 @@ function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;
 function renderOverview() {
   specEl.innerHTML = `
     <div class="cat">Vehicle overview</div>
-    <h2>APEX VX-10 Buggy</h2>
-    <p class="desc">A 1/10-scale electric off-road buggy built entirely from procedural geometry. Click any component on the car or in the list above to fly the camera to it and read its engineering data. Turn on Exploded view to separate the modules.</p>
+    <h2>Traxxas Rustler 2WD VXL</h2>
+    <p class="desc">Your truck as it sits: gloss-black body, green arms and wheels, the blue aluminum rear tower, the 3D-printed wing and the Gens ace 3S pack. Click any component on the truck or in the list above to fly the camera to it and read its specs. Turn on Exploded view to separate the modules.</p>
     <dl>
-      <dt>Scale</dt><dd>1/10</dd>
-      <dt>Wheelbase</dt><dd>290 mm</dd>
-      <dt>Track width</dt><dd>${Math.round(TRACK * 100 + TIRE_W * 100)} mm</dd>
-      <dt>Drivetrain</dt><dd>2WD, rear sealed diff</dd>
-      <dt>Ready-to-run mass</dt><dd>1,980 g</dd>
-      <dt>Top speed (2S, stock gearing)</dt><dd>≈ 64 km/h</dd>
+      <dt>Model</dt><dd>Traxxas 37076-74</dd>
+      <dt>Type</dt><dd>1/10 2WD stadium truck</dd>
+      <dt>Power</dt><dd>Velineon 3500 kV + VXL-3s</dd>
+      <dt>Battery</dt><dd>Gens ace 3S 5000 mAh 60C</dd>
+      <dt>Gearing</dt><dd>25T / 83T (FDR 9.03)</dd>
+      <dt>Drivetrain</dt><dd>2WD, rear gear diff (Magnum 272)</dd>
+      <dt>Mass (est.)</dt><dd>≈ 2.75 kg</dd>
+      <dt>Top speed (3S, stock gearing)</dt><dd>≈ 60 mph</dd>
     </dl>`;
 }
 function renderSpecs(p) {
@@ -1099,10 +1129,10 @@ document.querySelectorAll('.swatch').forEach(btn => btn.addEventListener('click'
   const p = PAINTS[btn.dataset.paint];
   bodyPaintMaterial.color.set(p.color);
   bodyPaintMaterial.sheenColor.set(p.sheen);
-  document.documentElement.style.setProperty('--accent', p.accent);
-  document.documentElement.style.setProperty('--accent-soft', p.soft);
-  ACCENT_EMISSIVE.set(p.accent);
-  refreshHighlights();
+  bodyPaintMaterial.metalness = p.metal;
+  bodyPaintMaterial.sheen = p.sheenAmt;
+  bodyPaintMaterial.envMapIntensity = p.env;
+  bodyPaintMaterial.normalScale.set(p.flake, p.flake);
   document.querySelectorAll('.swatch').forEach(s => s.setAttribute('aria-pressed', String(s === btn)));
 }));
 window.addEventListener('keydown', e => {
