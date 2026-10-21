@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>APEX VX-10 — Interactive RC Showcase</title>
+<style>
+  :root{
+    --bg:#0d0d11;
+    --panel:rgba(18,18,24,.72);
+    --panel-solid:#14141b;
+    --line:rgba(255,255,255,.09);
+    --ink:#eceef4;
+    --muted:#8d93a5;
+    --accent:#ff3b55;
+    --accent-soft:rgba(255,59,85,.16);
+    --ok:#3ddc97;
+    --radius:14px;
+    --font:"SF Pro Display","Segoe UI Variable","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);overflow:hidden;-webkit-font-smoothing:antialiased}
+  #scene{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none;touch-action:none}
+  #scene.hovering{cursor:pointer}
+  button,input{font:inherit;color:inherit}
+
+  /* top HUD */
+  .hud-top{position:fixed;top:0;left:0;right:0;display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;
+    padding:max(18px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) 0 max(20px,env(safe-area-inset-left));pointer-events:none;z-index:5}
+  .hud-top>*{pointer-events:auto}
+  .brand .kicker{display:block;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  .brand h1{margin:6px 0 2px;font-size:30px;line-height:1;letter-spacing:.02em;font-weight:700}
+  .brand p{margin:0;color:var(--muted);font-size:13px}
+  .controls{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);
+    border-radius:999px;padding:8px 10px 8px 16px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .switch{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:500;user-select:none}
+  .switch input{position:absolute;opacity:0;width:1px;height:1px}
+  .track{position:relative;width:42px;height:24px;border-radius:999px;background:rgba(255,255,255,.12);transition:background .25s}
+  .track::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.4);transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+  .switch input:checked+.track{background:var(--accent)}
+  .switch input:checked+.track::after{transform:translateX(18px)}
+  .switch input:focus-visible+.track{outline:2px solid #fff;outline-offset:2px}
+  .sep{width:1px;height:22px;background:var(--line)}
+  .swatches{display:flex;gap:6px}
+  .swatch{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;box-shadow:inset 0 -4px 6px rgba(0,0,0,.35)}
+  .swatch[aria-pressed="true"]{border-color:#fff}
+  .swatch:focus-visible,.btn:focus-visible,.part-btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .btn{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:500;cursor:pointer}
+  .btn:hover{background:rgba(255,255,255,.12)}
+
+  /* sidebar */
+  .sidebar{position:fixed;top:118px;right:max(20px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));width:340px;display:flex;flex-direction:column;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:5;overflow:hidden}
+  .sb-section{padding:16px 18px;border-bottom:1px solid var(--line)}
+  .sb-label{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px;display:flex;justify-content:space-between}
+  .part-list{display:flex;flex-wrap:wrap;gap:6px}
+  .part-btn{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:8px;padding:6px 10px;font-size:12.5px;cursor:pointer;transition:background .15s,border-color .15s}
+  .part-btn:hover{background:rgba(255,255,255,.1)}
+  .part-btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:#fff}
+  .spec{flex:1;overflow:auto;padding:18px}
+  .spec .cat{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  .spec h2{margin:6px 0 8px;font-size:22px;line-height:1.15;font-weight:650}
+  .spec .desc{margin:0 0 16px;color:#c3c7d3;font-size:13.5px;line-height:1.55}
+  .spec dl{margin:0;display:grid;grid-template-columns:auto 1fr;border-top:1px solid var(--line)}
+  .spec dt,.spec dd{margin:0;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .spec dt{color:var(--muted);padding-right:14px}
+  .spec dd{font-family:var(--mono);font-size:12.5px;text-align:right}
+  .meter{margin-top:16px;display:grid;gap:10px}
+  .meter div{display:grid;grid-template-columns:96px 1fr 34px;gap:10px;align-items:center;font-size:12px;color:var(--muted)}
+  .meter i{display:block;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+  .meter i b{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ff8a5b);border-radius:3px;transition:width .5s}
+  .meter span{font-family:var(--mono);text-align:right;color:var(--ink)}
+  .spec .back{margin-top:16px}
+
+  .hint{position:fixed;left:max(20px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));font-size:12px;color:var(--muted);
+    background:var(--panel);border:1px solid var(--line);padding:8px 12px;border-radius:999px;backdrop-filter:blur(10px);z-index:4}
+  .tip{position:fixed;pointer-events:none;z-index:6;background:rgba(10,10,14,.92);border:1px solid var(--line);padding:6px 10px;border-radius:8px;font-size:12px;transform:translate(14px,14px);white-space:nowrap}
+  .tip b{color:var(--accent);font-weight:600}
+  #loader{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:20;transition:opacity .6s}
+  #loader.done{opacity:0;pointer-events:none}
+  #loader .ring{width:44px;height:44px;border-radius:50%;border:3px solid rgba(255,255,255,.1);border-top-color:var(--accent);animation:spin 1s linear infinite;margin:0 auto 14px}
+  #loader p{margin:0;color:var(--muted);font-size:13px;text-align:center}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  [hidden]{display:none!important}
+
+  @media (max-width:820px){
+    .brand h1{font-size:22px}
+    .controls{margin-left:0;border-radius:14px}
+    .sidebar{top:auto;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));width:auto;max-height:44vh}
+    .hint{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){.track::after,.meter i b{transition:none}#loader .ring{animation:none}}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="scene" tabindex="0" aria-label="Interactive 3D model of the APEX VX-10 RC buggy"></canvas>
+
+<header class="hud-top">
+  <div class="brand">
+    <span class="kicker">Procedural 3D showcase</span>
+    <h1>APEX VX-10</h1>
+    <p>1/10 electric off-road buggy · every part generated in code</p>
+  </div>
+  <div class="controls">
+    <label class="switch"><input type="checkbox" id="explodeToggle"><span class="track"></span>Exploded view</label>
+    <span class="sep"></span>
+    <label class="switch"><input type="checkbox" id="spinToggle" checked><span class="track"></span>Auto-rotate</label>
+    <span class="sep"></span>
+    <div class="swatches" role="group" aria-label="Body paint">
+      <button class="swatch" data-paint="red" aria-pressed="true" aria-label="Candy red paint" style="background:#b0001a"></button>
+      <button class="swatch" data-paint="blue" aria-pressed="false" aria-label="Electric blue paint" style="background:#0a46e0"></button>
+    </div>
+    <button class="btn" id="resetBtn" type="button">Reset view</button>
+  </div>
+</header>
+
+<aside class="sidebar" aria-label="Component inspector">
+  <div class="sb-section">
+    <div class="sb-label"><span>Components</span><span id="partCount"></span></div>
+    <div class="part-list" id="partList"></div>
+  </div>
+  <div class="spec" id="spec" aria-live="polite"></div>
+</aside>
+
+<div class="hint">Drag to orbit · Right-drag or two fingers to pan · Scroll to zoom · Click any part</div>
+<div class="tip" id="tip" hidden></div>
+<div id="loader"><div><div class="ring"></div><p>Generating geometry, textures and shaders…</p></div></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { Reflector } from 'three/addons/objects/Reflector.js';
+
+/* ================================================================
+   RENDERER / SCENE / CAMERA
+   ================================================================ */
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#0d0d11');
+scene.fog = new THREE.Fog('#0d0d11', 16, 34);
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+
+const camera = new THREE.PerspectiveCamera(34, window.innerWidth / window.innerHeight, 0.05, 200);
+const HOME_POS = new THREE.Vector3(7.2, 3.6, 7.6);
+const HOME_TARGET = new THREE.Vector3(0, 0.75, 0);
+camera.position.copy(HOME_POS);
+
+const controls = new OrbitControls(camera, canvas);
+controls.target.copy(HOME_TARGET);
+controls.enableDamping = true;
+controls.dampingFactor = 0.07;
+controls.minDistance = 2.2;
+controls.maxDistance = 18;
+controls.maxPolarAngle = Math.PI * 0.49;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.6;
+controls.screenSpacePanning = true;
+
+/* ================================================================
+   LIGHTING — key with sharp shadows, soft fills, coloured specular points
+   ================================================================ */
+scene.add(new THREE.HemisphereLight(0xcfd8ff, 0x16161c, 0.45));
+scene.add(new THREE.AmbientLight(0xffffff, 0.12));
+
+const key = new THREE.DirectionalLight(0xfff4e8, 3.0);
+key.position.set(5, 9, 4);
+key.castShadow = true;
+key.shadow.mapSize.set(4096, 4096);
+key.shadow.camera.left = -5; key.shadow.camera.right = 5;
+key.shadow.camera.top = 5; key.shadow.camera.bottom = -5;
+key.shadow.camera.near = 1; key.shadow.camera.far = 25;
+key.shadow.bias = -0.0002;
+key.shadow.normalBias = 0.015;
+key.shadow.radius = 2;
+scene.add(key);
+
+const rimLight = new THREE.DirectionalLight(0xbcd2ff, 0.9);
+rimLight.position.set(-6, 4, -5);
+scene.add(rimLight);
+
+const cyanPoint = new THREE.PointLight(0x3fd2ff, 26, 14, 2);
+cyanPoint.position.set(-3.2, 2.4, 3.0);
+scene.add(cyanPoint);
+
+const warmPoint = new THREE.PointLight(0xff4d6d, 18, 14, 2);
+warmPoint.position.set(3.4, 1.8, -3.2);
+scene.add(warmPoint);
+
+/* ================================================================
+   PROCEDURAL TEXTURES (canvas-generated)
+   ================================================================ */
+function canvasTexture(size, draw, { srgb = true, repeat = null } = {}) {
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  draw(c.getContext('2d'), size);
+  const t = new THREE.CanvasTexture(c);
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); }
+  return t;
+}
+
+// 2x2 twill carbon-fibre weave: colour + matching roughness map
+function carbonDraw(ctx, s, rough) {
+  const cell = s / 8;
+  for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+    const horizontal = ((x + y) % 4) < 2;
+    const g = horizontal
+      ? ctx.createLinearGradient(x * cell, y * cell, x * cell, (y + 1) * cell)
+      : ctx.createLinearGradient(x * cell, y * cell, (x + 1) * cell, y * cell);
+    if (rough) { g.addColorStop(0, '#9a9a9a'); g.addColorStop(0.5, '#5a5a5a'); g.addColorStop(1, '#9a9a9a'); }
+    else { g.addColorStop(0, '#0c0c0e'); g.addColorStop(0.5, '#2c2d33'); g.addColorStop(1, '#0c0c0e'); }
+    ctx.fillStyle = g;
+    ctx.fillRect(x * cell, y * cell, cell, cell);
+    ctx.strokeStyle = rough ? 'rgba(255,255,255,.25)' : 'rgba(0,0,0,.6)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x * cell + 0.5, y * cell + 0.5, cell - 1, cell - 1);
+  }
+}
+const carbonMap = canvasTexture(512, (c, s) => carbonDraw(c, s, false), { repeat: [3, 3] });
+const carbonRough = canvasTexture(512, (c, s) => carbonDraw(c, s, true), { srgb: false, repeat: [3, 3] });
+
+// metallic flake normal map for the clear-coat paint
+const flakeNormal = canvasTexture(512, (ctx, s) => {
+  const img = ctx.createImageData(s, s);
+  for (let i = 0; i < img.data.length; i += 4) {
+    img.data[i] = 128 + (Math.random() - 0.5) * 70;
+    img.data[i + 1] = 128 + (Math.random() - 0.5) * 70;
+    img.data[i + 2] = 255;
+    img.data[i + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+}, { srgb: false, repeat: [6, 6] });
+
+// tyre sidewall / tread grain bump
+const rubberBump = canvasTexture(512, (ctx, s) => {
+  ctx.fillStyle = '#808080'; ctx.fillRect(0, 0, s, s);
+  for (let i = 0; i < 9000; i++) {
+    const v = 100 + Math.random() * 60;
+    ctx.fillStyle = `rgb(${v},${v},${v})`;
+    ctx.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  }
+}, { srgb: false, repeat: [4, 1] });
+
+// battery wrap label
+const batteryLabel = canvasTexture(1024, (ctx, s) => {
+  const g = ctx.createLinearGradient(0, 0, s, 0);
+  g.addColorStop(0, '#15161c'); g.addColorStop(1, '#22242c');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, s, s);
+  ctx.fillStyle = '#ff3b55';
+  ctx.beginPath(); ctx.moveTo(s * 0.55, 0); ctx.lineTo(s * 0.7, 0); ctx.lineTo(s * 0.45, s); ctx.lineTo(s * 0.3, s); ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 120px system-ui, sans-serif';
+  ctx.fillText('APEX', 60, 300);
+  ctx.font = '600 70px system-ui, sans-serif';
+  ctx.fillText('LiPo 2S · 7.4V', 60, 430);
+  ctx.font = 'bold 150px system-ui, sans-serif';
+  ctx.fillText('6200', 560, 760);
+  ctx.font = '600 56px system-ui, sans-serif';
+  ctx.fillText('mAh · 100C', 580, 840);
+});
+
+/* ================================================================
+   MATERIALS
+   ================================================================ */
+const PAINTS = {
+  red:  { color: '#a3000f', sheen: '#ff2a3f', accent: '#ff3b55', soft: 'rgba(255,59,85,.16)' },
+  blue: { color: '#0637c4', sheen: '#3f8bff', accent: '#3f8bff', soft: 'rgba(63,139,255,.18)' }
+};
+const MAT = {
+  paint: new THREE.MeshPhysicalMaterial({
+    color: PAINTS.red.color, metalness: 0.55, roughness: 0.22,
+    clearcoat: 1.0, clearcoatRoughness: 0.03,
+    normalMap: flakeNormal, normalScale: new THREE.Vector2(0.12, 0.12),
+    sheen: 0.4, sheenColor: new THREE.Color(PAINTS.red.sheen), sheenRoughness: 0.4,
+    envMapIntensity: 1.35, side: THREE.DoubleSide
+  }),
+  glass: new THREE.MeshPhysicalMaterial({ color: '#0b0f16', metalness: 0.2, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.6, side: THREE.DoubleSide }),
+  carbon: new THREE.MeshPhysicalMaterial({ map: carbonMap, roughnessMap: carbonRough, roughness: 0.6, metalness: 0.15, clearcoat: 0.15, clearcoatRoughness: 0.6 }),
+  chrome: new THREE.MeshStandardMaterial({ color: '#f2f4f7', metalness: 1.0, roughness: 0.1, envMapIntensity: 1.6 }),
+  silver: new THREE.MeshStandardMaterial({ color: '#c9ced6', metalness: 1.0, roughness: 0.22, envMapIntensity: 1.3 }),
+  gunmetal: new THREE.MeshStandardMaterial({ color: '#3a3d45', metalness: 0.9, roughness: 0.32 }),
+  anodRed: new THREE.MeshStandardMaterial({ color: '#d4142e', metalness: 0.85, roughness: 0.28 }),
+  rubber: new THREE.MeshStandardMaterial({ color: '#2b2c30', roughness: 0.94, metalness: 0.0, bumpMap: rubberBump, bumpScale: 0.6 }),
+  rubberKnob: new THREE.MeshStandardMaterial({ color: '#303136', roughness: 0.96, metalness: 0.0 }),
+  composite: new THREE.MeshStandardMaterial({ color: '#17181c', roughness: 0.55, metalness: 0.05 }),
+  battery: new THREE.MeshPhysicalMaterial({ map: batteryLabel, roughness: 0.35, metalness: 0.1, clearcoat: 0.6, clearcoatRoughness: 0.2 }),
+  copper: new THREE.MeshStandardMaterial({ color: '#c46a3a', metalness: 1.0, roughness: 0.3 }),
+  wireRed: new THREE.MeshStandardMaterial({ color: '#c3121f', roughness: 0.45 }),
+  wireBlack: new THREE.MeshStandardMaterial({ color: '#111114', roughness: 0.45 }),
+  fanBlade: new THREE.MeshStandardMaterial({ color: '#202228', roughness: 0.5 })
+};
+const ACCENT_EMISSIVE = new THREE.Color('#ff3b55');
+
+/* ================================================================
+   PART REGISTRY — every clickable component with specs and explode vectors
+   ================================================================ */
+const parts = [];
+const partById = {};
+const pickables = [];
+const car = new THREE.Group();
+scene.add(car);
+
+function createPart(id, name, category, description, specs, ratings) {
+  const part = { id, name, category, description, specs, ratings, pieces: [], meshes: [], materials: [] };
+  parts.push(part);
+  partById[id] = part;
+  return part;
+}
+// A piece is one movable group of a part with its own explode offset
+function createPiece(part, offset) {
+  const group = new THREE.Group();
+  group.userData.base = new THREE.Vector3();
+  group.userData.offset = new THREE.Vector3(...offset);
+  car.add(group);
+  part.pieces.push(group);
+  return group;
+}
+function addMesh(part, parent, geometry, material, { position, rotation, castShadow = true, receiveShadow = true } = {}) {
+  const mat = material.clone();            // per-mesh clone so highlights stay on one part
+  const mesh = new THREE.Mesh(geometry, mat);
+  if (position) mesh.position.set(...position);
+  if (rotation) mesh.rotation.set(...rotation);
+  mesh.castShadow = castShadow;
+  mesh.receiveShadow = receiveShadow;
+  mesh.userData.partId = part.id;
+  parent.add(mesh);
+  part.meshes.push(mesh);
+  part.materials.push(mat);
+  pickables.push(mesh);
+  return mesh;
+}
+function addInstanced(part, parent, geometry, material, matrices) {
+  const mat = material.clone();
+  const inst = new THREE.InstancedMesh(geometry, mat, matrices.length);
+  matrices.forEach((m, i) => inst.setMatrixAt(i, m));
+  inst.castShadow = true;
+  inst.receiveShadow = true;
+  inst.userData.partId = part.id;
+  parent.add(inst);
+  part.meshes.push(inst);
+  part.materials.push(mat);
+  pickables.push(inst);
+  return inst;
+}
+
+/* geometry helpers */
+const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+function cylinderBetween(a, b, radius, segments = 24) {
+  const A = V3(...a), B = V3(...b);
+  const geo = new THREE.CylinderGeometry(radius, radius, A.distanceTo(B), segments);
+  const mid = A.clone().add(B).multiplyScalar(0.5);
+  const quat = new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), B.clone().sub(A).normalize());
+  return { geo, mid, quat };
+}
+function roundedRectShape(w, h, r) {
+  const s = new THREE.Shape();
+  s.moveTo(-w / 2 + r, -h / 2);
+  s.lineTo(w / 2 - r, -h / 2); s.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+  s.lineTo(w / 2, h / 2 - r); s.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2);
+  s.lineTo(-w / 2 + r, h / 2); s.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r);
+  s.lineTo(-w / 2, -h / 2 + r); s.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
+  return s;
+}
+function roundedBox(w, h, d, r) {
+  const geo = new THREE.ExtrudeGeometry(roundedRectShape(w, d, r), { depth: h - 2 * r * 0.6, bevelEnabled: true, bevelThickness: r * 0.6, bevelSize: r * 0.6, bevelSegments: 4, curveSegments: 8 });
+  geo.rotateX(-Math.PI / 2);
+  geo.translate(0, -(h - 2 * r * 0.6) / 2, 0);
+  geo.computeVertexNormals();
+  return geo;
+}
+class HelixCurve extends THREE.Curve {
+  constructor(radius, height, turns) { super(); this.radius = radius; this.height = height; this.turns = turns; }
+  getPoint(t, target = new THREE.Vector3()) {
+    const a = t * this.turns * Math.PI * 2;
+    // closed, ground coil ends: tighter pitch for the first and last 6%
+    const e = 0.06;
+    const y = t < e ? t * 0.35 : t > 1 - e ? 1 - (1 - t) * 0.35 : (e * 0.35) + (t - e) / (1 - 2 * e) * (1 - 2 * e * 0.35);
+    return target.set(Math.cos(a) * this.radius, y * this.height, Math.sin(a) * this.radius);
+  }
+}
+
+/* key dimensions (1 unit ≈ 100 mm) */
+const WHEELBASE = 2.9, AXLE_F = WHEELBASE / 2, AXLE_R = -WHEELBASE / 2;
+const TRACK = 1.62, TIRE_R = 0.58, TIRE_W = 0.5, CHASSIS_Y = 0.36;
+const SIDES = [1, -1];
+
+/* ================================================================
+   CHASSIS — carbon fibre plate
+   ================================================================ */
+{
+  const part = createPart('chassis', 'Carbon chassis plate', 'Structure',
+    'A single CNC-cut plate of 3K twill carbon fibre that every other module bolts to. Countersunk holes keep the underside flush for clean landings.',
+    [['Material', '3K twill carbon, 2.5 mm'], ['Length', '412 mm'], ['Max width', '118 mm'], ['Mass', '86 g'], ['Flex rating', 'Medium-stiff']],
+    { Strength: 88, Weight: 92, Stiffness: 80 });
+  const piece = createPiece(part, [0, -0.35, 0]);
+  const outline = new THREE.Shape();
+  const pts = [[-2.1, -0.38], [-1.2, -0.5], [1.0, -0.5], [1.85, -0.34], [2.15, -0.22], [2.15, 0.22], [1.85, 0.34], [1.0, 0.5], [-1.2, 0.5], [-2.1, 0.38]];
+  outline.moveTo(pts[0][0], pts[0][1]);
+  pts.slice(1).forEach(p => outline.lineTo(p[0], p[1]));
+  outline.lineTo(pts[0][0], pts[0][1]);
+  for (let i = 0; i < 4; i++) {                       // lightening slots
+    const x = -0.9 + i * 0.55;
+    const slot = new THREE.Path();
+    slot.absarc(x, 0.3, 0.06, Math.PI / 2, -Math.PI / 2, true);
+    slot.absarc(x + 0.25, 0.3, 0.06, -Math.PI / 2, Math.PI / 2, true);
+    outline.holes.push(slot);
+    const slot2 = new THREE.Path();
+    slot2.absarc(x, -0.3, 0.06, Math.PI / 2, -Math.PI / 2, true);
+    slot2.absarc(x + 0.25, -0.3, 0.06, -Math.PI / 2, Math.PI / 2, true);
+    outline.holes.push(slot2);
+  }
+  const geo = new THREE.ExtrudeGeometry(outline, { depth: 0.04, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.008, bevelSegments: 2, curveSegments: 24 });
+  geo.rotateX(-Math.PI / 2);
+  addMesh(part, piece, geo, MAT.carbon, { position: [0, CHASSIS_Y - 0.02, 0] });
+  // side rails
+  SIDES.forEach(s => addMesh(part, piece, roundedBox(3.0, 0.12, 0.05, 0.02), MAT.carbon, { position: [-0.1, CHASSIS_Y + 0.08, s * 0.52] }));
+  // countersunk screw heads
+  const screwGeo = new THREE.CylinderGeometry(0.028, 0.02, 0.012, 16);
+  [[-1.8, 0.25], [-1.8, -0.25], [1.8, 0.2], [1.8, -0.2], [0, 0.42], [0, -0.42], [-0.9, 0.0], [0.9, 0.0]].forEach(([x, z]) =>
+    addMesh(part, piece, screwGeo, MAT.gunmetal, { position: [x, CHASSIS_Y + 0.03, z] }));
+}
+
+/* ================================================================
+   SHOCK TOWERS (carbon)
+   ================================================================ */
+function buildTower(id, name, x, dir) {
+  const part = createPart(id, name, 'Suspension',
+    'Machined carbon tower carrying the upper shock mounts. Three mounting holes per side let you change the shock angle for more or less progression.',
+    [['Material', '3K carbon, 4 mm'], ['Width', '180 mm'], ['Mount holes', '3 per side'], ['Mass', '24 g']],
+    { Strength: 82, Weight: 90, Stiffness: 86 });
+  const piece = createPiece(part, [dir * 0.7, 1.1, 0]);
+  const s = new THREE.Shape();
+  s.moveTo(-0.86, 1.14); s.lineTo(0.86, 1.14); s.lineTo(0.9, 1.05); s.lineTo(0.36, 0.6); s.lineTo(-0.36, 0.6); s.lineTo(-0.9, 1.05); s.lineTo(-0.86, 1.14);
+  SIDES.forEach(side => [0.6, 0.7, 0.8].forEach(z => { const h = new THREE.Path(); h.absarc(side * z, 1.07, 0.022, 0, Math.PI * 2, true); s.holes.push(h); }));
+  const win = new THREE.Path(); win.moveTo(-0.2, 0.74); win.lineTo(0.2, 0.74); win.lineTo(0.42, 0.96); win.lineTo(-0.42, 0.96); win.lineTo(-0.2, 0.74); s.holes.push(win);
+  const geo = new THREE.ExtrudeGeometry(s, { depth: 0.04, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.006, bevelSegments: 2, curveSegments: 20 });
+  geo.rotateY(Math.PI / 2);
+  addMesh(part, piece, geo, MAT.carbon, { position: [x - 0.02, 0, 0] });
+  addMesh(part, piece, roundedBox(0.18, 0.3, 0.5, 0.03), MAT.anodRed, { position: [x - dir * 0.08, 0.5, 0] });
+}
+buildTower('towerF', 'Front shock tower', AXLE_F + 0.12, 1);
+buildTower('towerR', 'Rear shock tower', AXLE_R - 0.12, -1);
+
+/* ================================================================
+   SUSPENSION ARMS
+   ================================================================ */
+function buildArms(id, name, axleX) {
+  const part = createPart(id, name, 'Suspension',
+    'Lower A-arms in glass-filled composite with hard-anodised hinge-pin blocks. Long arms give 85 mm of usable wheel travel.',
+    [['Material', 'PA66 + 30% glass fibre'], ['Hinge pins', '3 mm hardened steel'], ['Travel', '85 mm'], ['Camber range', '−3° to +1°']],
+    { Strength: 78, Weight: 80, Travel: 85 });
+  SIDES.forEach(side => {
+    const piece = createPiece(part, [0, 0.15, side * 0.65]);
+    const shape = new THREE.Shape();
+    shape.moveTo(axleX - 0.26, side * 0.36); shape.lineTo(axleX + 0.26, side * 0.36);
+    shape.lineTo(axleX + 0.09, side * 0.66); shape.lineTo(axleX - 0.09, side * 0.66); shape.lineTo(axleX - 0.26, side * 0.36);
+    const hole = new THREE.Path();
+    hole.moveTo(axleX - 0.13, side * 0.43); hole.lineTo(axleX + 0.13, side * 0.43); hole.lineTo(axleX + 0.04, side * 0.6); hole.lineTo(axleX - 0.04, side * 0.6); hole.lineTo(axleX - 0.13, side * 0.43);
+    shape.holes.push(hole);
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 3 });
+    geo.rotateX(Math.PI / 2);
+    addMesh(part, piece, geo, MAT.composite, { position: [0, CHASSIS_Y + 0.02, 0] });
+    addMesh(part, piece, new THREE.CylinderGeometry(0.035, 0.035, 0.6, 20).rotateZ(Math.PI / 2), MAT.anodRed, { position: [axleX, CHASSIS_Y - 0.01, side * 0.36] });
+    addMesh(part, piece, new THREE.CylinderGeometry(0.012, 0.012, 0.66, 12).rotateZ(Math.PI / 2), MAT.chrome, { position: [axleX, CHASSIS_Y - 0.01, side * 0.36] });
+    // hub carrier / knuckle
+    addMesh(part, piece, roundedBox(0.16, 0.42, 0.1, 0.03), MAT.gunmetal, { position: [axleX, TIRE_R, side * 0.7] });
+    // driveshaft / axle
+    const { geo: axleGeo, mid, quat } = cylinderBetween([axleX, TIRE_R, side * 0.25], [axleX, TIRE_R, side * 0.78], 0.028);
+    const axle = addMesh(part, piece, axleGeo, MAT.silver);
+    axle.position.copy(mid); axle.quaternion.copy(quat);
+    // camber link with rod ends
+    const { geo: lGeo, mid: lMid, quat: lQ } = cylinderBetween([axleX, 0.98, side * 0.16], [axleX, 0.86, side * 0.68], 0.018);
+    const link = addMesh(part, piece, lGeo, MAT.chrome);
+    link.position.copy(lMid); link.quaternion.copy(lQ);
+    [[axleX, 0.98, side * 0.16], [axleX, 0.86, side * 0.68]].forEach(p => addMesh(part, piece, new THREE.SphereGeometry(0.038, 20, 14), MAT.composite, { position: p }));
+  });
+}
+buildArms('armsF', 'Front suspension arms', AXLE_F);
+buildArms('armsR', 'Rear suspension arms', AXLE_R);
+
+/* ================================================================
+   SHOCK ABSORBERS — chrome coil-overs
+   ================================================================ */
+function buildShock(id, name, axleX, towerX, side) {
+  const part = createPart(id, name, 'Suspension',
+    'Big-bore, threaded-body coil-over damper. A polished chrome shaft rides in a bladder-sealed oil chamber, and the progressive chrome spring stiffens as it compresses.',
+    [['Body bore', '16 mm'], ['Shaft', '3.5 mm hard chrome'], ['Stroke', '42 mm'], ['Spring rate', '2.8 → 3.6 lb/in'], ['Oil', '35 wt silicone'], ['Length (eye to eye)', '118 mm']],
+    { Damping: 84, Travel: 78, Durability: 80 });
+  const piece = createPiece(part, [0, 0.55, side * 0.95]);
+  const A = V3(axleX, CHASSIS_Y + 0.05, side * 0.6);
+  const B = V3(towerX, 1.07, side * 0.7);
+  const dir = B.clone().sub(A); const L = dir.length();
+  const holder = new THREE.Group();
+  holder.position.copy(A);
+  holder.quaternion.setFromUnitVectors(V3(0, 1, 0), dir.normalize());
+  piece.add(holder);
+  const at = y => ({ position: [0, y, 0] });
+  addMesh(part, holder, new THREE.SphereGeometry(0.045, 20, 14), MAT.composite, at(0));
+  addMesh(part, holder, new THREE.CylinderGeometry(0.022, 0.022, L * 0.48, 24), MAT.chrome, at(L * 0.26));
+  addMesh(part, holder, new THREE.CylinderGeometry(0.08, 0.08, L * 0.5, 40), MAT.chrome, at(L * 0.7));
+  addMesh(part, holder, new THREE.CylinderGeometry(0.092, 0.092, 0.06, 40), MAT.anodRed, at(L * 0.95));
+  for (let i = 0; i < 9; i++) addMesh(part, holder, new THREE.TorusGeometry(0.081, 0.004, 8, 40).rotateX(Math.PI / 2), MAT.silver, at(L * 0.5 + i * 0.022));
+  addMesh(part, holder, new THREE.CylinderGeometry(0.115, 0.115, 0.025, 40), MAT.anodRed, at(L * 0.47));
+  addMesh(part, holder, new THREE.CylinderGeometry(0.11, 0.11, 0.02, 40), MAT.anodRed, at(L * 0.12));
+  const coil = new THREE.TubeGeometry(new HelixCurve(0.1, L * 0.38, 8), 600, 0.013, 12, false);
+  addMesh(part, holder, coil, MAT.chrome, at(L * 0.12));
+  addMesh(part, holder, new THREE.SphereGeometry(0.045, 20, 14), MAT.composite, at(L));
+}
+SIDES.forEach(side => {
+  const tag = side > 0 ? 'right' : 'left';
+  buildShock('shockF' + tag, `Front ${tag} shock`, AXLE_F, AXLE_F + 0.12, side);
+  buildShock('shockR' + tag, `Rear ${tag} shock`, AXLE_R, AXLE_R - 0.12, side);
+});
+
+/* ================================================================
+   WHEELS & TYRES
+   ================================================================ */
+const knobGeo = roundedBox(0.09, 0.05, 0.11, 0.02);
+const shoulderGeo = roundedBox(0.08, 0.05, 0.09, 0.02);
+const rimFaceGeo = (() => {
+  const s = new THREE.Shape(); s.absarc(0, 0, 0.36, 0, Math.PI * 2, false);
+  for (let i = 0; i < 6; i++) {
+    const a0 = i / 6 * Math.PI * 2 + 0.17, a1 = (i + 1) / 6 * Math.PI * 2 - 0.17;
+    const h = new THREE.Path(); h.absarc(0, 0, 0.3, a0, a1, false); h.absarc(0, 0, 0.13, a1, a0, true); s.holes.push(h);
+  }
+  const g = new THREE.ExtrudeGeometry(s, { depth: 0.035, bevelEnabled: true, bevelThickness: 0.012, bevelSize: 0.01, bevelSegments: 3, curveSegments: 48 });
+  return g;
+})();
+function buildWheel(id, name, axleX, side) {
+  const part = createPart(id, name, 'Wheels',
+    'A 2.2-inch six-spoke forged rim with a beadlock-style outer lip, wrapped in a soft-compound knobby tyre. Staggered knobs bite on loose dirt; shoulder lugs keep grip mid-corner.',
+    [['Rim', '2.2" forged 7075 aluminium'], ['Tyre OD', '116 mm'], ['Width', '50 mm'], ['Compound', 'Soft (Shore 32A)'], ['Hex', '12 mm'], ['Mass', '118 g']],
+    { Grip: 86, Wear: 64, Weight: 72 });
+  const piece = createPiece(part, [0, 0, side * 1.45]);
+  const wheel = new THREE.Group();
+  wheel.position.set(axleX, TIRE_R, side * TRACK / 2);
+  if (side < 0) wheel.rotation.y = Math.PI;
+  piece.add(wheel);
+  const R0 = TIRE_R - 0.035, hw = TIRE_W / 2;
+  const prof = [[0.36, -hw], [0.46, -hw - 0.005], [0.51, -hw + 0.02], [R0 - 0.01, -hw + 0.07], [R0, -hw + 0.11], [R0, hw - 0.11], [R0 - 0.01, hw - 0.07], [0.51, hw - 0.02], [0.46, hw + 0.005], [0.36, hw]]
+    .map(([r, y]) => new THREE.Vector2(r, y));
+  const tyreGeo = new THREE.LatheGeometry(prof, 128).rotateX(Math.PI / 2);
+  addMesh(part, wheel, tyreGeo, MAT.rubber);
+  const dummy = new THREE.Object3D(), mats = [], sh = [];
+  const qz = new THREE.Quaternion(), qx = new THREE.Quaternion();
+  const N = 26;
+  for (let i = 0; i < N; i++) {
+    const a = i / N * Math.PI * 2;
+    [[-0.12, 0], [0, 0.5], [0.12, 0]].forEach(([z, off]) => {
+      const aa = a + off * Math.PI * 2 / N;
+      dummy.position.set(Math.cos(aa) * (R0 + 0.022), Math.sin(aa) * (R0 + 0.022), z);
+      qz.setFromAxisAngle(V3(0, 0, 1), aa - Math.PI / 2);
+      dummy.quaternion.copy(qz); dummy.updateMatrix(); mats.push(dummy.matrix.clone());
+    });
+    [[-0.215, 0.7], [0.215, -0.7]].forEach(([z, tilt]) => {
+      dummy.position.set(Math.cos(a) * (R0 - 0.015), Math.sin(a) * (R0 - 0.015), z);
+      qz.setFromAxisAngle(V3(0, 0, 1), a - Math.PI / 2); qx.setFromAxisAngle(V3(1, 0, 0), tilt);
+      dummy.quaternion.copy(qz).multiply(qx); dummy.updateMatrix(); sh.push(dummy.matrix.clone());
+    });
+  }
+  addInstanced(part, wheel, knobGeo, MAT.rubberKnob, mats);
+  addInstanced(part, wheel, shoulderGeo, MAT.rubberKnob, sh);
+  // rim: barrel, beadlock ring with bolts, spoked face, hex nut
+  const barrel = new THREE.LatheGeometry([[0.35, -hw + 0.02], [0.375, -hw + 0.02], [0.375, -hw + 0.05], [0.345, -hw + 0.07], [0.345, hw - 0.07], [0.375, hw - 0.05], [0.38, hw], [0.36, hw + 0.01]]
+    .map(([r, y]) => new THREE.Vector2(r, y)), 96).rotateX(Math.PI / 2);
+  addMesh(part, wheel, barrel, new THREE.MeshStandardMaterial({ color: '#c9ced6', metalness: 1, roughness: 0.22, side: THREE.DoubleSide }));
+  addMesh(part, wheel, new THREE.TorusGeometry(0.37, 0.022, 16, 96), MAT.silver, { position: [0, 0, hw + 0.005] });
+  const boltGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.02, 6).rotateX(Math.PI / 2);
+  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; addMesh(part, wheel, boltGeo, MAT.gunmetal, { position: [Math.cos(a) * 0.37, Math.sin(a) * 0.37, hw + 0.03] }); }
+  addMesh(part, wheel, rimFaceGeo, MAT.silver, { position: [0, 0, hw - 0.09] });
+  addMesh(part, wheel, new THREE.CylinderGeometry(0.135, 0.135, 0.06, 48).rotateX(Math.PI / 2), MAT.silver, { position: [0, 0, hw - 0.07] });
+  addMesh(part, wheel, new THREE.CylinderGeometry(0.06, 0.06, 0.05, 6).rotateX(Math.PI / 2), MAT.anodRed, { position: [0, 0, hw - 0.02] });
+  return part;
+}
+SIDES.forEach(side => {
+  const tag = side > 0 ? 'right' : 'left';
+  buildWheel('wheelF' + tag, `Front ${tag} wheel`, AXLE_F, side);
+  buildWheel('wheelR' + tag, `Rear ${tag} wheel`, AXLE_R, side);
+});
+
+/* ================================================================
+   POWERTRAIN — battery, motor, ESC, servo
+   ================================================================ */
+{
+  const part = createPart('battery', 'LiPo battery pack', 'Power',
+    'Hard-case 2S lithium-polymer pack mounted low and central to keep the centre of gravity between the axles.',
+    [['Chemistry', 'LiPo, hard case'], ['Voltage', '7.4 V nominal (8.4 V full)'], ['Capacity', '6200 mAh'], ['Discharge', '100C'], ['Size', '139 × 47 × 25 mm'], ['Mass', '322 g']],
+    { Power: 86, Runtime: 82, Weight: 50 });
+  const piece = createPiece(part, [0, 1.1, 0]);
+  addMesh(part, piece, roundedBox(1.39, 0.25, 0.47, 0.04), MAT.battery, { position: [-0.15, CHASSIS_Y + 0.155, 0] });
+  addMesh(part, piece, roundedBox(0.1, 0.42, 0.62, 0.02), MAT.composite, { position: [0.3, CHASSIS_Y + 0.31, 0] });
+}
+{
+  const part = createPart('motor', 'Brushless motor', 'Power',
+    'Sensored 4-pole brushless can with a finned aluminium heat-sink sleeve. The 5 mm hardened shaft drives a 48-pitch steel pinion.',
+    [['Type', 'Sensored brushless, 4-pole'], ['Kv', '3300 rpm/V'], ['Can', '36 × 52 mm'], ['Max power', '820 W'], ['Shaft', '5 mm'], ['Mass', '228 g']],
+    { Power: 90, Efficiency: 84, Heat: 62 });
+  const piece = createPiece(part, [-0.75, 1.0, -0.4]);
+  const mx = -1.25, mz = -0.18, my = CHASSIS_Y + 0.22;
+  addMesh(part, piece, new THREE.CylinderGeometry(0.18, 0.18, 0.52, 64).rotateZ(Math.PI / 2), MAT.gunmetal, { position: [mx, my, mz] });
+  for (let i = 0; i < 14; i++) {
+    const a = i / 14 * Math.PI * 2;
+    addMesh(part, piece, new THREE.BoxGeometry(0.44, 0.05, 0.012), MAT.anodRed, { position: [mx, my + Math.cos(a) * 0.2, mz + Math.sin(a) * 0.2], rotation: [a, 0, 0] });
+  }
+  addMesh(part, piece, new THREE.CylinderGeometry(0.16, 0.18, 0.06, 64).rotateZ(Math.PI / 2), MAT.silver, { position: [mx - 0.29, my, mz] });
+  addMesh(part, piece, new THREE.CylinderGeometry(0.025, 0.025, 0.2, 16).rotateZ(Math.PI / 2), MAT.chrome, { position: [mx + 0.34, my, mz] });
+  addMesh(part, piece, new THREE.CylinderGeometry(0.07, 0.07, 0.07, 24).rotateZ(Math.PI / 2), MAT.copper, { position: [mx + 0.4, my, mz] });
+  // gearbox and spur cover
+  addMesh(part, piece, roundedBox(0.5, 0.5, 0.5, 0.06), MAT.composite, { position: [AXLE_R + 0.05, CHASSIS_Y + 0.27, 0.05] });
+  addMesh(part, piece, new THREE.CylinderGeometry(0.3, 0.3, 0.06, 64).rotateX(Math.PI / 2), MAT.composite, { position: [mx + 0.3, my + 0.12, mz + 0.14] });
+}
+{
+  const part = createPart('esc', 'Electronic speed controller', 'Power',
+    'Waterproof brushless ESC with an aluminium heat-sink case and a 30 mm cooling fan. It converts battery DC into three-phase drive for the motor.',
+    [['Continuous', '150 A'], ['Burst', '950 A'], ['Input', '2–3S LiPo'], ['BEC', '6.0 / 7.4 V, 6 A'], ['Cooling', '30 mm ball-bearing fan'], ['Mass', '96 g']],
+    { Power: 88, Cooling: 80, Weight: 70 });
+  const piece = createPiece(part, [0.3, 1.25, 0.65]);
+  const ex = 0.6, ez = 0.3, ey = CHASSIS_Y + 0.15;
+  addMesh(part, piece, roundedBox(0.5, 0.26, 0.42, 0.04), MAT.gunmetal, { position: [ex, ey, ez] });
+  for (let i = 0; i < 7; i++) addMesh(part, piece, new THREE.BoxGeometry(0.46, 0.06, 0.015), MAT.silver, { position: [ex, ey + 0.16, ez - 0.18 + i * 0.06] });
+  addMesh(part, piece, roundedBox(0.34, 0.06, 0.34, 0.03), MAT.composite, { position: [ex, ey + 0.21, ez] });
+  for (let i = 0; i < 7; i++) addMesh(part, piece, new THREE.BoxGeometry(0.13, 0.008, 0.04), MAT.fanBlade, { position: [ex, ey + 0.245, ez], rotation: [0, i / 7 * Math.PI * 2, 0.35] });
+  addMesh(part, piece, new THREE.CylinderGeometry(0.04, 0.04, 0.02, 24), MAT.anodRed, { position: [ex, ey + 0.255, ez] });
+  // power wires to the battery
+  const wire = (mat, z) => {
+    const curve = new THREE.CatmullRomCurve3([V3(ex - 0.25, ey, ez + z), V3(ex - 0.45, ey + 0.1, ez + z * 2), V3(0.55, CHASSIS_Y + 0.2, z * 3)]);
+    addMesh(part, piece, new THREE.TubeGeometry(curve, 40, 0.022, 10, false), mat);
+  };
+  wire(MAT.wireRed, 0.05); wire(MAT.wireBlack, -0.05);
+}
+{
+  const part = createPart('servo', 'Steering servo', 'Control',
+    'High-torque digital servo with titanium gears, linked to the front knuckles through an aluminium servo saver.',
+    [['Torque', '25 kg·cm @ 7.4 V'], ['Speed', '0.08 s / 60°'], ['Gears', 'Titanium'], ['Case', 'Aluminium centre'], ['Mass', '72 g']],
+    { Torque: 88, Speed: 90, Durability: 84 });
+  const piece = createPiece(part, [0.6, 0.9, -0.6]);
+  const sx = 0.95, sz = -0.3, sy = CHASSIS_Y + 0.17;
+  addMesh(part, piece, roundedBox(0.4, 0.34, 0.2, 0.03), MAT.composite, { position: [sx, sy, sz] });
+  addMesh(part, piece, roundedBox(0.52, 0.04, 0.2, 0.015), MAT.anodRed, { position: [sx, sy + 0.1, sz] });
+  addMesh(part, piece, new THREE.CylinderGeometry(0.05, 0.05, 0.05, 24), MAT.silver, { position: [sx + 0.1, sy + 0.2, sz] });
+  const { geo, mid, quat } = cylinderBetween([sx + 0.1, sy + 0.22, sz], [AXLE_F + 0.15, CHASSIS_Y + 0.25, 0.65], 0.016);
+  const link = addMesh(part, piece, geo, MAT.chrome); link.position.copy(mid); link.quaternion.copy(quat);
+  const { geo: g2, mid: m2, quat: q2 } = cylinderBetween([sx + 0.1, sy + 0.22, sz], [AXLE_F + 0.15, CHASSIS_Y + 0.25, -0.65], 0.016);
+  const link2 = addMesh(part, piece, g2, MAT.chrome); link2.position.copy(m2); link2.quaternion.copy(q2);
+}
+
+/* ================================================================
+   BODY SHELL — lofted aerodynamic shell with cockpit glass
+   ================================================================ */
+function profileFn(points) {
+  const samples = new THREE.SplineCurve(points.map(p => new THREE.Vector2(p[0], p[1]))).getPoints(500);
+  return x => {
+    if (x <= samples[0].x) return samples[0].y;
+    for (let i = 1; i < samples.length; i++) if (samples[i].x >= x) {
+      const a = samples[i - 1], b = samples[i];
+      return a.y + (b.y - a.y) * ((x - a.x) / ((b.x - a.x) || 1));
+    }
+    return samples[samples.length - 1].y;
+  };
+}
+function buildBodyGeometry() {
+  const X0 = -2.05, X1 = 2.2, NX = 220, NH = 60;
+  const deck = profileFn([[-2.05, 1.0], [-1.85, 1.14], [-1.2, 1.2], [-0.4, 1.24], [0.6, 1.26], [1.3, 1.2], [1.8, 1.06], [2.05, 0.9], [2.2, 0.72]]);
+  const roof = profileFn([[-1.05, 1.2], [-0.8, 1.48], [-0.45, 1.68], [0.1, 1.72], [0.5, 1.6], [0.85, 1.4], [1.15, 1.24]]);
+  const half = profileFn([[-2.05, 0.72], [-1.45, 0.94], [-0.8, 0.82], [0, 0.78], [0.8, 0.82], [1.45, 0.94], [2.2, 0.66]]);
+  const cab = profileFn([[-1.05, 0.62], [-0.5, 0.5], [0.2, 0.48], [0.8, 0.52], [1.15, 0.62]]);
+  const sectionAt = x => {
+    let f = 1;
+    if (x > 1.95) f = Math.pow(Math.max(0, 1 - ((x - 1.95) / (X1 - 1.95)) ** 2), 0.4);
+    if (x < -1.85) f = Math.pow(Math.max(0, 1 - ((-1.85 - x) / (-1.85 - X0)) ** 2), 0.4);
+    const w = half(x) * f, d = deck(x);
+    const inCab = x > -1.05 && x < 1.15;
+    const r = inCab ? Math.max(d, roof(x)) : d;
+    let b = 0.56;
+    [AXLE_F, AXLE_R].forEach(ax => { const dx = x - ax; if (Math.abs(dx) < 0.7) b = Math.max(b, TIRE_R + Math.sqrt(0.7 * 0.7 - dx * dx) + 0.04); });
+    b = Math.min(b, d - 0.08);
+    const rr = Math.max(0.005, Math.min(0.14, (d - b) * 0.6, w * 0.45));
+    const pts = [[w - 0.015 * f, b], [w, b + 0.03], [w + 0.012, (b + d - rr) / 2], [w, d - rr]];
+    for (let i = 1; i <= 8; i++) { const a = i / 8 * Math.PI / 2; pts.push([w - rr + rr * Math.cos(a), d - rr + rr * Math.sin(a)]); }
+    const cw = Math.min(cab(x), w - rr - 0.06) * Math.max(f, 0.01), gh = r - d;
+    if (gh > 0.015 && cw > 0.04) {
+      const rc = Math.min(0.1, gh * 0.45);
+      pts.push([cw + 0.05, d + 0.005], [cw + 0.025, d + gh * 0.45], [cw, r - rc]);
+      for (let i = 1; i <= 6; i++) { const a = i / 6 * Math.PI / 2; pts.push([cw - rc + rc * Math.cos(a), r - rc + rc * Math.sin(a)]); }
+      pts.push([0, r + 0.015]);
+    } else pts.push([w * 0.5, d + 0.03 * f], [0, d + 0.04 * f]);
+    return { pts, d, r, inCab: gh > 0.015 };
+  };
+  const resample = (pts, n) => {
+    const L = [0];
+    for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    const out = [];
+    for (let k = 0; k < n; k++) {
+      const t = k / (n - 1) * L[L.length - 1]; let i = 1;
+      while (i < L.length - 1 && L[i] < t) i++;
+      const s = (t - L[i - 1]) / ((L[i] - L[i - 1]) || 1);
+      out.push([pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * s, pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * s]);
+    }
+    return out;
+  };
+  const M = NH * 2 - 1, pos = [], uv = [], glass = [];
+  for (let i = 0; i < NX; i++) {
+    const x = X0 + (X1 - X0) * i / (NX - 1);
+    const sec = sectionAt(x), h = resample(sec.pts, NH);
+    const full = h.concat(h.slice(0, -1).reverse().map(p => [-p[0], p[1]]));
+    full.forEach((q, j) => {
+      pos.push(x, q[1], q[0]); uv.push(i / (NX - 1), j / (M - 1));
+      glass.push(sec.inCab && x > -0.92 && x < 1.05 && q[1] > sec.d + 0.05 && q[1] < sec.r - 0.06 && Math.abs(q[0]) > 0.03 ? 1 : 0);
+    });
+  }
+  const paintIdx = [], glassIdx = [];
+  for (let i = 0; i < NX - 1; i++) for (let j = 0; j < M - 1; j++) {
+    const a = i * M + j, b = (i + 1) * M + j, c = (i + 1) * M + j + 1, d = i * M + j + 1;
+    (glass[a] && glass[b] && glass[c] && glass[d] ? glassIdx : paintIdx).push(a, d, b, b, d, c);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setIndex(paintIdx.concat(glassIdx));
+  g.addGroup(0, paintIdx.length, 0);
+  g.addGroup(paintIdx.length, glassIdx.length, 1);
+  g.computeVertexNormals();
+  return { geometry: g, deck };
+}
+let bodyPaintMaterial;
+{
+  const part = createPart('body', 'Aero body shell', 'Bodywork',
+    'Vacuum-formed polycarbonate shell painted from the inside, then finished with a 2K clear coat over metallic flake. Sculpted wheel arches vent air out of the wheel wells.',
+    [['Material', '1 mm polycarbonate'], ['Finish', 'Candy over metallic flake + 2K clear'], ['Length', '425 mm'], ['Width', '196 mm'], ['Mass', '138 g']],
+    { Aero: 82, Durability: 70, Weight: 78 });
+  const piece = createPiece(part, [0, 2.2, 0]);
+  const { geometry, deck } = buildBodyGeometry();
+  const mesh = new THREE.Mesh(geometry, [MAT.paint.clone(), MAT.glass.clone()]);
+  mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.partId = part.id;
+  piece.add(mesh); part.meshes.push(mesh); part.materials.push(...mesh.material); pickables.push(mesh);
+  bodyPaintMaterial = mesh.material[0];
+  addMesh(part, piece, roundedBox(0.5, 0.06, 0.5, 0.025), MAT.gunmetal, { position: [1.45, deck(1.45) + 0.02, 0] });
+  addMesh(part, piece, roundedBox(0.3, 0.07, 1.25, 0.03), MAT.carbon, { position: [2.12, 0.62, 0] });
+  SIDES.forEach(s => addMesh(part, piece, new THREE.CircleGeometry(0.07, 32).rotateY(Math.PI / 2 + 0.5), new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: '#fff4d6', emissiveIntensity: 1.2 }), { position: [2.17, 0.84, s * 0.44], castShadow: false }));
+}
+{
+  const part = createPart('wing', 'Rear wing', 'Bodywork',
+    'Twin-element carbon wing on aluminium uprights. Adds rear downforce at speed and keeps the buggy level through jumps.',
+    [['Material', 'Carbon fibre + 6061 uprights'], ['Span', '240 mm'], ['Chord', '62 mm'], ['Angle', 'Adjustable 0–12°'], ['Mass', '41 g']],
+    { Aero: 90, Durability: 76, Weight: 84 });
+  const piece = createPiece(part, [-0.6, 3.0, 0]);
+  const af = new THREE.Shape();
+  af.moveTo(-0.33, 0); af.quadraticCurveTo(-0.26, 0.085, 0, 0.085); af.quadraticCurveTo(0.22, 0.075, 0.3, 0.02); af.lineTo(0.3, 0); af.quadraticCurveTo(0, 0.02, -0.33, -0.01); af.lineTo(-0.33, 0);
+  const wingGeo = new THREE.ExtrudeGeometry(af, { depth: 2.3, bevelEnabled: true, bevelThickness: 0.01, bevelSize: 0.008, bevelSegments: 3, curveSegments: 20 }).translate(0, 0, -1.15);
+  addMesh(part, piece, wingGeo, MAT.carbon, { position: [-1.95, 1.62, 0], rotation: [0, 0, -0.14] });
+  SIDES.forEach(s => {
+    const ep = new THREE.Shape(); ep.moveTo(-0.45, -0.12); ep.lineTo(0.12, -0.15); ep.lineTo(0.2, 0.2); ep.lineTo(-0.38, 0.24); ep.lineTo(-0.45, -0.12);
+    const epGeo = new THREE.ExtrudeGeometry(ep, { depth: 0.025, bevelEnabled: true, bevelThickness: 0.005, bevelSize: 0.005, bevelSegments: 2 }).translate(0, 0, -0.0125);
+    addMesh(part, piece, epGeo, MAT.anodRed, { position: [-1.95, 1.65, s * 1.16] });
+    const { geo, mid, quat } = cylinderBetween([-1.86, 1.06, s * 0.36], [-1.92, 1.6, s * 0.36], 0.025);
+    const up = addMesh(part, piece, geo, MAT.silver); up.position.copy(mid); up.quaternion.copy(quat);
+  });
+}
+
+/* record resting positions for the explode animation */
+parts.forEach(p => p.pieces.forEach(g => g.userData.base.copy(g.position)));
+
+/* ================================================================
+   STUDIO FLOOR — real reflection + fading shader overlay + grid
+   ================================================================ */
+const mirror = new Reflector(new THREE.PlaneGeometry(60, 60), {
+  textureWidth: Math.round(window.innerWidth * Math.min(window.devicePixelRatio, 2) * 0.6),
+  textureHeight: Math.round(window.innerHeight * Math.min(window.devicePixelRatio, 2) * 0.6),
+  color: 0x8a8a96
+});
+mirror.rotation.x = -Math.PI / 2;
+mirror.position.y = -0.001;
+scene.add(mirror);
+
+// shader: darkens the mirror with distance and adds a soft studio spotlight pool
+const floorOverlay = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false,
+  uniforms: { uBase: { value: new THREE.Color('#0d0d11') }, uGlow: { value: new THREE.Color('#1c1d26') }, uTime: { value: 0 } },
+  vertexShader: `varying vec3 vWorld; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vWorld = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+  fragmentShader: `
+    uniform vec3 uBase; uniform vec3 uGlow; uniform float uTime; varying vec3 vWorld;
+    float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
+    void main(){
+      float d = length(vWorld.xz);
+      float pool = 1.0 - smoothstep(0.0, 7.5, d);
+      vec3 col = mix(uBase, uGlow, pool * 0.85);
+      float alpha = mix(0.76, 1.0, smoothstep(2.5, 13.0, d));
+      col += (hash(vWorld.xz * 40.0) - 0.5) * 0.004;          // fine grain to avoid banding
+      gl_FragColor = vec4(col, alpha);
+      #include <colorspace_fragment>
+    }`
+}));
+floorOverlay.rotation.x = -Math.PI / 2;
+floorOverlay.position.y = 0.001;
+floorOverlay.renderOrder = 1;
+scene.add(floorOverlay);
+
+const shadowCatcher = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({ opacity: 0.55 }));
+shadowCatcher.rotation.x = -Math.PI / 2;
+shadowCatcher.position.y = 0.003;
+shadowCatcher.receiveShadow = true;
+shadowCatcher.renderOrder = 2;
+scene.add(shadowCatcher);
+
+const grid = new THREE.GridHelper(40, 80, 0x2a2b36, 0x1b1c24);
+grid.material.transparent = true;
+grid.material.opacity = 0.35;
+grid.position.y = 0.004;
+grid.renderOrder = 3;
+scene.add(grid);
+
+/* ================================================================
+   UI — part list, spec panel, toggles
+   ================================================================ */
+const listEl = document.getElementById('partList');
+const specEl = document.getElementById('spec');
+const tipEl = document.getElementById('tip');
+document.getElementById('partCount').textContent = parts.length + ' parts';
+
+const groupedOrder = ['body', 'wing', 'chassis', 'towerF', 'towerR', 'armsF', 'armsR', 'shockFright', 'shockFleft', 'shockRright', 'shockRleft', 'wheelFright', 'wheelFleft', 'wheelRright', 'wheelRleft', 'battery', 'motor', 'esc', 'servo'];
+groupedOrder.forEach(id => {
+  const p = partById[id];
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'part-btn'; b.textContent = p.name; b.dataset.id = id;
+  b.setAttribute('aria-pressed', 'false');
+  b.addEventListener('click', () => selectPart(p));
+  listEl.appendChild(b);
+});
+
+function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function renderOverview() {
+  specEl.innerHTML = `
+    <div class="cat">Vehicle overview</div>
+    <h2>APEX VX-10 Buggy</h2>
+    <p class="desc">A 1/10-scale electric off-road buggy built entirely from procedural geometry. Click any component on the car or in the list above to fly the camera to it and read its engineering data. Turn on Exploded view to separate the modules.</p>
+    <dl>
+      <dt>Scale</dt><dd>1/10</dd>
+      <dt>Wheelbase</dt><dd>290 mm</dd>
+      <dt>Track width</dt><dd>${Math.round(TRACK * 100 + TIRE_W * 100)} mm</dd>
+      <dt>Drivetrain</dt><dd>2WD, rear sealed diff</dd>
+      <dt>Ready-to-run mass</dt><dd>1,980 g</dd>
+      <dt>Top speed (2S, stock gearing)</dt><dd>≈ 64 km/h</dd>
+    </dl>`;
+}
+function renderSpecs(p) {
+  const meters = Object.entries(p.ratings).map(([k, v]) =>
+    `<div><span style="color:var(--muted);text-align:left;font-family:var(--font)">${escapeHtml(k)}</span><i><b style="width:${v}%"></b></i><span>${v}</span></div>`).join('');
+  specEl.innerHTML = `
+    <div class="cat">${escapeHtml(p.category)}</div>
+    <h2>${escapeHtml(p.name)}</h2>
+    <p class="desc">${escapeHtml(p.description)}</p>
+    <dl>${p.specs.map(([k, v]) => `<dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd>`).join('')}</dl>
+    <div class="meter">${meters}</div>
+    <button class="btn back" type="button" id="backBtn">Back to overview</button>`;
+  document.getElementById('backBtn').addEventListener('click', () => clearSelection(true));
+}
+
+/* ================================================================
+   SELECTION, HOVER, CAMERA FLIGHTS
+   ================================================================ */
+let selected = null, hovered = null;
+function setHighlight(part, intensity) {
+  if (!part) return;
+  part.materials.forEach(m => {
+    if (!m.emissive) return;
+    if (m.userData.baseEmissive === undefined) { m.userData.baseEmissive = m.emissive.clone(); m.userData.baseIntensity = m.emissiveIntensity; }
+    if (intensity > 0) { m.emissive.copy(ACCENT_EMISSIVE); m.emissiveIntensity = intensity; }
+    else { m.emissive.copy(m.userData.baseEmissive); m.emissiveIntensity = m.userData.baseIntensity; }
+  });
+}
+function refreshHighlights() {
+  parts.forEach(p => setHighlight(p, p === selected ? 0.22 : p === hovered ? 0.1 : 0));
+}
+
+const flight = { active: false, fromPos: new THREE.Vector3(), toPos: new THREE.Vector3(), fromTarget: new THREE.Vector3(), toTarget: new THREE.Vector3(), t: 0, duration: 1.1 };
+function flyTo(target, position) {
+  flight.fromPos.copy(camera.position); flight.fromTarget.copy(controls.target);
+  flight.toPos.copy(position); flight.toTarget.copy(target);
+  flight.t = 0; flight.active = true;
+}
+function partBounds(p) {
+  const box = new THREE.Box3();
+  p.pieces.forEach(g => box.expandByObject(g));
+  return box;
+}
+function focusPart(p) {
+  const box = partBounds(p);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3()).length();
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  if (dir.y < 0.25) { dir.y = 0.35; dir.normalize(); }
+  const dist = Math.min(Math.max(size * 1.9, 2.4), 9);
+  flyTo(center, center.clone().add(dir.multiplyScalar(dist)));
+}
+function selectPart(p) {
+  selected = p;
+  setAutoRotate(false);
+  refreshHighlights();
+  renderSpecs(p);
+  listEl.querySelectorAll('.part-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === p.id)));
+  focusPart(p);
+}
+function clearSelection(fly) {
+  selected = null;
+  refreshHighlights();
+  renderOverview();
+  listEl.querySelectorAll('.part-btn').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  if (fly) flyTo(HOME_TARGET, HOME_POS);
+}
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+function pickAt(clientX, clientY) {
+  const r = canvas.getBoundingClientRect();
+  pointer.set(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
+  raycaster.setFromCamera(pointer, camera);
+  const hit = raycaster.intersectObjects(pickables, false)[0];
+  return hit ? partById[hit.object.userData.partId] : null;
+}
+let downAt = null, lastMove = null;
+canvas.addEventListener('pointerdown', e => { downAt = { x: e.clientX, y: e.clientY }; });
+canvas.addEventListener('pointerup', e => {
+  if (downAt && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 5) {
+    const p = pickAt(e.clientX, e.clientY);
+    if (p) selectPart(p); else if (selected) clearSelection(false);
+  }
+  downAt = null;
+});
+canvas.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') lastMove = { x: e.clientX, y: e.clientY }; });
+canvas.addEventListener('pointerleave', () => { lastMove = null; hovered = null; tipEl.hidden = true; canvas.classList.remove('hovering'); refreshHighlights(); });
+let lastHoverCheck = 0;
+function updateHover(now) {
+  if (!lastMove || downAt || now - lastHoverCheck < 50) return;
+  lastHoverCheck = now;
+  const p = pickAt(lastMove.x, lastMove.y);
+  if (p !== hovered) { hovered = p; refreshHighlights(); canvas.classList.toggle('hovering', !!p); }
+  if (p) {
+    tipEl.hidden = false;
+    tipEl.innerHTML = `<b>${escapeHtml(p.category)}</b> · ${escapeHtml(p.name)}`;
+    tipEl.style.left = lastMove.x + 'px'; tipEl.style.top = lastMove.y + 'px';
+  } else tipEl.hidden = true;
+}
+
+/* toggles */
+const explodeToggle = document.getElementById('explodeToggle');
+const spinToggle = document.getElementById('spinToggle');
+let explodeTarget = 0, explodeValue = 0;
+explodeToggle.addEventListener('change', () => { explodeTarget = explodeToggle.checked ? 1 : 0; });
+function setAutoRotate(on) { controls.autoRotate = on; spinToggle.checked = on; }
+spinToggle.addEventListener('change', () => setAutoRotate(spinToggle.checked));
+controls.addEventListener('start', () => { flight.active = false; if (controls.autoRotate) setAutoRotate(false); });
+document.getElementById('resetBtn').addEventListener('click', () => {
+  explodeToggle.checked = false; explodeTarget = 0;
+  clearSelection(true);
+});
+document.querySelectorAll('.swatch').forEach(btn => btn.addEventListener('click', () => {
+  const p = PAINTS[btn.dataset.paint];
+  bodyPaintMaterial.color.set(p.color);
+  bodyPaintMaterial.sheenColor.set(p.sheen);
+  document.documentElement.style.setProperty('--accent', p.accent);
+  document.documentElement.style.setProperty('--accent-soft', p.soft);
+  ACCENT_EMISSIVE.set(p.accent);
+  refreshHighlights();
+  document.querySelectorAll('.swatch').forEach(s => s.setAttribute('aria-pressed', String(s === btn)));
+}));
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') clearSelection(true);
+  if (e.key.toLowerCase() === 'e' && !e.metaKey && !e.ctrlKey) { explodeToggle.checked = !explodeToggle.checked; explodeTarget = explodeToggle.checked ? 1 : 0; }
+});
+
+/* ================================================================
+   RESIZE + ANIMATION LOOP
+   ================================================================ */
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  const s = Math.min(window.devicePixelRatio, 2) * 0.6;
+  mirror.getRenderTarget().setSize(Math.round(window.innerWidth * s), Math.round(window.innerHeight * s));
+});
+
+const clock = new THREE.Clock();
+const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const tmp = new THREE.Vector3();
+function animate(now) {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+
+  // exploded view: frame-rate independent lerp toward the target state
+  const k = 1 - Math.pow(0.0015, dt);
+  explodeValue += (explodeTarget - explodeValue) * k;
+  if (Math.abs(explodeTarget - explodeValue) < 0.0005) explodeValue = explodeTarget;
+  const e = easeInOut(explodeValue);
+  parts.forEach(p => p.pieces.forEach(g => {
+    tmp.copy(g.userData.offset).multiplyScalar(e);
+    g.position.copy(g.userData.base).add(tmp);
+  }));
+
+  // camera flights
+  if (flight.active) {
+    flight.t = Math.min(1, flight.t + dt / flight.duration);
+    const f = easeInOut(flight.t);
+    camera.position.lerpVectors(flight.fromPos, flight.toPos, f);
+    controls.target.lerpVectors(flight.fromTarget, flight.toTarget, f);
+    if (flight.t >= 1) flight.active = false;
+  }
+  // slow orbit of the coloured accent lights for living specular highlights
+  const t = clock.elapsedTime;
+  cyanPoint.position.set(Math.cos(t * 0.25) * 4, 2.4, Math.sin(t * 0.25) * 4);
+  warmPoint.position.set(Math.cos(t * 0.25 + Math.PI) * 4, 1.8, Math.sin(t * 0.25 + Math.PI) * 4);
+
+  controls.update();
+  updateHover(now || 0);
+  renderer.render(scene, camera);
+}
+
+renderOverview();
+requestAnimationFrame(animate);
+requestAnimationFrame(() => document.getElementById('loader').classList.add('done'));
+</script>
+</body>
+</html>
