@@ -623,13 +623,13 @@ function buildTower(id, name, x, dir, mat, desc, specs, ratings) {
   addMesh(part, piece, geo, mat, { position: [x - 0.02, 0, 0] });
   addMesh(part, piece, roundedBox(0.18, 0.3, 0.5, 0.03), MAT.anodRed, { position: [x - dir * 0.08, 0.5, 0] });
 }
-buildTower('towerF', 'Front shock tower', AXLE_F + 0.12, 1, MAT.blackNylon,
-  'Stock black composite tower carrying the upper front shock mounts. It flexes on impact instead of cracking the bulkhead.',
-  [['Traxxas part', '1914R'], ['Material', 'Black nylon composite'], ['Mount holes', '3 per side'], ['Status', 'Stock']],
-  { Strength: 66, Weight: 80, Stiffness: 60 });
+buildTower('towerF', 'Front shock tower — blue aluminum', AXLE_F + 0.12, 1, MAT.blueAlu,
+  'Blue aluminum front tower from the GTHELE front and rear set you installed. It matches the rear, so both ends hold their shock angle on hard landings.',
+  [['Brand', 'GTHELE aluminum front & rear set'], ['Replaces', 'Traxxas 3639 (stock plastic)'], ['Mount holes', '3 per side'], ['Status', 'Upgrade · installed by you']],
+  { Strength: 92, Weight: 74, Stiffness: 94 });
 buildTower('towerR', 'Rear shock tower — blue aluminum', AXLE_R - 0.12, -1, MAT.blueAlu,
   'Blue anodized aluminum rear tower you installed. It is much stiffer than the stock plastic, so the rear shocks hold their angle on hard landings. Check the screws now and then; aluminum can loosen into plastic.',
-  [['Replaces', 'Traxxas 3638 (stock plastic)'], ['Material', '6061 aluminum, blue anodized'], ['Mount holes', '3 per side'], ['Status', 'Upgrade · installed by you'], ['Tip', 'Blue thread-locker on metal-to-metal screws']],
+  [['Replaces', 'Traxxas 3638 (stock plastic)'], ['Brand', 'GTHELE aluminum front & rear set'], ['Mount holes', '3 per side'], ['Status', 'Upgrade · installed by you'], ['Tip', 'Blue thread-locker on metal-to-metal screws']],
   { Strength: 92, Weight: 74, Stiffness: 94 });
 
 /* ================================================================
@@ -668,7 +668,7 @@ function buildArms(id, name, axleX, specs) {
   });
 }
 buildArms('armsF', 'Front suspension arms', AXLE_F,
-  [['Arms', 'Traxxas 3631 (green)'], ['Steering blocks', '3636 / 3637 (black)'], ['Camber links', 'Teal turnbuckles'], ['Bellcranks', '3743'], ['Hinge pins', 'Steel, 3 mm']]);
+  [['Arms', 'Traxxas 3631 (green)'], ['Steering blocks', '3636 / 3637 (black)'], ['Camber links', 'Teal turnbuckles'], ['Bellcranks', 'RCarmumb red aluminum, ball bearings'], ['Hinge pins', 'Steel, 3 mm']]);
 buildArms('armsR', 'Rear suspension arms', AXLE_R,
   [['Arms', 'Traxxas 3655X (green)'], ['Hub carriers', '3652 (black)'], ['Camber links', 'Teal turnbuckles'], ['Driveshafts', '3654 half shafts'], ['Hinge pins', 'Steel, 3 mm']]);
 
@@ -831,8 +831,8 @@ SIDES.forEach(side => {
 }
 {
   const part = createPart('servo', 'Steering servo', 'Control',
-    'Stock Traxxas 2075 waterproof digital servo driving the bellcranks through a 3744 servo saver. If the truck pulls one way after a crash, check the servo saver and the bellcrank screws first.',
-    [['Traxxas part', '2075 (waterproof, digital)'], ['Torque', '≈ 9 kg·cm @ 6 V'], ['Speed', '0.17 s / 60°'], ['Servo saver', '3744'], ['Bellcranks', '3743']],
+    'Stock Traxxas 2075 waterproof digital servo driving your red aluminum ball-bearing bellcranks through a 3744 servo saver. If the truck pulls one way after a crash, check the servo saver and the bellcrank screws first.',
+    [['Traxxas part', '2075 (waterproof, digital)'], ['Torque', '≈ 9 kg·cm @ 6 V'], ['Speed', '0.17 s / 60°'], ['Servo saver', '3744'], ['Bellcranks', 'RCarmumb red aluminum + drag link, ball bearings (replaces 3743)'], ['Radio', 'TQi + 6511 Traxxas Link Wireless Module']],
     { Torque: 62, Speed: 64, Durability: 70 });
   const piece = createPiece(part, [0.6, 0.9, -0.6]);
   const sx = 0.95, sz = -0.3, sy = CHASSIS_Y + 0.17;
