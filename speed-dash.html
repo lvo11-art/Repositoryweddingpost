@@ -1,6 +1,6 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Rustler Speed Dash</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Archivo+Narrow:wght@600&family=JetBrains+Mono:wght@500&display=swap"><style>:root{--f-ui:"Archivo","Helvetica Neue",Arial,sans-serif;--f-narrow:"Archivo Narrow","Arial Narrow",Arial,sans-serif;--f-mono:"JetBrains Mono",ui-monospace,monospace}html,body{margin:0;background:#060708}/* Speed dash: a single dark instrument look, white numerals on near-black, one amber accent.
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Rustler Speed Dash</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&family=Archivo:wght@400;500;600;700;800&family=Archivo+Narrow:wght@600&family=JetBrains+Mono:wght@500&display=swap"><style>:root{--f-ui:"Archivo","Helvetica Neue",Arial,sans-serif;--f-narrow:"Archivo Narrow","Arial Narrow",Arial,sans-serif;--f-mono:"JetBrains Mono",ui-monospace,monospace}html,body{margin:0;background:#060708}/* Speed dash: a single dark instrument look, white numerals on near-black, one amber accent.
    Layout: status bar, the reading, a 30-second trace, three stats, pack log, two thumb-sized actions. */
-.sd{--k-bg:#060708;--k-surf:#101315;--k-line:#22282c;--k-ink:#f3f5f2;--k-mute:#7f898f;--k-acc:#ffb020;--k-ok:#3ddc84;--k-bad:#ff5a4f;
+.sd{--f-ui:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-display:"Rajdhani","Arial Narrow",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--k-bg:#080D16;--k-surf:#111927;--k-line:rgba(148,178,220,.16);--k-ink:#F3F6FC;--k-mute:#8C9AB3;--k-acc:#00B8FF;--k-warn:#ffb020;--k-ok:#22C55E;--k-bad:#ff5d52;
   position:fixed;inset:0;z-index:80;background:var(--k-bg);color:var(--k-ink);color-scheme:dark;display:flex;flex-direction:column;overflow:auto;box-sizing:border-box;
   font-family:var(--f-ui);padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
 .sd[hidden]{display:none}
@@ -11,13 +11,13 @@
 .sd-link span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sd-link i{width:9px;height:9px;border-radius:50%;background:var(--k-bad);flex:none}
 .sd-link.ok{color:var(--k-ink)}.sd-link.ok i{background:var(--k-ok)}
-.sd-link.wait i{background:var(--k-acc);animation:sdp 1s infinite}
+.sd-link.wait i{background:var(--k-warn);animation:sdp 1s infinite}
 @keyframes sdp{50%{opacity:.25}}
 .sd-sat{margin-left:auto;display:flex;align-items:flex-end;gap:7px;font:700 16px/1 var(--f-ui);font-variant-numeric:tabular-nums;color:var(--k-ink)}
 .sd-bars{display:flex;align-items:flex-end;gap:2px;height:16px}
 .sd-bars i{width:4px;border-radius:1px;background:var(--k-line)}
 .sd-bars i:nth-child(1){height:25%}.sd-bars i:nth-child(2){height:50%}.sd-bars i:nth-child(3){height:75%}.sd-bars i:nth-child(4){height:100%}
-.sd-bars i.on{background:var(--k-ok)}.sd-bars.weak i.on{background:var(--k-acc)}.sd-bars.bad i.on{background:var(--k-bad)}
+.sd-bars i.on{background:var(--k-ok)}.sd-bars.weak i.on{background:var(--k-warn)}.sd-bars.bad i.on{background:var(--k-bad)}
 .sd-main{flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;padding-block:8px 16px;min-height:0}
 .sd-read{display:flex;flex-direction:column;gap:14px}
 .sd-num{display:flex;align-items:flex-start;justify-content:center;gap:10px}
@@ -42,7 +42,7 @@
 .sd-packs li.empty{flex:1;background:none;padding:0;color:var(--k-mute)}
 .sd-act{position:sticky;bottom:0;display:grid;grid-template-columns:1.6fr 1fr;gap:10px;padding-block:12px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--k-bg) 30%)}
 .sd-btn{min-height:58px;border-radius:14px;border:1px solid var(--k-line);background:var(--k-surf);color:var(--k-ink);font:700 16px/1.1 var(--f-ui);cursor:pointer}
-.sd-btn.primary{background:var(--k-acc);border-color:var(--k-acc);color:#140c00}
+.sd-btn.primary{background:var(--k-acc);border-color:var(--k-acc);color:#03121c}
 .sd-btn.primary.on{background:var(--k-surf);border-color:var(--k-line);color:var(--k-ink)}
 .sd-btn.ghost{min-height:48px}
 .sd-btn:disabled{opacity:.5;cursor:progress}
@@ -171,7 +171,7 @@ function drawTrace(){const r=cv.getBoundingClientRect(),d=Math.min(2,devicePixel
   if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}cx.clearRect(0,0,W,H);
   const now=performance.now(),top=Math.max(10,st.max*1.1),X=t=>W-(now-t)/30000*W,Y=v=>H-4*d-(v/top)*(H-10*d);
   cx.strokeStyle='#22282c';cx.lineWidth=1*d;[0.5,1].forEach(f=>{cx.beginPath();cx.moveTo(0,Y(top*f/1.1));cx.lineTo(W,Y(top*f/1.1));cx.stroke();});
-  if(st.max>0){cx.strokeStyle='#ffb020';cx.setLineDash([4*d,4*d]);cx.beginPath();cx.moveTo(0,Y(st.max));cx.lineTo(W,Y(st.max));cx.stroke();cx.setLineDash([]);}
+  if(st.max>0){cx.strokeStyle='#A855F7';cx.setLineDash([4*d,4*d]);cx.beginPath();cx.moveTo(0,Y(st.max));cx.lineTo(W,Y(st.max));cx.stroke();cx.setLineDash([]);}
   if(st.trace.length>1){cx.beginPath();st.trace.forEach(([t,v],i)=>i?cx.lineTo(X(t),Y(v)):cx.moveTo(X(t),Y(v)));
     cx.strokeStyle='#f3f5f2';cx.lineWidth=2*d;cx.lineJoin='round';cx.stroke();cx.lineTo(X(st.trace[st.trace.length-1][0]),H);cx.lineTo(X(st.trace[0][0]),H);cx.closePath();
     cx.fillStyle='rgba(243,245,242,.07)';cx.fill();}
