@@ -1,82 +1,125 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Rustler Speed Dash</title><style>html,body{margin:0;background:#000}/* speed dash: pure black, neon, sunlight-readable */
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Rustler Speed Dash</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Archivo+Narrow:wght@600&family=JetBrains+Mono:wght@500&display=swap"><style>:root{--f-ui:"Archivo","Helvetica Neue",Arial,sans-serif;--f-narrow:"Archivo Narrow","Arial Narrow",Arial,sans-serif;--f-mono:"JetBrains Mono",ui-monospace,monospace}html,body{margin:0;background:#060708}/* Speed dash: a single dark instrument look, white numerals on near-black, one amber accent.
+   Layout: status bar, the reading, a 30-second trace, three stats, pack log, two thumb-sized actions. */
+.sd{--k-bg:#060708;--k-surf:#101315;--k-line:#22282c;--k-ink:#f3f5f2;--k-mute:#7f898f;--k-acc:#ffb020;--k-ok:#3ddc84;--k-bad:#ff5a4f;
+  position:fixed;inset:0;z-index:80;background:var(--k-bg);color:var(--k-ink);color-scheme:dark;display:flex;flex-direction:column;overflow:auto;box-sizing:border-box;
+  font-family:var(--f-ui);padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
 .sd[hidden]{display:none}
-.sd{position:fixed;inset:0;z-index:80;background:#000;color:#39ff14;display:flex;flex-direction:column;gap:14px;overflow:auto;box-sizing:border-box;color-scheme:dark;
-  padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));font-family:ui-monospace,Menlo,Consolas,monospace}
-.sd-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.sd-title{font:700 18px/1.1 system-ui,sans-serif;letter-spacing:.14em;color:#ffea00}
-.sd-title small{display:block;font:500 11px/1.3 system-ui,sans-serif;letter-spacing:.04em;color:#9aff7a}
-.sd-conn{margin-left:auto;display:flex;align-items:center;gap:8px;font:700 14px/1 ui-monospace,Menlo,Consolas,monospace;border:2px solid currentColor;padding:8px 12px;border-radius:8px;color:#ff3b30}
-.sd-conn i{width:12px;height:12px;border-radius:50%;background:currentColor}
-.sd-conn.ok{color:#39ff14}.sd-conn.wait{color:#ffea00}.sd-conn.wait i{animation:sdblink .8s infinite}
-@keyframes sdblink{50%{opacity:.2}}
-.sd-x{background:#000;color:#fff;border:2px solid #fff;border-radius:8px;width:44px;height:44px;font-size:20px;cursor:pointer}
-.sd-speed{flex:1 1 auto;min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid #39ff14;border-radius:16px;padding:8px}
-.sd-speed b{font:700 clamp(110px,30vw,380px)/0.9 ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;color:#39ff14;letter-spacing:-.04em}
-.sd-speed span{font:700 clamp(22px,4vw,44px)/1 ui-monospace,Menlo,Consolas,monospace;color:#ffea00;letter-spacing:.2em;margin-top:6px}
-.sd-boxes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.sd-box{border:3px solid #ffea00;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
-.sd-box small{font:700 12px/1.2 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ffea00}
-.sd-box b{font:700 clamp(38px,8vw,72px)/1 ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;color:#fff}
-.sd-box em{font:700 14px/1.2 ui-monospace,Menlo,Consolas,monospace;font-style:normal;color:#9aff7a}
-.sd-btns{display:grid;grid-template-columns:2fr 1.4fr 1fr 1fr;gap:10px}
-.sd-btn{min-height:64px;border-radius:12px;border:3px solid #ffea00;background:#000;color:#ffea00;font:700 18px/1.1 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
-.sd-btn.go{background:#39ff14;border-color:#39ff14;color:#000}
-.sd-btn:focus-visible,.sd-x:focus-visible{outline:4px solid #fff;outline-offset:2px}
-.sd-btn:disabled{opacity:.45;cursor:not-allowed}
-.sd-msg{margin:0;font:600 15px/1.45 system-ui,sans-serif;color:#fff}.sd-msg:empty{display:none}
-.sd-cal{border:2px solid #333;border-radius:10px;padding:8px 12px;color:#cfd}
-.sd-cal summary{cursor:pointer;font:700 14px/1.4 system-ui,sans-serif;color:#9aff7a}
-.sd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:10px}
-.sd-grid label{display:flex;flex-direction:column;gap:4px;font:600 12px/1.2 system-ui,sans-serif;color:#cfd}
-.sd-grid input,.sd-grid select{background:#000;color:#39ff14;border:2px solid #39ff14;border-radius:6px;padding:8px;font:600 16px ui-monospace,Menlo,Consolas,monospace}
-.sd-hex{font-size:12px;overflow-wrap:anywhere;color:#cfd}.sd-hex code{color:#39ff14}
-.sd-note{font:500 12px/1.45 system-ui,sans-serif;color:#aaa;max-width:70ch}
-@media (max-width:640px){.sd-boxes{grid-template-columns:1fr 1fr}.sd-boxes .sd-box:first-child{grid-column:1/-1}.sd-btns{grid-template-columns:1fr 1fr}.sd-btns .go{grid-column:1/-1}}
-@media (prefers-reduced-motion:reduce){.sd-conn.wait i{animation:none}}
-.sd{position:static;min-height:100vh}</style></head><body><section class="sd" id="sd" aria-label="Speed dash">
-  <div class="sd-top">
-    <div class="sd-title">SPEED DASH <small>SkyRC GSM020 / Racer's Edge</small></div>
-    <div class="sd-conn" id="sdConn" role="status"><i></i><span>Disconnected</span></div>
-    <button type="button" class="sd-x" id="sdClose" aria-label="Close speed dash">✕</button>
-  </div>
-  <div class="sd-speed" aria-live="off"><b id="sdSpeed">0.0</b><span id="sdUnit">MPH</span></div>
-  <div class="sd-boxes">
-    <div class="sd-box"><small>Max top speed</small><b id="sdMax">0.0</b><em id="sdMaxU">mph</em></div>
-    <div class="sd-box"><small>Satellites</small><b id="sdSat">--</b><em id="sdFix">no fix</em></div>
-    <div class="sd-box"><small>Bluetooth</small><b id="sdBt">OFF</b><em id="sdHz">0 Hz</em></div>
-  </div>
-  <div class="sd-btns">
-    <button type="button" class="sd-btn go" id="sdGo">Connect device</button>
-    <button type="button" class="sd-btn" id="sdReset">Reset max speed</button>
-    <button type="button" class="sd-btn" id="sdUnitBtn">Units: MPH</button>
-    <button type="button" class="sd-btn" id="sdDemo">Demo</button>
-  </div>
-  <p class="sd-msg" id="sdMsg"></p>
-  <details class="sd-cal"><summary>Packet decoder settings (calibrate to your firmware)</summary>
-    <div class="sd-grid">
-      <label>Speed byte offset<input id="cSpdOff" type="number" min="0" max="60" value="10"></label>
-      <label>Speed byte order<select id="cEnd"><option value="le">Little-endian</option><option value="be">Big-endian</option></select></label>
-      <label>Speed raw unit<select id="cScale"><option value="kmh10">km/h × 10</option><option value="kmh100">km/h × 100</option><option value="kn10">knots × 10</option><option value="kn100">knots × 100</option><option value="ms100">m/s × 100</option></select></label>
-      <label>Satellite byte offset<input id="cSatOff" type="number" min="0" max="60" value="17"></label>
-      <label>Min sats for max speed<input id="cMinSat" type="number" min="0" max="30" value="6"></label>
-      <label>Spike filter (mph/s)<input id="cSpike" type="number" min="0" max="500" value="60"></label>
+.sd svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sd-bar{display:flex;align-items:center;gap:10px;padding-block:12px}
+.sd-ic{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;border:1px solid var(--k-line);background:var(--k-surf);color:var(--k-ink);cursor:pointer;flex:none}
+.sd-link{display:flex;align-items:center;gap:8px;font:600 14px/1 var(--f-ui);color:var(--k-mute);min-width:0}
+.sd-link span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sd-link i{width:9px;height:9px;border-radius:50%;background:var(--k-bad);flex:none}
+.sd-link.ok{color:var(--k-ink)}.sd-link.ok i{background:var(--k-ok)}
+.sd-link.wait i{background:var(--k-acc);animation:sdp 1s infinite}
+@keyframes sdp{50%{opacity:.25}}
+.sd-sat{margin-left:auto;display:flex;align-items:flex-end;gap:7px;font:700 16px/1 var(--f-ui);font-variant-numeric:tabular-nums;color:var(--k-ink)}
+.sd-bars{display:flex;align-items:flex-end;gap:2px;height:16px}
+.sd-bars i{width:4px;border-radius:1px;background:var(--k-line)}
+.sd-bars i:nth-child(1){height:25%}.sd-bars i:nth-child(2){height:50%}.sd-bars i:nth-child(3){height:75%}.sd-bars i:nth-child(4){height:100%}
+.sd-bars i.on{background:var(--k-ok)}.sd-bars.weak i.on{background:var(--k-acc)}.sd-bars.bad i.on{background:var(--k-bad)}
+.sd-main{flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;padding-block:8px 16px;min-height:0}
+.sd-read{display:flex;flex-direction:column;gap:14px}
+.sd-num{display:flex;align-items:flex-start;justify-content:center;gap:10px}
+.sd-num b{font:800 clamp(128px,36vw,320px)/.8 var(--f-ui);font-variant-numeric:tabular-nums;letter-spacing:-.05em}
+.sd-unit{margin-top:.6em;border:1px solid var(--k-line);background:var(--k-surf);color:var(--k-mute);border-radius:999px;padding:7px 12px;font:700 14px/1 var(--f-narrow);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.sd-gauge{position:relative;height:6px;border-radius:3px;background:var(--k-surf)}
+.sd-gauge #sdFill{position:absolute;inset:0 auto 0 0;width:0;border-radius:3px;background:var(--k-ink);transition:width .1s linear}
+.sd-gauge #sdTopMark{position:absolute;top:-5px;bottom:-5px;width:3px;margin-left:-1.5px;left:0;background:var(--k-acc);border-radius:2px}
+.sd-trace{width:100%;height:96px;display:block}
+.sd-stats{margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-block:1px solid var(--k-line)}
+.sd-stats div{padding:12px 10px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.sd-stats div+div{border-left:1px solid var(--k-line)}
+.sd-stats dt{font:600 12px/1.2 var(--f-narrow);letter-spacing:.06em;text-transform:uppercase;color:var(--k-mute)}
+.sd-stats dd{margin:0;font:500 13px/1 var(--f-ui);color:var(--k-mute)}
+.sd-stats dd b{font:700 clamp(28px,7.5vw,42px)/1 var(--f-ui);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--k-ink)}
+.sd-stats div:first-child dd b{color:var(--k-acc)}
+.sd-packs{display:flex;flex-direction:column;gap:8px}
+.sd-lbl{font:600 12px/1.2 var(--f-narrow);letter-spacing:.06em;text-transform:uppercase;color:var(--k-mute)}
+.sd-packs ol{list-style:none;margin:0;padding:0;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.sd-packs li{flex:none;padding:8px 12px;border-radius:10px;background:var(--k-surf);font:500 13px/1.3 var(--f-ui);color:var(--k-mute)}
+.sd-packs li b{display:block;font:700 20px/1.1 var(--f-ui);font-variant-numeric:tabular-nums;color:var(--k-ink)}
+.sd-packs li.empty{flex:1;background:none;padding:0;color:var(--k-mute)}
+.sd-act{position:sticky;bottom:0;display:grid;grid-template-columns:1.6fr 1fr;gap:10px;padding-block:12px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--k-bg) 30%)}
+.sd-btn{min-height:58px;border-radius:14px;border:1px solid var(--k-line);background:var(--k-surf);color:var(--k-ink);font:700 16px/1.1 var(--f-ui);cursor:pointer}
+.sd-btn.primary{background:var(--k-acc);border-color:var(--k-acc);color:#140c00}
+.sd-btn.primary.on{background:var(--k-surf);border-color:var(--k-line);color:var(--k-ink)}
+.sd-btn.ghost{min-height:48px}
+.sd-btn:disabled{opacity:.5;cursor:progress}
+.sd-btn:focus-visible,.sd-ic:focus-visible,.sd-unit:focus-visible{outline:3px solid var(--k-acc);outline-offset:2px}
+.sd-msg{margin:0 0 12px;font:500 14px/1.45 var(--f-ui);color:var(--k-mute);max-width:62ch}
+.sd-msg:empty{display:none}
+.sd-sheet{position:fixed;inset:0;z-index:2;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}
+.sd-sheet[hidden]{display:none}
+.sd-sheet-in{width:min(560px,100%);max-height:85vh;overflow:auto;box-sizing:border-box;background:var(--k-surf);border:1px solid var(--k-line);border-radius:18px 18px 0 0;
+  padding:16px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+.sd-sheet-h{display:flex;align-items:center;justify-content:space-between;font:700 18px/1 var(--f-ui)}
+.sd-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sd-grid label{display:flex;flex-direction:column;gap:6px;font:600 12px/1.25 var(--f-ui);color:var(--k-mute)}
+.sd-grid input,.sd-grid select{background:var(--k-bg);color:var(--k-ink);border:1px solid var(--k-line);border-radius:10px;padding:10px;font:600 16px var(--f-mono)}
+.sd-hex{margin:0;font:500 12px/1.5 var(--f-mono);color:var(--k-mute);overflow-wrap:anywhere}.sd-hex code{color:var(--k-ink)}
+.sd-note{margin:0;font:500 13px/1.45 var(--f-ui);color:var(--k-mute)}
+@media (min-width:900px) and (orientation:landscape){
+  .sd-main{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);grid-template-rows:auto auto 1fr;column-gap:32px;align-content:center}
+  .sd-read{grid-row:1/3}.sd-trace{grid-column:1;grid-row:3;height:clamp(140px,28vh,260px)}.sd-stats{grid-column:2;grid-row:1;grid-template-columns:1fr}.sd-stats div+div{border-left:0;border-top:1px solid var(--k-line)}
+  .sd-packs{grid-column:2;grid-row:2/4}.sd-act{max-width:640px;width:100%;margin-left:auto}}
+@media (max-height:560px) and (orientation:landscape){.sd-num b{font-size:clamp(90px,22vh,180px)}.sd-trace{height:60px}}
+@media (prefers-reduced-motion:reduce){.sd-link.wait i{animation:none}.sd-gauge #sdFill{transition:none}}
+</style></head><body><section class="sd" id="sd" aria-label="Speed dash">
+  <header class="sd-bar">
+    <button type="button" class="sd-ic" id="sdClose" aria-label="Back to the model"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="sd-link" id="sdConn" role="status"><i></i><span>Not connected</span></div>
+    <div class="sd-sat" title="GPS satellites"><span class="sd-bars" id="sdBars"><i></i><i></i><i></i><i></i></span><b id="sdSat">--</b></div>
+    <button type="button" class="sd-ic" id="sdGear" aria-label="Settings" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+  </header>
+  <main class="sd-main">
+    <div class="sd-read">
+      <div class="sd-num"><b id="sdSpeed">0.0</b><button type="button" class="sd-unit" id="sdUnitBtn" aria-label="Switch units"><span id="sdUnit">mph</span></button></div>
+      <div class="sd-gauge" aria-hidden="true"><i id="sdFill"></i><i id="sdTopMark"></i></div>
     </div>
-    <p class="sd-hex">Last packet (<span id="sdLen">0</span> bytes): <code id="sdHex">—</code></p>
-    <p class="sd-note">The byte positions are the commonly reported layout, not confirmed for every firmware. Drive at a known speed (or walk at about 3 mph) and adjust the offset, byte order and unit until the reading matches. Settings are saved in this browser.</p>
-  </details>
-</section>
-<script>
+    <canvas class="sd-trace" id="sdTrace" aria-label="Speed over the last 30 seconds"></canvas>
+    <dl class="sd-stats">
+      <div><dt>Top speed</dt><dd><b id="sdMax">0.0</b> <span id="sdMaxU">mph</span></dd></div>
+      <div><dt>Average moving</dt><dd><b id="sdAvg">0.0</b> <span id="sdAvgU">mph</span></dd></div>
+      <div><dt>Run time</dt><dd><b id="sdTime">0:00</b></dd></div>
+    </dl>
+    <div class="sd-packs"><span class="sd-lbl">Packs today</span><ol id="sdPacks"><li class="empty">Tap New pack after each battery to log its top speed.</li></ol></div>
+  </main>
+  <footer class="sd-act">
+    <button type="button" class="sd-btn primary" id="sdGo">Connect analyzer</button>
+    <button type="button" class="sd-btn" id="sdReset">New pack</button>
+  </footer>
+  <p class="sd-msg" id="sdMsg" role="status"></p>
+  <div class="sd-sheet" id="sdSheet" hidden>
+    <div class="sd-sheet-in">
+      <div class="sd-sheet-h"><b>Settings</b><button type="button" class="sd-ic" id="sdSheetX" aria-label="Close settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <button type="button" class="sd-btn ghost" id="sdDemo">Play demo run</button>
+      <div class="sd-grid">
+        <label>Speed byte<input id="cSpdOff" type="number" min="0" max="60" value="10"></label>
+        <label>Byte order<select id="cEnd"><option value="le">Little-endian</option><option value="be">Big-endian</option></select></label>
+        <label>Raw speed unit<select id="cScale"><option value="kmh10">km/h × 10</option><option value="kmh100">km/h × 100</option><option value="kn10">knots × 10</option><option value="kn100">knots × 100</option><option value="ms100">m/s × 100</option></select></label>
+        <label>Satellite byte<input id="cSatOff" type="number" min="0" max="60" value="17"></label>
+        <label>Satellites to count top speed<input id="cMinSat" type="number" min="0" max="30" value="6"></label>
+        <label>Ignore jumps over (mph/s)<input id="cSpike" type="number" min="0" max="500" value="60"></label>
+      </div>
+      <p class="sd-hex"><span id="sdHz">0 Hz</span> · last packet <span id="sdLen">0</span> bytes<br><code id="sdHex">—</code></p>
+      <p class="sd-note">Byte positions follow the commonly reported GSM020 layout. Walk with the analyzer at about 3 mph and adjust until the reading matches.</p>
+    </div>
+  </div>
+</section><script>
 /* ---------- Speed dash: SkyRC GSM020 (Racer's Edge) over Web Bluetooth ----------
-   Notifications arrive at about 10 Hz; each packet only updates a small state object, and one
-   requestAnimationFrame loop paints the latest values, so rendering never queues behind the radio. */
+   Each ~10 Hz notification only updates the state object; one requestAnimationFrame loop paints
+   the latest values, so drawing never queues behind the radio. */
 (function(){
 const $=s=>document.querySelector(s);
 const SVC='0000ffe0-0000-1000-8000-00805f9b34fb',CHR='0000ffe1-0000-1000-8000-00805f9b34fb';
 const SCALE={kmh10:0.1/1.609344,kmh100:0.01/1.609344,kn10:0.1*1.150779,kn100:0.01*1.150779,ms100:0.01*2.236936};   // raw → mph
-const st={mph:0,max:0,sats:null,conn:'off',hz:0,times:[],lastT:0,metric:false,dev:null,chr:null,demo:null,dirty:true,hex:'',len:0};
+const st={mph:0,max:0,sats:null,conn:'off',times:[],lastT:0,metric:false,dev:null,demo:null,dirty:true,hex:'',len:0,trace:[],movT:0,movSum:0,runStart:0,packs:[]};
 const cfg={spdOff:10,end:'le',scale:'kmh10',satOff:17,minSat:6,spike:60};
-try{Object.assign(cfg,JSON.parse(localStorage.getItem('rustler-dash-v1')||'{}'));st.metric=localStorage.getItem('rustler-dash-metric')==='1';}catch(e){}
-const save=()=>{try{localStorage.setItem('rustler-dash-v1',JSON.stringify(cfg));localStorage.setItem('rustler-dash-metric',st.metric?'1':'0');}catch(e){}};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('rustler-dash-v1')||'{}'));st.metric=localStorage.getItem('rustler-dash-metric')==='1';
+  const pk=JSON.parse(localStorage.getItem('rustler-dash-packs')||'null');if(pk&&pk.day===new Date().toDateString())st.packs=pk.list||[];}catch(e){}
+const save=()=>{try{localStorage.setItem('rustler-dash-v1',JSON.stringify(cfg));localStorage.setItem('rustler-dash-metric',st.metric?'1':'0');
+  localStorage.setItem('rustler-dash-packs',JSON.stringify({day:new Date().toDateString(),list:st.packs}));}catch(e){}};
 [['#cSpdOff','spdOff',Number],['#cEnd','end',String],['#cScale','scale',String],['#cSatOff','satOff',Number],['#cMinSat','minSat',Number],['#cSpike','spike',Number]].forEach(([id,k,f])=>{
   const el=$(id);el.value=cfg[k];el.addEventListener('change',()=>{cfg[k]=f(el.value);save();});});
 const msg=t=>{$('#sdMsg').textContent=t||'';};
@@ -85,68 +128,80 @@ function parse(dv){
   const n=dv.byteLength;st.len=n;
   st.hex=Array.from({length:n},(_,i)=>dv.getUint8(i).toString(16).padStart(2,'0')).join(' ');
   const now=performance.now();st.times.push(now);while(st.times.length&&now-st.times[0]>2000)st.times.shift();
-  if(cfg.spdOff+1<n){const raw=dv.getUint16(cfg.spdOff,cfg.end==='le');let mph=raw*(SCALE[cfg.scale]||SCALE.kmh10);
-    const dt=st.lastT?Math.max(0.02,(now-st.lastT)/1000):0.1;
-    // reject single-packet spikes (GPS glitches) before they reach the max
-    const ok=!cfg.spike||Math.abs(mph-st.mph)/dt<=cfg.spike||mph<st.mph;
-    if(ok){st.mph=mph;const satsOk=st.sats==null||st.sats>=cfg.minSat;if(satsOk&&mph>st.max)st.max=mph;}
-    st.lastT=now;}
   if(cfg.satOff<n)st.sats=dv.getUint8(cfg.satOff);
+  if(cfg.spdOff+1<n){const mph=dv.getUint16(cfg.spdOff,cfg.end==='le')*(SCALE[cfg.scale]||SCALE.kmh10);
+    const dt=st.lastT?Math.max(0.02,(now-st.lastT)/1000):0.1;
+    const ok=!cfg.spike||mph<st.mph||Math.abs(mph-st.mph)/dt<=cfg.spike;   // drop one-packet GPS spikes
+    if(ok){st.mph=mph;if((st.sats==null||st.sats>=cfg.minSat)&&mph>st.max)st.max=mph;
+      if(mph>2){if(!st.runStart)st.runStart=now;st.movT+=dt;st.movSum+=mph*dt;}}
+    st.lastT=now;st.trace.push([now,st.mph]);while(st.trace.length&&now-st.trace[0][0]>30000)st.trace.shift();}
   st.dirty=true;}
 
-function setConn(s,label){st.conn=s;const c=$('#sdConn');c.className='sd-conn'+(s==='on'?' ok':s==='wait'?' wait':'');c.querySelector('span').textContent=label;$('#sdBt').textContent=s==='on'?'ON':s==='wait'?'…':'OFF';
-  $('#sdGo').textContent=s==='on'?'Disconnect':'Connect device';$('#sdGo').disabled=s==='wait';}
+function setConn(s,label){st.conn=s;const c=$('#sdConn');c.className='sd-link'+(s==='on'?' ok':s==='wait'?' wait':'');c.querySelector('span').textContent=label;
+  const g=$('#sdGo');g.textContent=s==='on'?'Disconnect':s==='wait'?'Connecting…':'Connect analyzer';g.classList.toggle('on',s==='on');g.disabled=s==='wait';}
 
 async function connect(){
+  if(st.demo){stopDemo();return;}
   if(st.dev&&st.dev.gatt.connected){st.dev.gatt.disconnect();return;}
-  if(!navigator.bluetooth){msg('This browser cannot use Bluetooth. Use Chrome or Edge on Android, Windows, Mac or ChromeOS. On iPhone/iPad, Safari has no Web Bluetooth: open this page in the free Bluefy browser instead.');return;}
-  try{const ok=navigator.bluetooth.getAvailability?await navigator.bluetooth.getAvailability():true;if(!ok){msg('Bluetooth is off or unavailable on this device. Turn it on and try again.');return;}}catch(e){}
-  stopDemo();setConn('wait','Pairing…');msg('');
-  try{
-    const dev=await navigator.bluetooth.requestDevice({filters:[{services:[SVC]},{namePrefix:'GSM'},{namePrefix:'SkyRC'}],optionalServices:[SVC]});
-    st.dev=dev;dev.addEventListener('gattserverdisconnected',onDrop);
-    await open(dev);
-  }catch(e){setConn('off','Disconnected');
-    if(e&&e.name==='NotFoundError')msg('No device chosen. Switch the analyzer on (Bluetooth LED flashing), keep it close, then try again.');
-    else if(e&&(e.name==='SecurityError'||e.name==='NotAllowedError'))msg('Bluetooth is blocked for this page here (embedded pages often are). Save the page and open it directly in Chrome, or in Bluefy on iPhone.');
-    else msg('Could not connect: '+(e&&e.message||e));}}
-async function open(dev){setConn('wait','Connecting…');
-  const srv=await dev.gatt.connect();const svc=await srv.getPrimaryService(SVC);const ch=await svc.getCharacteristic(CHR);
-  st.chr=ch;ch.addEventListener('characteristicvaluechanged',e=>parse(e.target.value));await ch.startNotifications();
-  setConn('on',(dev.name||'GSM020')+' connected');msg('Waiting for GPS fix… speed reads once satellites lock.');keepAwake(true);}
-let retry=0;
-async function onDrop(){setConn('wait','Signal lost, reconnecting…');st.mph=0;st.dirty=true;
-  for(retry=0;retry<4;retry++){await new Promise(r=>setTimeout(r,800*(retry+1)));if(!st.dev)break;
-    try{await open(st.dev);msg('Reconnected.');return;}catch(e){}}
-  setConn('off','Disconnected');keepAwake(false);msg('Lost the analyzer. Tap Connect device to pair again.');}
-
+  if(!navigator.bluetooth){msg('Bluetooth isn’t available in this browser. Use Chrome on Android or a computer. On iPhone, open the page in the Bluefy browser.');return;}
+  setConn('wait','Pairing');msg('');
+  try{const dev=await navigator.bluetooth.requestDevice({filters:[{services:[SVC]},{namePrefix:'GSM'},{namePrefix:'SkyRC'}],optionalServices:[SVC]});
+    st.dev=dev;dev.addEventListener('gattserverdisconnected',onDrop);await open(dev);}
+  catch(e){setConn('off','Not connected');
+    if(e&&e.name==='NotFoundError')msg('No analyzer chosen. Switch it on, keep it close, and try again.');
+    else if(e&&(e.name==='SecurityError'||e.name==='NotAllowedError'))msg('Bluetooth is blocked inside this embedded page. Open the standalone Speed Dash file in Chrome or Bluefy.');
+    else msg('Couldn’t connect: '+(e&&e.message||e));}}
+async function open(dev){setConn('wait','Connecting');
+  const ch=await (await (await dev.gatt.connect()).getPrimaryService(SVC)).getCharacteristic(CHR);
+  ch.addEventListener('characteristicvaluechanged',e=>parse(e.target.value));await ch.startNotifications();
+  setConn('on',dev.name||'GSM020');msg('Waiting for a GPS fix.');keepAwake(true);}
+async function onDrop(){setConn('wait','Reconnecting');st.mph=0;st.dirty=true;
+  for(let i=0;i<4;i++){await new Promise(r=>setTimeout(r,800*(i+1)));if(!st.dev)break;try{await open(st.dev);msg('');return;}catch(e){}}
+  setConn('off','Not connected');keepAwake(false);msg('Lost the analyzer. Tap Connect to pair again.');}
 let lock=null;async function keepAwake(on){try{if(on&&'wakeLock' in navigator&&!lock){lock=await navigator.wakeLock.request('screen');lock.addEventListener('release',()=>lock=null);}else if(!on&&lock){await lock.release();lock=null;}}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&st.conn==='on')keepAwake(true);});
 
-function stopDemo(){if(st.demo){clearInterval(st.demo);st.demo=null;$('#sdDemo').textContent='Demo';if(st.conn!=='on')setConn('off','Disconnected');}}
-function startDemo(){if(st.conn==='on')return;let t=0;$('#sdDemo').textContent='Stop demo';setConn('on','Demo data (10 Hz)');msg('Demo: a simulated speed pass so you can check the layout. Nothing is connected.');
-  st.demo=setInterval(()=>{t+=0.1;const kmh=Math.max(0,96*Math.sin(Math.min(1,t/6)*Math.PI)*(1+0.02*Math.sin(t*9)));
-    const b=new DataView(new ArrayBuffer(20));b.setUint16(cfg.spdOff,Math.round(kmh*10*(cfg.scale==='kmh10'?1:1)),cfg.end==='le');b.setUint8(cfg.satOff,12);parse(b);if(t>8)t=0;},100);}
+function stopDemo(){clearInterval(st.demo);st.demo=null;$('#sdDemo').textContent='Play demo run';setConn('off','Not connected');msg('');st.mph=0;st.dirty=true;}
+function startDemo(){if(st.dev&&st.dev.gatt.connected)return;let t=0;$('#sdDemo').textContent='Stop demo';setConn('on','Demo run');msg('Demo data. Nothing is connected.');
+  st.demo=setInterval(()=>{t+=0.1;const ph=t%9,kmh=ph<6?Math.max(0,92*Math.sin(ph/6*Math.PI))*(1+0.015*Math.sin(t*9)):0;
+    const b=new DataView(new ArrayBuffer(20));b.setUint16(cfg.spdOff,Math.round(kmh*10),cfg.end==='le');b.setUint8(cfg.satOff,11);parse(b);},100);}
 
-function frame(){if(st.dirty&&!$('#sd').hidden){st.dirty=false;const k=st.metric?1.609344:1;
+const cv=$('#sdTrace'),cx=cv.getContext('2d');
+function drawTrace(){const r=cv.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1),W=Math.round(r.width*d),H=Math.round(r.height*d);if(!W||!H)return;
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}cx.clearRect(0,0,W,H);
+  const now=performance.now(),top=Math.max(10,st.max*1.1),X=t=>W-(now-t)/30000*W,Y=v=>H-4*d-(v/top)*(H-10*d);
+  cx.strokeStyle='#22282c';cx.lineWidth=1*d;[0.5,1].forEach(f=>{cx.beginPath();cx.moveTo(0,Y(top*f/1.1));cx.lineTo(W,Y(top*f/1.1));cx.stroke();});
+  if(st.max>0){cx.strokeStyle='#ffb020';cx.setLineDash([4*d,4*d]);cx.beginPath();cx.moveTo(0,Y(st.max));cx.lineTo(W,Y(st.max));cx.stroke();cx.setLineDash([]);}
+  if(st.trace.length>1){cx.beginPath();st.trace.forEach(([t,v],i)=>i?cx.lineTo(X(t),Y(v)):cx.moveTo(X(t),Y(v)));
+    cx.strokeStyle='#f3f5f2';cx.lineWidth=2*d;cx.lineJoin='round';cx.stroke();cx.lineTo(X(st.trace[st.trace.length-1][0]),H);cx.lineTo(X(st.trace[0][0]),H);cx.closePath();
+    cx.fillStyle='rgba(243,245,242,.07)';cx.fill();}
+  cx.fillStyle='#7f898f';cx.font=`${11*d}px "JetBrains Mono",monospace`;cx.fillText('30 s',4*d,H-4*d);}
+function renderPacks(){const k=st.metric?1.609344:1,u=st.metric?'km/h':'mph';const ol=$('#sdPacks');
+  ol.innerHTML=st.packs.length?st.packs.map((v,i)=>'<li><b>'+(v*k).toFixed(1)+'</b>Pack '+(i+1)+' · '+u+'</li>').reverse().join(''):'<li class="empty">Tap New pack after each battery to log its top speed.</li>';}
+function frame(){if(!$('#sd').hidden){if(st.dirty){st.dirty=false;const k=st.metric?1.609344:1,u=st.metric?'km/h':'mph';
     $('#sdSpeed').textContent=(st.mph*k).toFixed(1);$('#sdMax').textContent=(st.max*k).toFixed(1);
-    const s=st.sats;$('#sdSat').textContent=s==null?'--':s;
-    $('#sdFix').textContent=s==null?'no data':s<4?'no fix':s<cfg.minSat?'weak':s<10?'good':'excellent';
-    $('#sdSat').style.color=s==null||s<4?'#ff3b30':s<cfg.minSat?'#ffea00':'#39ff14';
+    $('#sdAvg').textContent=(st.movT?st.movSum/st.movT*k:0).toFixed(1);
+    const sec=Math.round(st.movT);$('#sdTime').textContent=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');
+    [['#sdUnit',u],['#sdMaxU',u],['#sdAvgU',u]].forEach(([id,v])=>$(id).textContent=v);
+    const scale=Math.max(30,Math.ceil(st.max*1.15/10)*10);$('#sdFill').style.width=Math.min(100,st.mph/scale*100)+'%';$('#sdTopMark').style.left=Math.min(100,st.max/scale*100)+'%';
+    const s=st.sats,lv=s==null?0:s<4?1:s<cfg.minSat?2:s<10?3:4;$('#sdSat').textContent=s==null?'--':s;
+    const bars=$('#sdBars');bars.className='sd-bars'+(lv<=1?' bad':lv===2?' weak':'');bars.querySelectorAll('i').forEach((e,i)=>e.classList.toggle('on',i<lv));
     $('#sdHz').textContent=Math.max(0,Math.round((st.times.length-1)/2))+' Hz';$('#sdHex').textContent=st.hex||'—';$('#sdLen').textContent=st.len;}
+    drawTrace();}
   requestAnimationFrame(frame);}
-setInterval(()=>{if(st.conn==='on'){const now=performance.now();while(st.times.length&&now-st.times[0]>2000)st.times.shift();st.dirty=true;}},500);
-requestAnimationFrame(frame);
+setInterval(()=>{const now=performance.now();while(st.times.length&&now-st.times[0]>2000)st.times.shift();st.dirty=true;},500);
+requestAnimationFrame(frame);renderPacks();
 
-function units(){$('#sdUnit').textContent=st.metric?'KM/H':'MPH';$('#sdMaxU').textContent=st.metric?'km/h':'mph';$('#sdUnitBtn').textContent='Units: '+(st.metric?'KM/H':'MPH');st.dirty=true;}
-units();
 $('#sdGo').onclick=connect;
-$('#sdReset').onclick=()=>{st.max=0;st.dirty=true;msg('Max speed cleared for the next pack.');};
-$('#sdUnitBtn').onclick=()=>{st.metric=!st.metric;save();units();};
-$('#sdDemo').onclick=()=>st.demo?stopDemo():startDemo();
-if($('#sdOpen'))$('#sdOpen').onclick=()=>{$('#sd').hidden=false;document.body.classList.add('sd-open');st.dirty=true;$('#sdGo').focus();};
-$('#sdClose').onclick=()=>{if(!$('#sdOpen'))return;$('#sd').hidden=true;document.body.classList.remove('sd-open');$('#sdOpen').focus();};
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sd').hidden)$('#sdClose').click();});
+$('#sdReset').onclick=()=>{if(st.max>0){st.packs.push(+st.max.toFixed(2));save();renderPacks();msg('Pack '+st.packs.length+' saved. Ready for the next battery.');}
+  st.max=0;st.movT=0;st.movSum=0;st.runStart=0;st.trace=[];st.dirty=true;};
+$('#sdUnitBtn').onclick=()=>{st.metric=!st.metric;save();renderPacks();st.dirty=true;};
+$('#sdDemo').onclick=()=>{st.demo?stopDemo():startDemo();closeSheet();};
+const sheet=$('#sdSheet'),openSheet=()=>{sheet.hidden=false;$('#sdGear').setAttribute('aria-expanded','true');$('#sdSheetX').focus();},closeSheet=()=>{sheet.hidden=true;$('#sdGear').setAttribute('aria-expanded','false');};
+$('#sdGear').onclick=openSheet;$('#sdSheetX').onclick=closeSheet;sheet.addEventListener('click',e=>{if(e.target===sheet)closeSheet();});
+const opener=$('#sdOpen');
+if(opener)opener.onclick=()=>{$('#sd').hidden=false;document.body.classList.add('sd-open');st.dirty=true;$('#sdGo').focus();};
+$('#sdClose').onclick=()=>{if(!opener)return;$('#sd').hidden=true;document.body.classList.remove('sd-open');closeSheet();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sd').hidden){if(!sheet.hidden)closeSheet();else $('#sdClose').click();}});
 })();
-</script>
-</body></html>
+</script></body></html>
