@@ -406,6 +406,27 @@ dl.kv dd{margin:0;font-family:var(--f-m);font-size:12.5px}
 .tfeel i b{position:absolute;top:0;bottom:0;left:50%;background:var(--ok)}
 .tfeel i b.n{background:var(--bad)}
 .tfeel i::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--mute)}
+
+.goal{display:flex;flex-direction:column;gap:10px;border-color:rgba(0,184,255,.35);box-shadow:0 0 24px rgba(0,184,255,.08)}
+.gform{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gform label{font:700 18px/1 var(--f-d);letter-spacing:.04em;text-transform:uppercase}
+.gform input{width:96px;border:1px solid rgba(0,184,255,.5);background:rgba(8,13,22,.8);border-radius:10px;padding:8px 10px;color:var(--ink);font:700 26px/1 var(--f-m);text-align:center}
+.gform span{font:700 18px/1 var(--f-d);color:var(--mute);text-transform:uppercase}
+.gopts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.gopt{position:relative;display:flex;flex-direction:column;gap:6px;padding:13px;border-radius:12px;border:1px solid var(--line);background:rgba(8,13,22,.65);overflow:hidden}
+.gopt::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--hc)}
+.gopt .t{font:700 12px/1 var(--f-d);letter-spacing:.14em;text-transform:uppercase;color:var(--hc)}
+.gopt b{font:700 24px/1 var(--f-m)}
+.gopt b small{font:600 13px/1 var(--f-ui);color:var(--mute);margin-left:4px}
+.gopt p{margin:0;font-size:12.5px;color:#c4cede}
+.gopt .a{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.gopt.best{border-color:rgba(0,184,255,.6);box-shadow:var(--glow)}
+.grec{display:flex;flex-direction:column;gap:8px}
+.grec h3{font-size:17px}
+.gmsg{padding:11px 13px;border-radius:11px;font-weight:600}
+.gmsg.ok{background:rgba(34,197,94,.12);color:#8af0b0}.gmsg.warn{background:rgba(255,176,32,.12);color:#ffd27a}.gmsg.bad{background:rgba(255,93,82,.12);color:#ffb0aa}
+.grec{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.grec>h3,.grec>div:last-child{grid-column:1/-1}
 </style>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6v10H3z"/><path d="M8 20v-6h8v6"/></symbol>
@@ -511,6 +532,14 @@ dl.kv dd{margin:0;font-family:var(--f-m);font-size:12.5px}
     </section>
     <!-- TUNE -->
     <section class="scr tune" id="s-tune" aria-label="Tune" hidden>
+      <div class="card pad goal" style="grid-column:1/-1">
+        <div class="h2row" style="margin-bottom:6px"><h2>Speed goal</h2><small>tell it your target, get the gearing</small></div>
+        <form class="gform" id="goalF"><label for="goalIn">I want to hit</label><input id="goalIn" type="number" inputmode="numeric" min="20" max="120" step="1" value="70" aria-describedby="goalHelp"><span>mph</span>
+          <div class="seg" id="goalCells" role="radiogroup" aria-label="Battery for the goal"><button type="button" role="radio" data-c="3">3S</button><button type="button" role="radio" data-c="4">4S</button></div>
+          <button class="btn pri" type="submit">Show me how</button></form>
+        <p class="fine" id="goalHelp">Uses the same speed estimate as the gauge below: scaled from Traxxas's "60+ mph on 4S" at 14T/50T. Real speed also depends on tyres, battery health and wind, so check it with the speed dash.</p>
+        <div id="goalOut"></div>
+      </div>
       <div class="card pad" style="display:flex;flex-direction:column;gap:12px">
         <div class="h2row" style="margin:0"><h2>Gearing & speed</h2><small>0.8 mod (32P) gears</small></div>
         <div class="gauge"><svg viewBox="0 0 220 130" aria-hidden="true"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#00B8FF"/><stop offset="1" stop-color="#A855F7"/></linearGradient></defs><path class="bg" d="M20 120 A90 90 0 0 1 200 120"/><path class="v" id="gArc" d="M20 120 A90 90 0 0 1 200 120"/></svg>
@@ -767,7 +796,7 @@ const I=n=>'<svg class="i"><use href="#i-'+n+'"/></svg>';
 const KEY='jato-lab-v1';
 const S=Object.assign({screen:'garage',sel:null,hover:null,body:'on',exT:0,labels:true,ptab:'over',paintMode:false,paint:{},installed:[],wish:[],gear:{pin:14,sp:50,cells:4},maint:{},builds:[],filter:'all',sort:'fit',fits:true,q:''},(()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};}})());
 S.sel=null;S.hover=null;S.paintMode=false;S.exT=0;
-function save(){try{const {screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune}=S;localStorage.setItem(KEY,JSON.stringify({screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune}));}catch(e){}}
+function save(){try{const {screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal}=S;localStorage.setItem(KEY,JSON.stringify({screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal}));}catch(e){}}
 function toast(h){const t=$('#toast');t.innerHTML=h;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2400);}
 
 /* ---------- catalogue ---------- */
@@ -1222,6 +1251,54 @@ function feel(){const F={steer:0,bump:0,land:0,trac:0};TUNE.forEach(t=>{const e=
   const L={steer:'Steering response',bump:'Bump soaking',land:'Landing control',trac:'Power-down traction'};
   $('#tFeel').innerHTML=Object.entries(L).map(([k,l])=>{const v=Math.max(-1,Math.min(1,F[k]));const w=Math.abs(v)*50;return '<div><span>'+l+'</span><i><b class="'+(v<0?'n':'')+'" style="'+(v<0?'left:'+(50-w)+'%;':'')+'width:'+w+'%"></b></i></div>';}).join('');}
 const _rt=renderTune;renderTune=function(){_rt();renderTuning();};
+
+
+/* ================= Speed goal ================= */
+const SPURS=[50,54];const PINS=[11,12,13,14,15,16,17,18,19,20];
+const HEAT=h=>h<=1.08?['Cool','#22C55E','Normal temps. Fine for everyday running.']:h<=1.22?['Warm','#f2d21a','Check motor temp after each pack.']:h<=1.38?['Hot','#ff9a1f','Speed-run only: short passes, let it cool between runs.']:['Too hot','#ff5d52','Likely to overheat the motor or ESC. Not recommended.'];
+S.goal=S.goal||{mph:70,cells:4};
+function goalOpts(target,cells){const out=[];SPURS.forEach(sp=>PINS.forEach(pin=>{const g={pin,sp,cells};const m=mph(g),r=sp/pin,heat=Math.pow(cells/4,1.6)*((50/14)/r);out.push({g,m,heat});}));
+  const pen=o=>o.heat+(o.g.sp!==50?0.03:0);   // a stock spur is one less part to buy and fit
+  const ok=out.filter(o=>o.m>=target-0.5).sort((a,b)=>pen(a)-pen(b)||a.m-b.m);return {ok,best:ok[0],max:out.filter(o=>o.heat<=1.38).sort((a,b)=>b.m-a.m)[0]};}
+function pinionPart(t){return UP.find(u=>u.grp==='pinion'&&new RegExp('Pinion '+t+'T','i').test(u.name));}
+function storeQ(q){const e=encodeURIComponent(q);return [['AMain','https://www.amainhobbies.com/search?q='+e],['eBay','https://www.ebay.com/sch/i.html?_nkw='+e],['Amazon','https://www.amazon.com/s?k='+e]].map(([n,h])=>'<a class="btn sm" href="'+h+'" target="_blank" rel="noopener">'+n+I('ext')+'</a>').join('');}
+function renderGoal(){const out=$('#goalOut');if(!out)return;$('#goalIn').value=S.goal.mph;document.querySelectorAll('#goalCells button').forEach(b=>b.setAttribute('aria-checked',+b.dataset.c===S.goal.cells));
+  const T=S.goal.mph,C=S.goal.cells,{ok,best,max}=goalOpts(T,C);const cur=mph();let h='';
+  if(cur>=T-0.5&&S.gear.cells===C)h+='<div class="gmsg ok">Your current gearing ('+S.gear.pin+'T/'+S.gear.sp+'T on '+S.gear.cells+'S) already estimates about '+cur.toFixed(0)+' mph.</div>';
+  if(!best||best.heat>1.38){h+='<div class="gmsg bad">'+T+' mph is past what the stock VXL-4s system can gear for safely on '+C+'S. The most it reasonably reaches is about '+(max?max.m.toFixed(0)+' mph ('+max.g.pin+'T/'+max.g.sp+'T, running hot)':'—')+'. Going further needs a more powerful (6S-capable) motor and ESC, which isn\'t in this catalogue yet. Ask the AI mechanic for options.</div>';}
+  const show=(ok.length?ok:[max]).filter(Boolean).filter((o,i,a)=>a.findIndex(x=>x.g.pin===o.g.pin&&x.g.sp===o.g.sp)===i).slice(0,4);
+  if(show.length){h+='<div class="gopts">'+show.map((o,i)=>{const [hl,hc,ht]=HEAT(o.heat);const pp=pinionPart(o.g.pin);const sp54=o.g.sp===54?UP.find(u=>u.grp==='spur'):null;const same=o.g.pin===S.gear.pin&&o.g.sp===S.gear.sp&&o.g.cells===S.gear.cells;
+      return '<div class="gopt'+(i===0&&o.heat<=1.38?' best':'')+'" style="--hc:'+hc+'"><span class="t">'+(i===0&&o.heat<=1.38?'Best match · ':'')+hl+'</span><b>'+o.g.pin+'T / '+o.g.sp+'T<small>'+o.g.cells+'S</small></b>'+
+        '<p>≈ '+o.m.toFixed(0)+' mph · ratio '+(o.g.sp/o.g.pin).toFixed(2)+':1 · motor load '+Math.round(o.heat*100)+'% of stock</p><p>'+ht+'</p>'+
+        '<p class="fine">Needs: '+(o.g.pin===14?'stock pinion':o.g.pin+'T 0.8 mod pinion, 5 mm bore')+(o.g.sp===50?', stock 50T spur':', 54T spur')+'.</p>'+
+        '<div class="a"><button type="button" class="btn sm pri" data-ga="'+o.g.pin+','+o.g.sp+','+o.g.cells+'"'+(same?' disabled':'')+'>'+(same?'Your gearing':'Use this gearing')+'</button>'+
+        (pp?'<button type="button" class="btn sm" data-gw="'+esc(pp.key)+'">'+(inWish(pp.key)?'Pinion saved':I('plus')+'Wishlist pinion')+'</button>':o.g.pin!==14?storeQ('Traxxas '+o.g.pin+'T 0.8 metric pinion 5mm'):'')+
+        (sp54?'<button type="button" class="btn sm" data-gw="'+esc(sp54.key)+'">'+(inWish(sp54.key)?'Spur saved':I('plus')+'Wishlist 54T spur')+'</button>':'')+'</div></div>';}).join('')+'</div>';}
+  // other upgrades that support this goal
+  const rec=[];const add=(k,why)=>{const u=UPK[k]||UP.find(x=>x.part_number===k);if(u&&!rec.some(r=>r.u===u))rec.push({u,why});};
+  const pinNeed=best?best.g.pin:20,hot=best?best.heat>1.08:true;
+  const find=re=>UP.find(u=>re.test(u.name));
+  if(hot){const fan=find(/fan kit/i);if(fan)rec.push({u:fan,why:'Taller gearing makes more heat. A fan keeps the 540XL under 160°F.'});}
+  if(pinNeed>=17){const hp=find(/Pinion 18T.*hardened|Pinion 20T/i);if(hp)rec.push({u:hp,why:'Big pinions wear fast; hardened steel lasts on 4S.'});}
+  if(T>=62){const bt=find(/belted/i);if(bt)rec.push({u:bt,why:'Belted tyres stop ballooning at speed, so the buggy stays planted and the speed estimate holds.'});
+    const lw=find(/low-profile race wing/i);if(lw)rec.push({u:lw,why:'Less drag from the wing at the top end.'});}
+  const gps=find(/GPS Module/i),tmp=find(/Temperature sensor/i),tex=find(/Telemetry Expander/i),lnk=find(/Link Wireless Module/i);
+  if(gps)rec.push({u:gps,why:'Shows your real top speed on the TQi radio or Traxxas Link app, so you know when you have hit '+T+'.'});
+  if(tmp&&hot)rec.push({u:tmp,why:'Live motor temperature while you tune toward the goal.'});
+  if(tex&&(gps||tmp))rec.push({u:tex,why:'Needed to plug the GPS and temperature sensors in.'});
+  if(lnk)rec.push({u:lnk,why:'Lets the Traxxas Link app on your phone log speed and temps.'});
+  const bat=UP.find(u=>u.part_number==='2889X');if(bat&&C===4)rec.push({u:bat,why:'A fresh, fully charged 4S pack: voltage sag costs top speed.'});
+  h+='<div class="grec"><h3>Also helps you reach '+T+' mph</h3>'+rec.map(r=>{const u=r.u,[fk,ft]=fitInfo(u),pr=price(u);return '<div class="up'+(isInst(u.key)?' inst':'')+'"><div class="t"><b>'+esc(u.name)+'</b><span>'+(pr||'')+'</span></div><div class="tags"><span class="tag">'+esc(u.brand||'')+(u.part_number?' · '+esc(u.part_number):'')+'</span><span class="tag '+fk+'">'+esc(ft)+'</span>'+(isInst(u.key)?'<span class="tag vi">On your Jato</span>':'')+'</div><p>'+esc(r.why)+'</p>'+
+    '<div class="a"><button type="button" class="btn sm '+(inWish(u.key)?'':'pri')+'" data-wish="'+esc(u.key)+'">'+(inWish(u.key)?I('check')+'In wishlist':I('plus')+'Wishlist')+'</button><button type="button" class="btn sm" data-inst="'+esc(u.key)+'">'+(isInst(u.key)?'Remove from build':'Mark installed')+'</button>'+stores(u)+'</div></div>';}).join('')+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" id="goalWishAll">'+I('plus')+'Add all to wishlist</button><button type="button" class="btn sm ai" id="goalAsk">'+I('chat')+'Ask the mechanic for a '+T+' mph plan</button></div></div>';
+  out.innerHTML=h;wireUps(out);
+  out.querySelectorAll('[data-ga]').forEach(b=>b.onclick=()=>{const [pin,sp,c]=b.dataset.ga.split(',').map(Number);S.gear={pin,sp,cells:c};save();heroDirty=true;chime();toast('<b>Gearing set</b> '+pin+'T / '+sp+'T on '+c+'S · ≈ '+mph().toFixed(0)+' mph');renderTune();});
+  out.querySelectorAll('[data-gw]').forEach(b=>b.onclick=()=>{toggleWish(b.dataset.gw);renderGoal();});
+  $('#goalWishAll').onclick=()=>{rec.forEach(r=>{if(!inWish(r.u.key)&&!isInst(r.u.key))S.wish.push(r.u.key);});if(best&&pinionPart(best.g.pin)&&!inWish(pinionPart(best.g.pin).key))S.wish.push(pinionPart(best.g.pin).key);save();renderWish();renderGoal();toast('<b>Added</b> the '+T+' mph parts to your wishlist');};
+  $('#goalAsk').onclick=()=>ask('I want my stock Jato 4X4 VXL 4S to hit '+T+' mph on '+C+'S. My gearing is '+S.gear.pin+'T/'+S.gear.sp+'T. What gearing, parts and setup do you recommend, and how do I keep temperatures safe?');}
+$('#goalF').onsubmit=e=>{e.preventDefault();const v=Math.round(+$('#goalIn').value);if(!v||v<20||v>120){toast('Enter a goal between 20 and 120 mph');return;}S.goal.mph=v;save();tick();renderGoal();};
+document.querySelectorAll('#goalCells button').forEach(b=>b.onclick=()=>{S.goal.cells=+b.dataset.c;save();renderGoal();});
+const _rt2=renderTune;renderTune=function(){_rt2();renderGoal();};
 
 go(S.screen||'garage');requestAnimationFrame(frame);
 </script>

@@ -178,4 +178,52 @@ function feel(){const F={steer:0,bump:0,land:0,trac:0};TUNE.forEach(t=>{const e=
   $('#tFeel').innerHTML=Object.entries(L).map(([k,l])=>{const v=Math.max(-1,Math.min(1,F[k]));const w=Math.abs(v)*50;return '<div><span>'+l+'</span><i><b class="'+(v<0?'n':'')+'" style="'+(v<0?'left:'+(50-w)+'%;':'')+'width:'+w+'%"></b></i></div>';}).join('');}
 const _rt=renderTune;renderTune=function(){_rt();renderTuning();};
 
+
+/* ================= Speed goal ================= */
+const SPURS=[50,54];const PINS=[11,12,13,14,15,16,17,18,19,20];
+const HEAT=h=>h<=1.08?['Cool','#22C55E','Normal temps. Fine for everyday running.']:h<=1.22?['Warm','#f2d21a','Check motor temp after each pack.']:h<=1.38?['Hot','#ff9a1f','Speed-run only: short passes, let it cool between runs.']:['Too hot','#ff5d52','Likely to overheat the motor or ESC. Not recommended.'];
+S.goal=S.goal||{mph:70,cells:4};
+function goalOpts(target,cells){const out=[];SPURS.forEach(sp=>PINS.forEach(pin=>{const g={pin,sp,cells};const m=mph(g),r=sp/pin,heat=Math.pow(cells/4,1.6)*((50/14)/r);out.push({g,m,heat});}));
+  const pen=o=>o.heat+(o.g.sp!==50?0.03:0);   // a stock spur is one less part to buy and fit
+  const ok=out.filter(o=>o.m>=target-0.5).sort((a,b)=>pen(a)-pen(b)||a.m-b.m);return {ok,best:ok[0],max:out.filter(o=>o.heat<=1.38).sort((a,b)=>b.m-a.m)[0]};}
+function pinionPart(t){return UP.find(u=>u.grp==='pinion'&&new RegExp('Pinion '+t+'T','i').test(u.name));}
+function storeQ(q){const e=encodeURIComponent(q);return [['AMain','https://www.amainhobbies.com/search?q='+e],['eBay','https://www.ebay.com/sch/i.html?_nkw='+e],['Amazon','https://www.amazon.com/s?k='+e]].map(([n,h])=>'<a class="btn sm" href="'+h+'" target="_blank" rel="noopener">'+n+I('ext')+'</a>').join('');}
+function renderGoal(){const out=$('#goalOut');if(!out)return;$('#goalIn').value=S.goal.mph;document.querySelectorAll('#goalCells button').forEach(b=>b.setAttribute('aria-checked',+b.dataset.c===S.goal.cells));
+  const T=S.goal.mph,C=S.goal.cells,{ok,best,max}=goalOpts(T,C);const cur=mph();let h='';
+  if(cur>=T-0.5&&S.gear.cells===C)h+='<div class="gmsg ok">Your current gearing ('+S.gear.pin+'T/'+S.gear.sp+'T on '+S.gear.cells+'S) already estimates about '+cur.toFixed(0)+' mph.</div>';
+  if(!best||best.heat>1.38){h+='<div class="gmsg bad">'+T+' mph is past what the stock VXL-4s system can gear for safely on '+C+'S. The most it reasonably reaches is about '+(max?max.m.toFixed(0)+' mph ('+max.g.pin+'T/'+max.g.sp+'T, running hot)':'—')+'. Going further needs a more powerful (6S-capable) motor and ESC, which isn\'t in this catalogue yet. Ask the AI mechanic for options.</div>';}
+  const show=(ok.length?ok:[max]).filter(Boolean).filter((o,i,a)=>a.findIndex(x=>x.g.pin===o.g.pin&&x.g.sp===o.g.sp)===i).slice(0,4);
+  if(show.length){h+='<div class="gopts">'+show.map((o,i)=>{const [hl,hc,ht]=HEAT(o.heat);const pp=pinionPart(o.g.pin);const sp54=o.g.sp===54?UP.find(u=>u.grp==='spur'):null;const same=o.g.pin===S.gear.pin&&o.g.sp===S.gear.sp&&o.g.cells===S.gear.cells;
+      return '<div class="gopt'+(i===0&&o.heat<=1.38?' best':'')+'" style="--hc:'+hc+'"><span class="t">'+(i===0&&o.heat<=1.38?'Best match · ':'')+hl+'</span><b>'+o.g.pin+'T / '+o.g.sp+'T<small>'+o.g.cells+'S</small></b>'+
+        '<p>≈ '+o.m.toFixed(0)+' mph · ratio '+(o.g.sp/o.g.pin).toFixed(2)+':1 · motor load '+Math.round(o.heat*100)+'% of stock</p><p>'+ht+'</p>'+
+        '<p class="fine">Needs: '+(o.g.pin===14?'stock pinion':o.g.pin+'T 0.8 mod pinion, 5 mm bore')+(o.g.sp===50?', stock 50T spur':', 54T spur')+'.</p>'+
+        '<div class="a"><button type="button" class="btn sm pri" data-ga="'+o.g.pin+','+o.g.sp+','+o.g.cells+'"'+(same?' disabled':'')+'>'+(same?'Your gearing':'Use this gearing')+'</button>'+
+        (pp?'<button type="button" class="btn sm" data-gw="'+esc(pp.key)+'">'+(inWish(pp.key)?'Pinion saved':I('plus')+'Wishlist pinion')+'</button>':o.g.pin!==14?storeQ('Traxxas '+o.g.pin+'T 0.8 metric pinion 5mm'):'')+
+        (sp54?'<button type="button" class="btn sm" data-gw="'+esc(sp54.key)+'">'+(inWish(sp54.key)?'Spur saved':I('plus')+'Wishlist 54T spur')+'</button>':'')+'</div></div>';}).join('')+'</div>';}
+  // other upgrades that support this goal
+  const rec=[];const add=(k,why)=>{const u=UPK[k]||UP.find(x=>x.part_number===k);if(u&&!rec.some(r=>r.u===u))rec.push({u,why});};
+  const pinNeed=best?best.g.pin:20,hot=best?best.heat>1.08:true;
+  const find=re=>UP.find(u=>re.test(u.name));
+  if(hot){const fan=find(/fan kit/i);if(fan)rec.push({u:fan,why:'Taller gearing makes more heat. A fan keeps the 540XL under 160°F.'});}
+  if(pinNeed>=17){const hp=find(/Pinion 18T.*hardened|Pinion 20T/i);if(hp)rec.push({u:hp,why:'Big pinions wear fast; hardened steel lasts on 4S.'});}
+  if(T>=62){const bt=find(/belted/i);if(bt)rec.push({u:bt,why:'Belted tyres stop ballooning at speed, so the buggy stays planted and the speed estimate holds.'});
+    const lw=find(/low-profile race wing/i);if(lw)rec.push({u:lw,why:'Less drag from the wing at the top end.'});}
+  const gps=find(/GPS Module/i),tmp=find(/Temperature sensor/i),tex=find(/Telemetry Expander/i),lnk=find(/Link Wireless Module/i);
+  if(gps)rec.push({u:gps,why:'Shows your real top speed on the TQi radio or Traxxas Link app, so you know when you have hit '+T+'.'});
+  if(tmp&&hot)rec.push({u:tmp,why:'Live motor temperature while you tune toward the goal.'});
+  if(tex&&(gps||tmp))rec.push({u:tex,why:'Needed to plug the GPS and temperature sensors in.'});
+  if(lnk)rec.push({u:lnk,why:'Lets the Traxxas Link app on your phone log speed and temps.'});
+  const bat=UP.find(u=>u.part_number==='2889X');if(bat&&C===4)rec.push({u:bat,why:'A fresh, fully charged 4S pack: voltage sag costs top speed.'});
+  h+='<div class="grec"><h3>Also helps you reach '+T+' mph</h3>'+rec.map(r=>{const u=r.u,[fk,ft]=fitInfo(u),pr=price(u);return '<div class="up'+(isInst(u.key)?' inst':'')+'"><div class="t"><b>'+esc(u.name)+'</b><span>'+(pr||'')+'</span></div><div class="tags"><span class="tag">'+esc(u.brand||'')+(u.part_number?' · '+esc(u.part_number):'')+'</span><span class="tag '+fk+'">'+esc(ft)+'</span>'+(isInst(u.key)?'<span class="tag vi">On your Jato</span>':'')+'</div><p>'+esc(r.why)+'</p>'+
+    '<div class="a"><button type="button" class="btn sm '+(inWish(u.key)?'':'pri')+'" data-wish="'+esc(u.key)+'">'+(inWish(u.key)?I('check')+'In wishlist':I('plus')+'Wishlist')+'</button><button type="button" class="btn sm" data-inst="'+esc(u.key)+'">'+(isInst(u.key)?'Remove from build':'Mark installed')+'</button>'+stores(u)+'</div></div>';}).join('')+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" id="goalWishAll">'+I('plus')+'Add all to wishlist</button><button type="button" class="btn sm ai" id="goalAsk">'+I('chat')+'Ask the mechanic for a '+T+' mph plan</button></div></div>';
+  out.innerHTML=h;wireUps(out);
+  out.querySelectorAll('[data-ga]').forEach(b=>b.onclick=()=>{const [pin,sp,c]=b.dataset.ga.split(',').map(Number);S.gear={pin,sp,cells:c};save();heroDirty=true;chime();toast('<b>Gearing set</b> '+pin+'T / '+sp+'T on '+c+'S · ≈ '+mph().toFixed(0)+' mph');renderTune();});
+  out.querySelectorAll('[data-gw]').forEach(b=>b.onclick=()=>{toggleWish(b.dataset.gw);renderGoal();});
+  $('#goalWishAll').onclick=()=>{rec.forEach(r=>{if(!inWish(r.u.key)&&!isInst(r.u.key))S.wish.push(r.u.key);});if(best&&pinionPart(best.g.pin)&&!inWish(pinionPart(best.g.pin).key))S.wish.push(pinionPart(best.g.pin).key);save();renderWish();renderGoal();toast('<b>Added</b> the '+T+' mph parts to your wishlist');};
+  $('#goalAsk').onclick=()=>ask('I want my stock Jato 4X4 VXL 4S to hit '+T+' mph on '+C+'S. My gearing is '+S.gear.pin+'T/'+S.gear.sp+'T. What gearing, parts and setup do you recommend, and how do I keep temperatures safe?');}
+$('#goalF').onsubmit=e=>{e.preventDefault();const v=Math.round(+$('#goalIn').value);if(!v||v<20||v>120){toast('Enter a goal between 20 and 120 mph');return;}S.goal.mph=v;save();tick();renderGoal();};
+document.querySelectorAll('#goalCells button').forEach(b=>b.onclick=()=>{S.goal.cells=+b.dataset.c;save();renderGoal();});
+const _rt2=renderTune;renderTune=function(){_rt2();renderGoal();};
+
 go(S.screen||'garage');requestAnimationFrame(frame);

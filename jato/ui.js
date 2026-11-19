@@ -5,7 +5,7 @@ const I=n=>'<svg class="i"><use href="#i-'+n+'"/></svg>';
 const KEY='jato-lab-v1';
 const S=Object.assign({screen:'garage',sel:null,hover:null,body:'on',exT:0,labels:true,ptab:'over',paintMode:false,paint:{},installed:[],wish:[],gear:{pin:14,sp:50,cells:4},maint:{},builds:[],filter:'all',sort:'fit',fits:true,q:''},(()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};}})());
 S.sel=null;S.hover=null;S.paintMode=false;S.exT=0;
-function save(){try{const {screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune}=S;localStorage.setItem(KEY,JSON.stringify({screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune}));}catch(e){}}
+function save(){try{const {screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal}=S;localStorage.setItem(KEY,JSON.stringify({screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal}));}catch(e){}}
 function toast(h){const t=$('#toast');t.innerHTML=h;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2400);}
 
 /* ---------- catalogue ---------- */

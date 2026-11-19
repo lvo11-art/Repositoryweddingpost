@@ -108,6 +108,14 @@
     </section>
     <!-- TUNE -->
     <section class="scr tune" id="s-tune" aria-label="Tune" hidden>
+      <div class="card pad goal" style="grid-column:1/-1">
+        <div class="h2row" style="margin-bottom:6px"><h2>Speed goal</h2><small>tell it your target, get the gearing</small></div>
+        <form class="gform" id="goalF"><label for="goalIn">I want to hit</label><input id="goalIn" type="number" inputmode="numeric" min="20" max="120" step="1" value="70" aria-describedby="goalHelp"><span>mph</span>
+          <div class="seg" id="goalCells" role="radiogroup" aria-label="Battery for the goal"><button type="button" role="radio" data-c="3">3S</button><button type="button" role="radio" data-c="4">4S</button></div>
+          <button class="btn pri" type="submit">Show me how</button></form>
+        <p class="fine" id="goalHelp">Uses the same speed estimate as the gauge below: scaled from Traxxas's "60+ mph on 4S" at 14T/50T. Real speed also depends on tyres, battery health and wind, so check it with the speed dash.</p>
+        <div id="goalOut"></div>
+      </div>
       <div class="card pad" style="display:flex;flex-direction:column;gap:12px">
         <div class="h2row" style="margin:0"><h2>Gearing & speed</h2><small>0.8 mod (32P) gears</small></div>
         <div class="gauge"><svg viewBox="0 0 220 130" aria-hidden="true"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#00B8FF"/><stop offset="1" stop-color="#A855F7"/></linearGradient></defs><path class="bg" d="M20 120 A90 90 0 0 1 200 120"/><path class="v" id="gArc" d="M20 120 A90 90 0 0 1 200 120"/></svg>
