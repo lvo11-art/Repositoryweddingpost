@@ -438,6 +438,20 @@ dl.kv dd{margin:0;font-family:var(--f-m);font-size:12.5px}
 .part-img{width:100%;max-height:170px;padding:8px}
 .uc-img{width:100%;height:84px;padding:4px}
 .ucard{width:210px}
+
+.tqi{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.tqi h3{font-size:19px;text-transform:uppercase;letter-spacing:.05em}
+.tqiwrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+.tqit{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
+.tqit th,.tqit td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.tqit tr:last-child td{border-bottom:0}
+.tqit thead th{font:700 13px/1 var(--f-d);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);background:rgba(8,13,22,.6)}
+.tqit tbody th{font-weight:600;width:24%}
+.tqit tbody th small{display:block;color:var(--mute);font-weight:400;font-size:11.5px;margin-top:3px}
+.tqit td b{font:700 15px/1 var(--f-m);display:block}
+.tqit td small{display:block;color:var(--mute);font-size:11.5px;margin-top:4px}
+.tqit .on{background:rgba(0,184,255,.09)}
+.tqit thead .on{color:var(--ink);box-shadow:inset 0 -2px 0 var(--blue)}
 </style>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6v10H3z"/><path d="M8 20v-6h8v6"/></symbol>
@@ -576,6 +590,10 @@ dl.kv dd{margin:0;font-family:var(--f-m);font-size:12.5px}
         <div class="seg" id="tPre" role="group" aria-label="Presets"></div>
         <div class="tgrid" id="tSliders"></div>
         <div class="tfeel" id="tFeel"></div>
+        <div class="tqi"><div class="h2row" style="margin:6px 0 0"><h3>TQi radio & Traxxas Link settings</h3><small>per run type</small></div>
+          <div class="seg" id="tqiRun" role="radiogroup" aria-label="Run type"></div>
+          <div class="tqiwrap"><table class="tqit" id="tqiTable"></table></div>
+          <p class="fine" id="tqiNote"></p></div>
         <p class="fine">Stock oils are 50 wt front and 60 wt rear shocks (from a shop chart), about 30K in the front diff and grease in the rear (from one retailer). Camber and toe are typical starting points, not Traxxas figures. Check the manual before you rebuild.</p></div>
     </section>
     <!-- MECHANIC -->
@@ -816,7 +834,7 @@ fetch('parts-img.json').then(r=>r.ok?r.json():null).then(j=>{if(j){PIMG=j;fillIm
 new MutationObserver(()=>fillImgs()).observe(document.documentElement,{childList:true,subtree:true});
 const S=Object.assign({screen:'garage',sel:null,hover:null,body:'on',exT:0,labels:true,ptab:'over',paintMode:false,paint:{},installed:[],wish:[],gear:{pin:14,sp:50,cells:4},maint:{},builds:[],filter:'all',sort:'fit',fits:true,q:''},(()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};}})());
 S.sel=null;S.hover=null;S.paintMode=false;S.exT=0;
-function save(){try{const {screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal}=S;localStorage.setItem(KEY,JSON.stringify({screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal}));}catch(e){}}
+function save(){try{const {screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal,run}=S;localStorage.setItem(KEY,JSON.stringify({screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal,run}));}catch(e){}}
 function toast(h){const t=$('#toast');t.innerHTML=h;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2400);}
 
 /* ---------- catalogue ---------- */
@@ -1261,7 +1279,7 @@ S.tune=S.tune||{};
 const tv2=k=>{const t=TUNE.find(x=>x.k===k);return S.tune[k]==null?t.stock:S.tune[k];};
 function renderTuning(){if(!$('#tSliders'))return;
   $('#tPre').innerHTML=Object.entries(TPRE).map(([k,[n,v]])=>'<button type="button" data-p="'+k+'" aria-pressed="'+(TUNE.every(t=>(v[t.k]==null?t.stock:v[t.k])===tv2(t.k)))+'">'+n+'</button>').join('');
-  $('#tPre').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.tune={...TPRE[b.dataset.p][1]};save();tick();renderTuning();toast('<b>Tune</b> '+TPRE[b.dataset.p][0]);});
+  $('#tPre').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.tune={...TPRE[b.dataset.p][1]};if(b.dataset.p!=='stock')S.run=b.dataset.p;save();tick();renderTuning();toast('<b>Tune</b> '+TPRE[b.dataset.p][0]);});
   $('#tSliders').innerHTML=TUNE.map(t=>{const v=tv2(t.k),pct=(t.stock-t.min)/(t.max-t.min)*100;return '<div class="tsl"><div class="th"><small>'+t.g+'</small><b>'+t.n+'</b><em class="'+(v!==t.stock?'ch':'')+'" id="tv-'+t.k+'">'+esc(t.fmt(v))+'</em></div>'+
     '<div class="rng"><input type="range" id="tr-'+t.k+'" min="'+t.min+'" max="'+t.max+'" step="'+t.step+'" value="'+v+'" aria-label="'+t.n+'"><span class="mk" style="left:calc('+pct+'% + '+(8-pct*0.16)+'px)" title="Stock"></span></div>'+
     '<div class="ends"><span>'+t.lo+'</span><span>Stock · '+esc(t.fmt(t.stock))+'</span><span>'+t.hi+'</span></div><p id="tt-'+t.k+'">'+esc(t.tip(v,t.stock))+'</p></div>';}).join('');
@@ -1319,6 +1337,28 @@ function renderGoal(){const out=$('#goalOut');if(!out)return;$('#goalIn').value=
 $('#goalF').onsubmit=e=>{e.preventDefault();const v=Math.round(+$('#goalIn').value);if(!v||v<20||v>120){toast('Enter a goal between 20 and 120 mph');return;}S.goal.mph=v;save();tick();renderGoal();};
 document.querySelectorAll('#goalCells button').forEach(b=>b.onclick=()=>{S.goal.cells=+b.dataset.c;save();renderGoal();});
 const _rt2=renderTune;renderTune=function(){_rt2();renderGoal();};
+
+
+/* ================= TQi radio & Traxxas Link settings ================= */
+const RUNS=[['bash','Bashing','Dirt, grass, jumps'],['track','Track','Pavement or racing'],['speed','Speed run','Straight-line top speed'],['learn','Learner','New driver or kids']];
+const TQI=[
+ {n:'Drive profile (ESC)',w:'Set on the VXL-4s by holding the EZ-Set button; also in the Link app.',v:{bash:['Sport','100% forward, brakes and reverse (factory setting)'],track:['Race','100% forward and brakes, no reverse'],speed:['Race','No reverse, so a hard stop can\'t throw it backwards'],learn:['Training','50% forward and reverse, full brakes']}},
+ {n:'Low-voltage detection',w:'Two-stage cutoff that protects LiPo packs.',v:{bash:['On','Always on with LiPo'],track:['On',''],speed:['On',''],learn:['On','']}},
+ {n:'Steering sensitivity (expo)',w:'0% is linear. Higher makes small stick moves gentler near centre.',v:{bash:['15–25%','Calms twitchy steering on loose ground'],track:['0–10%','Sharp, direct response'],speed:['30–40%','Tiny corrections at 70 mph stay small'],learn:['30%','Forgiving near centre']}},
+ {n:'Steering percentage (dual rate)',w:'How far the wheels turn at full stick.',v:{bash:['90–100%',''],track:['100%','Full lock for tight corners'],speed:['55–70%','Stops a full-lock swerve rolling it at speed'],learn:['70–80%','']}},
+ {n:'Throttle sensitivity (expo)',w:'0% is linear. Higher gives a softer roll-on.',v:{bash:['10–20%','Smoother take-offs on grass and dirt'],track:['0–10%',''],speed:['20–30%','Roll on gently so it doesn\'t wheelie or spin up'],learn:['30–40%','']}},
+ {n:'Braking percentage',w:'Brake strength at full brake.',v:{bash:['80–90%',''],track:['100%','Late braking into corners'],speed:['60–70%','Hard braking from 70 mph can flip or skid it'],learn:['70%','']}},
+ {n:'Traxxas Stability Management (TSM)',w:'Steering help when the rear slides; uses the 6533 receiver.',v:{bash:['40–60%','Helps on loose and wet ground'],track:['0–20%','Too much dulls the steering on high grip'],speed:['70–90%','Keeps it straight at full throttle'],learn:['80–100%','Most help']}},
+ {n:'Steering end points (L / R)',w:'Limits the servo travel at full lock.',v:{bash:['~95% / 95%','Just short of binding'],track:['~95% / 95%',''],speed:['~95% / 95%',''],learn:['~95% / 95%','']},all:'Set each side just before the servo buzzes against the stops at full lock.'},
+ {n:'Throttle & steering trim',w:'Neutral point and straight-line tracking.',v:{bash:['Centre','Trim until it drives straight'],track:['Centre',''],speed:['Centre','Recheck before every pass'],learn:['Centre','']}}];
+S.run=S.run||'bash';
+function renderTqi(){const t=$('#tqiTable');if(!t)return;
+  $('#tqiRun').innerHTML=RUNS.map(([k,n])=>'<button type="button" role="radio" data-r="'+k+'" aria-checked="'+(S.run===k)+'">'+n+'</button>').join('');
+  $('#tqiRun').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.run=b.dataset.r;save();tick();renderTqi();});
+  t.innerHTML='<thead><tr><th scope="col">Setting</th>'+RUNS.map(([k,n,d])=>'<th scope="col" class="'+(S.run===k?'on':'')+'">'+n+'<br><small style="font:400 11px var(--f-ui);letter-spacing:0;text-transform:none">'+d+'</small></th>').join('')+'</tr></thead><tbody>'+
+    TQI.map(r=>'<tr><th scope="row">'+esc(r.n)+'<small>'+esc(r.w)+'</small></th>'+RUNS.map(([k])=>{const [v,s]=r.v[k];return '<td class="'+(S.run===k?'on':'')+'"><b>'+esc(v)+'</b>'+(s?'<small>'+esc(s)+'</small>':'')+'</td>';}).join('')+'</tr>').join('')+'</tbody>';
+  $('#tqiNote').textContent='These are starting points for your Jato, not Traxxas factory numbers (factory is Sport profile, linear sensitivity, 100% steering and braking). Sensitivity, steering %, braking % and TSM are in the Traxxas Link app (needs the 6511 Bluetooth module) or the TQi menu, and any of them can be put on the multi-function knob. Slider ranges can differ by app and firmware version.';}
+const _rtq=renderTuning;renderTuning=function(){_rtq();renderTqi();};
 
 go(S.screen||'garage');requestAnimationFrame(frame);
 </script>

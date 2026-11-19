@@ -167,7 +167,7 @@ S.tune=S.tune||{};
 const tv2=k=>{const t=TUNE.find(x=>x.k===k);return S.tune[k]==null?t.stock:S.tune[k];};
 function renderTuning(){if(!$('#tSliders'))return;
   $('#tPre').innerHTML=Object.entries(TPRE).map(([k,[n,v]])=>'<button type="button" data-p="'+k+'" aria-pressed="'+(TUNE.every(t=>(v[t.k]==null?t.stock:v[t.k])===tv2(t.k)))+'">'+n+'</button>').join('');
-  $('#tPre').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.tune={...TPRE[b.dataset.p][1]};save();tick();renderTuning();toast('<b>Tune</b> '+TPRE[b.dataset.p][0]);});
+  $('#tPre').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.tune={...TPRE[b.dataset.p][1]};if(b.dataset.p!=='stock')S.run=b.dataset.p;save();tick();renderTuning();toast('<b>Tune</b> '+TPRE[b.dataset.p][0]);});
   $('#tSliders').innerHTML=TUNE.map(t=>{const v=tv2(t.k),pct=(t.stock-t.min)/(t.max-t.min)*100;return '<div class="tsl"><div class="th"><small>'+t.g+'</small><b>'+t.n+'</b><em class="'+(v!==t.stock?'ch':'')+'" id="tv-'+t.k+'">'+esc(t.fmt(v))+'</em></div>'+
     '<div class="rng"><input type="range" id="tr-'+t.k+'" min="'+t.min+'" max="'+t.max+'" step="'+t.step+'" value="'+v+'" aria-label="'+t.n+'"><span class="mk" style="left:calc('+pct+'% + '+(8-pct*0.16)+'px)" title="Stock"></span></div>'+
     '<div class="ends"><span>'+t.lo+'</span><span>Stock · '+esc(t.fmt(t.stock))+'</span><span>'+t.hi+'</span></div><p id="tt-'+t.k+'">'+esc(t.tip(v,t.stock))+'</p></div>';}).join('');
@@ -225,5 +225,27 @@ function renderGoal(){const out=$('#goalOut');if(!out)return;$('#goalIn').value=
 $('#goalF').onsubmit=e=>{e.preventDefault();const v=Math.round(+$('#goalIn').value);if(!v||v<20||v>120){toast('Enter a goal between 20 and 120 mph');return;}S.goal.mph=v;save();tick();renderGoal();};
 document.querySelectorAll('#goalCells button').forEach(b=>b.onclick=()=>{S.goal.cells=+b.dataset.c;save();renderGoal();});
 const _rt2=renderTune;renderTune=function(){_rt2();renderGoal();};
+
+
+/* ================= TQi radio & Traxxas Link settings ================= */
+const RUNS=[['bash','Bashing','Dirt, grass, jumps'],['track','Track','Pavement or racing'],['speed','Speed run','Straight-line top speed'],['learn','Learner','New driver or kids']];
+const TQI=[
+ {n:'Drive profile (ESC)',w:'Set on the VXL-4s by holding the EZ-Set button; also in the Link app.',v:{bash:['Sport','100% forward, brakes and reverse (factory setting)'],track:['Race','100% forward and brakes, no reverse'],speed:['Race','No reverse, so a hard stop can\'t throw it backwards'],learn:['Training','50% forward and reverse, full brakes']}},
+ {n:'Low-voltage detection',w:'Two-stage cutoff that protects LiPo packs.',v:{bash:['On','Always on with LiPo'],track:['On',''],speed:['On',''],learn:['On','']}},
+ {n:'Steering sensitivity (expo)',w:'0% is linear. Higher makes small stick moves gentler near centre.',v:{bash:['15–25%','Calms twitchy steering on loose ground'],track:['0–10%','Sharp, direct response'],speed:['30–40%','Tiny corrections at 70 mph stay small'],learn:['30%','Forgiving near centre']}},
+ {n:'Steering percentage (dual rate)',w:'How far the wheels turn at full stick.',v:{bash:['90–100%',''],track:['100%','Full lock for tight corners'],speed:['55–70%','Stops a full-lock swerve rolling it at speed'],learn:['70–80%','']}},
+ {n:'Throttle sensitivity (expo)',w:'0% is linear. Higher gives a softer roll-on.',v:{bash:['10–20%','Smoother take-offs on grass and dirt'],track:['0–10%',''],speed:['20–30%','Roll on gently so it doesn\'t wheelie or spin up'],learn:['30–40%','']}},
+ {n:'Braking percentage',w:'Brake strength at full brake.',v:{bash:['80–90%',''],track:['100%','Late braking into corners'],speed:['60–70%','Hard braking from 70 mph can flip or skid it'],learn:['70%','']}},
+ {n:'Traxxas Stability Management (TSM)',w:'Steering help when the rear slides; uses the 6533 receiver.',v:{bash:['40–60%','Helps on loose and wet ground'],track:['0–20%','Too much dulls the steering on high grip'],speed:['70–90%','Keeps it straight at full throttle'],learn:['80–100%','Most help']}},
+ {n:'Steering end points (L / R)',w:'Limits the servo travel at full lock.',v:{bash:['~95% / 95%','Just short of binding'],track:['~95% / 95%',''],speed:['~95% / 95%',''],learn:['~95% / 95%','']},all:'Set each side just before the servo buzzes against the stops at full lock.'},
+ {n:'Throttle & steering trim',w:'Neutral point and straight-line tracking.',v:{bash:['Centre','Trim until it drives straight'],track:['Centre',''],speed:['Centre','Recheck before every pass'],learn:['Centre','']}}];
+S.run=S.run||'bash';
+function renderTqi(){const t=$('#tqiTable');if(!t)return;
+  $('#tqiRun').innerHTML=RUNS.map(([k,n])=>'<button type="button" role="radio" data-r="'+k+'" aria-checked="'+(S.run===k)+'">'+n+'</button>').join('');
+  $('#tqiRun').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.run=b.dataset.r;save();tick();renderTqi();});
+  t.innerHTML='<thead><tr><th scope="col">Setting</th>'+RUNS.map(([k,n,d])=>'<th scope="col" class="'+(S.run===k?'on':'')+'">'+n+'<br><small style="font:400 11px var(--f-ui);letter-spacing:0;text-transform:none">'+d+'</small></th>').join('')+'</tr></thead><tbody>'+
+    TQI.map(r=>'<tr><th scope="row">'+esc(r.n)+'<small>'+esc(r.w)+'</small></th>'+RUNS.map(([k])=>{const [v,s]=r.v[k];return '<td class="'+(S.run===k?'on':'')+'"><b>'+esc(v)+'</b>'+(s?'<small>'+esc(s)+'</small>':'')+'</td>';}).join('')+'</tr>').join('')+'</tbody>';
+  $('#tqiNote').textContent='These are starting points for your Jato, not Traxxas factory numbers (factory is Sport profile, linear sensitivity, 100% steering and braking). Sensitivity, steering %, braking % and TSM are in the Traxxas Link app (needs the 6511 Bluetooth module) or the TQi menu, and any of them can be put on the multi-function knob. Slider ranges can differ by app and firmware version.';}
+const _rtq=renderTuning;renderTuning=function(){_rtq();renderTqi();};
 
 go(S.screen||'garage');requestAnimationFrame(frame);
