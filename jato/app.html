@@ -43,6 +43,7 @@
       <button type="button" data-s="tune"><svg class="i"><use href="#i-gear"/></svg>Tune</button>
       <button type="button" data-s="mech"><svg class="i"><use href="#i-chat"/></svg>AI Mechanic</button>
       <a href="speed-dash.html"><svg class="i"><use href="#i-speed"/></svg>Speed Run</a>
+      <a href="traxxas.html"><svg class="i"><use href="#i-wrench"/></svg>Traxxas Data</a>
     </nav>
   </header>
   <main class="screens">
@@ -96,14 +97,14 @@
     <!-- SHOP -->
     <section class="scr shop" id="s-shop" aria-label="Shop" hidden>
       <div class="main">
-        <div class="card pad"><div class="h2row" style="margin-bottom:8px"><h2>Upgrades & accessories</h2><small id="shopCount"></small></div>
+        <div class="card pad"><div class="h2row" style="margin-bottom:8px"><h2>Upgrades & accessories</h2><small id="shopCount"></small><a class="btn sm" href="traxxas.html#parts">Full Traxxas catalog</a></div>
           <div class="filters"><input type="search" id="shopQ" placeholder="Search by name or part number…" aria-label="Search upgrades" style="flex:1;min-width:200px">
             <div class="seg" role="group" aria-label="Sort"><button type="button" data-sort="fit" aria-pressed="true">Best fit</button><button type="button" data-sort="price">Price</button></div>
             <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="shopFits" checked style="accent-color:var(--blue)">Fits stock only</label></div>
           <div class="chips" id="shopChips" style="margin-top:8px"></div></div>
         <div class="grid scroll" id="shopGrid"></div>
       </div>
-      <aside class="card wish" aria-label="Wishlist"><div class="pad" style="padding-bottom:8px"><div class="h2row" style="margin:0"><h2>Wishlist</h2><small id="wishN"></small></div><p class="fine">Prices are rough US street prices. Tap a store to search it for that part.</p></div>
+      <aside class="card wish" aria-label="Wishlist"><div class="pad" style="padding-bottom:8px"><div class="h2row" style="margin:0"><h2>Wishlist</h2><small id="wishN"></small></div><p class="fine">Traxxas part prices are Traxxas MSRP (Nov 19, 2026); others are rough US street prices. Tap a store to search it for that part.</p></div>
         <div class="items" id="wishItems"></div><div class="total"><span>Total <small class="fine" id="wishUnk"></small></span><b id="wishTotal">$0</b></div></aside>
     </section>
     <!-- TUNE -->
@@ -126,11 +127,11 @@
         <div class="outs"><div><small>Gear ratio</small><b id="tRat">-</b></div><div><small>Punch</small><b id="tPunch">-</b></div><div><small>Motor heat</small><b id="tHeat">-</b></div></div>
         <p class="fine" id="tWarn"></p>
         <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn pri" id="tSave">Save as my gearing</button><button type="button" class="btn" id="tShop">Shop pinions</button></div>
-        <p class="fine">Speed is scaled from Traxxas's "60+ mph on 4S" claim at the stock 14T/50T gearing, so treat it as a guide. Your speed dash gives the real number. The stock 14T/50T comes from one retailer: count your teeth to confirm.</p>
+        <p class="fine">Speed is scaled from Traxxas's "60+ mph on 4S" claim at the stock 14T/50T gearing, so treat it as a guide. Your speed dash gives the real number. Stock 14T (5640) / 50T (6842X) is confirmed on the Traxxas transmission exploded view.</p>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="card pad" style="display:flex;flex-direction:column;gap:10px"><div class="h2row" style="margin:0"><h2>Will this battery fit?</h2></div>
-          <p class="fine">Enter your pack's size in millimetres. The Traxxas manual lists a 160 mm long bay, some retailers say 165 × 50 × 35 mm, and Traxxas's own 2889X pack (about 45 mm tall) fits, so height is checked loosely.</p>
+          <p class="fine">Enter your pack's size in millimetres. Traxxas lists the battery compartment as 165 × 50 × 35 mm (L/W/H). Traxxas's own 2889X 4S pack is taller than 35 mm and still fits, so height is checked loosely.</p>
           <div class="fit"><label>Length<input id="bL" inputmode="decimal" value="155"></label><label>Width<input id="bW" inputmode="decimal" value="46"></label><label>Height<input id="bH" inputmode="decimal" value="45"></label></div>
           <div class="verdict" id="bV"></div>
           <div class="list" id="bPacks"></div></div>
@@ -158,6 +159,7 @@
   <button type="button" data-s="up"><svg class="i"><use href="#i-bolt"/></svg>Upgrades</button>
   <button type="button" data-s="tune"><svg class="i"><use href="#i-gear"/></svg>Tune</button>
   <button type="button" data-s="mech"><svg class="i"><use href="#i-chat"/></svg>Mechanic</button>
+  <a href="traxxas.html"><svg class="i"><use href="#i-wrench"/></svg>Parts</a>
 </nav>
 <div class="toast" id="toast" role="status" hidden></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>

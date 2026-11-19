@@ -1,1301 +1,1396 @@
 {
-  "_meta": {
-    "model": "Traxxas Jato 4X4 VXL-4s, model #90386-4 (orange variant 90386-4-ORNG)",
-    "compiled": "2026-11-19",
-    "method_note": "traxxas.com and retailer pages could not be fetched directly from this environment (network policy blocked WebFetch/curl to traxxas.com, astramodel.cz etc.). All data comes from web-search result extracts of the cited pages. Values marked confidence 'medium'/'low' should be verified against the official parts list/manual PDFs before shipping the app.",
-    "confidence_scale": "high = Traxxas source plus agreement; medium = single Traxxas extract or several retailers; low = single retailer/forum or conflicting"
+ "_meta": {
+  "model": "Traxxas Jato 4X4 VXL-4s, model #90386-4 (orange variant 90386-4-ORNG)",
+  "compiled": "2026-11-19",
+  "method_note": "traxxas.com and retailer pages could not be fetched directly from this environment (network policy blocked WebFetch/curl to traxxas.com, astramodel.cz etc.). All data comes from web-search result extracts of the cited pages. Values marked confidence 'medium'/'low' should be verified against the official parts list/manual PDFs before shipping the app. UPDATE 2026-11-19: part numbers, stock gearing, battery bay and MSRP prices re-verified directly on traxxas.com (product page, exploded views, Parts Finder).",
+  "confidence_scale": "high = Traxxas source plus agreement; medium = single Traxxas extract or several retailers; low = single retailer/forum or conflicting"
+ },
+ "specs": {
+  "scale": {
+   "value": "1/8",
+   "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
+   "confidence": "high",
+   "note": "One retailer (RC Visions) mislabels it 1/10."
   },
-  "specs": {
-    "scale": {
-      "value": "1/8",
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "high",
-      "note": "One retailer (RC Visions) mislabels it 1/10."
-    },
-    "type": {
-      "value": "4WD electric off-road buggy, Ready-To-Race (no battery/charger included)",
-      "src": "https://beta.traxxas.com/media/productattach/9/0/90386-4-jato-4x4-vxl-box.pdf",
-      "confidence": "high"
-    },
-    "length_mm": {
-      "value": 517,
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "high",
-      "imperial": "20.4 in"
-    },
-    "width_mm": {
-      "value": 305,
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "high",
-      "imperial": "12.0 in"
-    },
-    "height_mm": {
-      "value": 179,
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "medium",
-      "imperial": "7.0 in",
-      "note": "Overall height, per Traxxas page as summarised by search."
-    },
-    "wheelbase_mm": {
-      "value": 320,
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "high",
-      "imperial": "12.6 in"
-    },
-    "track_mm": {
-      "value": {
-        "front": 305,
-        "rear": 305
-      },
-      "src": "https://www.smalladdictionsrc.com/traxxas-jato-4x4-vxl-green/",
-      "confidence": "low",
-      "note": "Retailer lists track as 12 in front and rear, which equals overall width; treat as approximate."
-    },
-    "weight": {
-      "value": {
-        "kg": 2.54,
-        "lb": 5.6,
-        "condition": "without battery"
-      },
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "medium"
-    },
-    "ground_clearance_mm": {
-      "value": 26,
-      "src": "https://www.smalladdictionsrc.com/traxxas-jato-4x4-vxl-green/",
-      "confidence": "low",
-      "imperial": "1.02 in (centre)",
-      "alt_src": "https://www.friendlyhobbies.com/products/traxxas-jato-4x4-vxl-tra90386-4-pre-order-only",
-      "note": "Retailer only (Small Addictions RC, Friendly Hobbies); not shown in Traxxas spec extract."
-    },
-    "drivetrain": {
-      "value": "Shaft-driven 4WD, sealed hardened-steel bevel-gear front/rear differentials, Torque-Biasing Center Drive (centre diff)",
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "medium",
-      "note": "Traxxas lists the Torque-Biasing Center Drive as a 4s-version feature; forum notes the 4s version has a centre diff where the BL-2s has a slipper."
-    },
-    "motor": {
-      "value": {
-        "name": "Velineon 540XL brushless (sensorless, 4-pole)",
-        "kv": 2400,
-        "shaft_mm": 5,
-        "length_mm": 91,
-        "traxxas_pn": "3461"
-      },
-      "src": "https://traxxas.com/3440-velineon-vxl-4s-brushless-power-system",
-      "confidence": "high",
-      "note": "2400 kV and 5 mm shaft from Traxxas 3440 power-system page; part number 3461 from retailer listings (EuroRC/eBay)."
-    },
-    "esc": {
-      "value": {
-        "name": "Velineon VXL-4s waterproof brushless ESC",
-        "input": "2S-4S LiPo",
-        "connector": "Traxxas iD high-current",
-        "traxxas_pn": "3445"
-      },
-      "src": "https://www.atlantahobby.com/products/velineon-vxl-4s-brushless-power-system-waterproof",
-      "confidence": "medium",
-      "note": "3445 confirmed only by retailer listings; 3465 is the different High Output VXL-4s (Maxx). One retailer wrongly lists VXL-3s."
-    },
-    "servo": {
-      "value": {
-        "name": "Traxxas 2075X digital high-torque, metal gear, ball bearing, waterproof",
-        "torque_oz_in": 125,
-        "traxxas_pn": "2075X"
-      },
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
-      "confidence": "medium",
-      "note": "Parts list names 2075X; 125 oz-in figure is for the 2075 family from search summary. Some retailers say plain 2075."
-    },
-    "radio": {
-      "value": {
-        "transmitter": "TQi 2.4GHz 2-channel with Traxxas Link Wireless Module support",
-        "receiver": "6533 micro TQi 5-channel with telemetry & TSM",
-        "transmitter_pn": null
-      },
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
-      "confidence": "medium",
-      "note": "Transmitter PN 6528 appears only on a third-party listing; not confirmed from Traxxas."
-    },
-    "stock_gearing": {
-      "value": {
-        "pinion_teeth": 14,
-        "spur_teeth": 50,
-        "pitch": "0.8 metric (32P-compatible)",
-        "pinion_bore_mm": 5
-      },
-      "src": "https://watsonshobbyshop.com/products/traxxas-jato-4x4-vxl-90386-4",
-      "confidence": "low",
-      "note": "14T/50T from a single retailer (Watson's) listing. The Traxxas parts list confirms a steel 50T spur on the centre diff and 0.8-mod pinions 11T-20T. Verify against the manual gearing chart."
-    },
-    "final_drive_ratio": {
-      "value": null,
-      "src": "https://traxxas.com/media/productattach/C-90386-4/2/90386-4-OM-EN-R01.pdf",
-      "confidence": "none",
-      "note": "Internal diff ratio and Traxxas gearing chart not retrievable (manual PDF fetch blocked). Compute in-app once the diff ring/pinion ratio is read from the manual: FDR = (spur/pinion) x diff ratio."
-    },
-    "wheels": {
-      "value": {
-        "size": "3.0 in dished",
-        "hex": "17 mm splined (aluminium hex hubs)"
-      },
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "high"
-    },
-    "tires": {
-      "value": {
-        "name": "Traxxas Response Pro, S1 compound, with foam inserts",
-        "size": "3.0 in"
-      },
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "high"
-    },
-    "shocks": {
-      "value": {
-        "type": "GTR XX-Long, aluminium, oil-filled, all four corners",
-        "oil_front_wt": 50,
-        "oil_rear_wt": 60
-      },
-      "src": "https://www.havocspeed.com/shock-oil-by-model/",
-      "confidence": "medium",
-      "note": "Oil weights from Havoc Speed chart and a retailer listing (Watson's); shocks type from Traxxas description."
-    },
-    "differentials": {
-      "value": {
-        "front": "sealed steel-gear, factory 30K silicone (retailer)",
-        "rear": "sealed steel-gear, grease-filled from factory (retailer)",
-        "center": "Torque-Biasing Center Drive; retailer claims '20 million weight' fill (unverified)"
-      },
-      "src": "https://watsonshobbyshop.com/products/traxxas-jato-4x4-vxl-90386-4",
-      "confidence": "low",
-      "note": "Fill data only from one retailer description; forum reports vary. Verify in manual."
-    },
-    "slipper": {
-      "value": "No conventional slipper on the 4s model per available sources; the Torque-Biasing Center Drive takes its place",
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "low",
-      "note": "Traxxas describes the TBCD as absorbing driveline shock; a Parkflyers review of the BL-2s version mentions a slipper. Verify in the transmission exploded view."
-    },
-    "battery_requirements": {
-      "value": {
-        "cells": "2S, 3S or 4S LiPo (4S for full performance)",
-        "connector": "Traxxas iD high-current",
-        "bay_mm": {
-          "length": "160.25 (manual) or 165 (retailers)",
-          "width": 50,
-          "height": 35
-        },
-        "hold_down": "Adjustable; fits Traxxas 5000mAh 4S pack; short post included for 2S/3S packs",
-        "known_not_to_fit": [
-          "Traxxas 2890X 6700mAh 4S"
-        ]
-      },
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "medium",
-      "alt_src": "https://traxxas.com/media/productattach/C-90386-4/2/90386-4-OM-EN-R01.pdf",
-      "note": "Bay dimensions conflict between manual (160.25 mm long) and retailers (165x50x35). The 35 mm height figure conflicts with retailer dims for 2889X (~45 mm tall) which Traxxas says fits, so bay height is probably wrong; measure."
-    },
-    "top_speed": {
-      "value": {
-        "claim_mph": "60+",
-        "condition": "4S LiPo, Traxxas claim"
-      },
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "high"
-    },
-    "waterproof_electronics": {
-      "value": true,
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "confidence": "high"
-    },
-    "age": {
-      "value": "14+",
-      "src": "https://beta.traxxas.com/media/productattach/9/0/90386-4-jato-4x4-vxl-box.pdf",
-      "confidence": "high"
-    }
+  "type": {
+   "value": "4WD electric off-road buggy, Ready-To-Race (no battery/charger included)",
+   "src": "https://beta.traxxas.com/media/productattach/9/0/90386-4-jato-4x4-vxl-box.pdf",
+   "confidence": "high"
   },
-  "stock_parts": [
-    {
-      "id": "chassis",
-      "name": "Main chassis",
-      "traxxas_pn": null,
-      "category": "chassis",
-      "notes": "Part number not retrieved; see parts list PDF.",
-      "confidence": "none",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "chassis_brace",
-      "name": "Aluminium T-Bar chassis brace / stiffener",
-      "traxxas_pn": null,
-      "category": "chassis",
-      "notes": "Stock on 4s version; parts list includes red-anodised variant. PN not retrieved. Telemetry expander mount attaches to it.",
-      "confidence": "low",
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s"
-    },
-    {
-      "id": "bulkhead_rear",
-      "name": "Rear bulkhead",
-      "traxxas_pn": "7429",
-      "category": "chassis",
-      "notes": "",
-      "confidence": "medium",
-      "src": "https://jennysrc.com/products/jato-4x4-vxl-plastic-set-towers-bumpers-housings-rx-box-traxxas-90386-4"
-    },
-    {
-      "id": "bulkhead_front",
-      "name": "Front bulkhead / bulkhead cover (has mounts for optional sway bar)",
-      "traxxas_pn": null,
-      "category": "chassis",
-      "notes": "PN not retrieved.",
-      "confidence": "none",
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s"
-    },
-    {
-      "id": "bulkhead_tie_bars",
-      "name": "Bulkhead tie bars, aluminium",
-      "traxxas_pn": "6823",
-      "category": "chassis",
-      "notes": "Listed in Jato parts list per search extract (colour variants); Jato fit not confirmed by retailers.",
-      "confidence": "low",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "suspension_arms",
-      "name": "Suspension arms, heavy-duty (front/rear, L&R)",
-      "traxxas_pn": "3655-BLK",
-      "category": "suspension",
-      "notes": "Traxxas lists 3655-BLK as fitting Jato 4X4 VXL-4s front and rear.",
-      "confidence": "high",
-      "src": "https://traxxas.com/3655-blk-black-heavy-duty-suspension-arms-lr"
-    },
-    {
-      "id": "shock_tower_front",
-      "name": "Front shock tower, Extreme HD",
-      "traxxas_pn": "9033-GRAY",
-      "category": "suspension",
-      "notes": "Colour variants exist; gray per Jennysrc takeoff set.",
-      "confidence": "medium",
-      "src": "https://jennysrc.com/products/jato-4x4-vxl-plastic-set-towers-bumpers-housings-rx-box-traxxas-90386-4"
-    },
-    {
-      "id": "shock_tower_rear",
-      "name": "Rear shock tower, Extreme HD",
-      "traxxas_pn": "9034-GRAY",
-      "category": "suspension",
-      "notes": "",
-      "confidence": "medium",
-      "src": "https://jennysrc.com/products/jato-4x4-vxl-plastic-set-towers-bumpers-housings-rx-box-traxxas-90386-4"
-    },
-    {
-      "id": "shocks",
-      "name": "GTR XX-Long shocks (assembled, no springs), orange anodised",
-      "traxxas_pn": "7462-ORNG",
-      "category": "suspension",
-      "notes": "Parts list has 7462 (blue), 7462G, 7462-ORNG, 7462-PINK; orange truck presumably uses -ORNG (jennysrc sells orange Jato takeoffs). Bodies 7467, shafts 7465/7465T, rebuild 7463, springs 7440-7449 series.",
-      "confidence": "medium",
-      "src": "https://jennysrc.com/products/jato-4x4-vxl-shocks-dampers-f-r-gtr-xx-long-orange-traxxas-90386-4"
-    },
-    {
-      "id": "caster_blocks",
-      "name": "Caster blocks (C-hubs), Extreme HD, 6 mm axle",
-      "traxxas_pn": "9032-GRAY",
-      "category": "suspension",
-      "notes": "Takeoff listing MPN; fits only 9080-style EHD parts.",
-      "confidence": "medium",
-      "src": "https://www.ebay.com/itm/127157147353"
-    },
-    {
-      "id": "steering_blocks",
-      "name": "Steering blocks, Extreme HD",
-      "traxxas_pn": "9037-GRAY",
-      "category": "steering",
-      "notes": "",
-      "confidence": "medium",
-      "src": "https://www.ebay.com/itm/127157147353"
-    },
-    {
-      "id": "hub_carriers",
-      "name": "Rear stub axle carriers, Extreme HD",
-      "traxxas_pn": "9050-GRAY",
-      "category": "suspension",
-      "notes": "",
-      "confidence": "medium",
-      "src": "https://www.ebay.com/itm/127157147353"
-    },
-    {
-      "id": "driveshaft_front",
-      "name": "Front driveshafts, Extreme HD, steel-spline CV, 6 mm stub",
-      "traxxas_pn": "9051R",
-      "category": "drivetrain",
-      "notes": "Parts list names 9051R; equivalents 9051 colour variants. 9051X/9052X are the non-EHD Slash/Rustler versions.",
-      "confidence": "medium",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "driveshaft_rear",
-      "name": "Rear driveshafts, Extreme HD, steel-spline CV",
-      "traxxas_pn": "9052R",
-      "category": "drivetrain",
-      "notes": "Half shafts 9055X/9056X, rebuild kit 9058X.",
-      "confidence": "medium",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "center_driveshaft",
-      "name": "Centre driveshaft(s)",
-      "traxxas_pn": null,
-      "category": "drivetrain",
-      "notes": "Parts list includes 6855/6855G/6855R aluminium 214 mm and plastic 7455; which is stock on the orange truck not confirmed.",
-      "confidence": "low",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "diff_front_rear",
-      "name": "Front/rear differential, sealed steel gear",
-      "traxxas_pn": "6882",
-      "category": "drivetrain",
-      "notes": "Jennysrc lists 'DIFFERENTIAL Frt or Rear 6882/5379x' for the Jato 4x4 VXL.",
-      "confidence": "low",
-      "src": "https://jennysrc.com/products/jato-4x4-vxl-differential-frt-or-rear-6882-5379x-traxxas-90386-4"
-    },
-    {
-      "id": "center_diff",
-      "name": "Torque-Biasing Center Drive / centre differential with 50T steel spur",
-      "traxxas_pn": "6814",
-      "category": "drivetrain",
-      "notes": "Parts list: 6814 complete centre diff; 6780 variant with aluminium carrier; gear set 6783, housing 6781. Exact stock assembly number unconfirmed.",
-      "confidence": "low",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "slipper",
-      "name": "Slipper clutch",
-      "traxxas_pn": null,
-      "category": "drivetrain",
-      "notes": "Apparently not fitted on the 4s model (TBCD instead). Unconfirmed.",
-      "confidence": "low",
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s"
-    },
-    {
-      "id": "spur",
-      "name": "Spur gear, steel, 50T, 0.8 metric pitch",
-      "traxxas_pn": null,
-      "category": "drivetrain",
-      "notes": "Listed in parts list; PN not retrieved.",
-      "confidence": "low",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "pinion",
-      "name": "Pinion gear, 14T (stock per retailer), 0.8 metric pitch, 5 mm bore",
-      "traxxas_pn": null,
-      "category": "power",
-      "notes": "PN not retrieved; stock tooth count from a single retailer.",
-      "confidence": "low",
-      "src": "https://watsonshobbyshop.com/products/traxxas-jato-4x4-vxl-90386-4"
-    },
-    {
-      "id": "motor",
-      "name": "Velineon 540XL brushless motor, 2400 kV",
-      "traxxas_pn": "3461",
-      "category": "power",
-      "notes": "",
-      "confidence": "medium",
-      "src": "https://www.eurorc.com/product/26312/traxxas-motor-velineon-540xl-brushless"
-    },
-    {
-      "id": "esc",
-      "name": "Velineon VXL-4s waterproof ESC",
-      "traxxas_pn": "3445",
-      "category": "electronics",
-      "notes": "Retailer-confirmed number.",
-      "confidence": "medium",
-      "src": "https://www.rcteam.com/en/products/traxxas-variateur-velineon-vxl-4s-pour-jato-3445c"
-    },
-    {
-      "id": "servo",
-      "name": "Steering servo 2075X",
-      "traxxas_pn": "2075X",
-      "category": "electronics",
-      "notes": "",
-      "confidence": "medium",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "receiver",
-      "name": "TQi micro receiver, 5-ch, telemetry & TSM",
-      "traxxas_pn": "6533",
-      "category": "electronics",
-      "notes": "",
-      "confidence": "medium",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "transmitter",
-      "name": "TQi 2.4GHz 2-ch transmitter",
-      "traxxas_pn": null,
-      "category": "electronics",
-      "notes": "6528 cited only by a third-party listing.",
-      "confidence": "low",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "body",
-      "name": "Body, Jato 4X4 VXL, orange, painted, clipless",
-      "traxxas_pn": "9060-ORNG",
-      "category": "body",
-      "notes": "Retailer listings; clear body 9018, blue 9060-BLUE.",
-      "confidence": "medium",
-      "src": "https://www.applianceelectronics.co.uk/viewproduct/45215/trx9060-orng"
-    },
-    {
-      "id": "wing",
-      "name": "Rear wing",
-      "traxxas_pn": "9517",
-      "category": "body",
-      "notes": "Parts list shows 9517 standard wing in several colours and 9019 low-profile race wing (black/white/yellow). Colour supplied on orange truck not confirmed.",
-      "confidence": "low",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "wing_mounts",
-      "name": "Wing mounts L&R",
-      "traxxas_pn": "9046",
-      "category": "body",
-      "notes": "From Jato 4X4 BL-2s (90154-4) context; fit on 90386-4 unconfirmed.",
-      "confidence": "low",
-      "src": "https://imgr2.wheelspinmodels.co.uk/attachments/575280c7ad3863406f9d46551edc9c88.pdf"
-    },
-    {
-      "id": "bumpers",
-      "name": "Front/rear bumpers",
-      "traxxas_pn": null,
-      "category": "chassis",
-      "notes": "PN not retrieved.",
-      "confidence": "none",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "wheels_tires",
-      "name": "Tires & wheels assembled, 3.0in dished wheels, Response Pro S1, foam inserts (pair)",
-      "traxxas_pn": "9074-BLK",
-      "category": "wheels",
-      "notes": "Parts list has 9074-BLK/GRN/WHT/YLW; black assumed for orange truck (retailer text: 'dished black buggy wheels'). Requires 17 mm splined hex.",
-      "confidence": "low",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "wheel_hex",
-      "name": "17 mm splined aluminium wheel hex",
-      "traxxas_pn": null,
-      "category": "wheels",
-      "notes": "PN not retrieved.",
-      "confidence": "none",
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s"
-    },
-    {
-      "id": "battery_hold_down",
-      "name": "Battery hold-down and front/rear retainers",
-      "traxxas_pn": "7426",
-      "category": "chassis",
-      "notes": "7426X is the taller version for larger packs.",
-      "confidence": "medium",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "id": "body_mounts",
-      "name": "Clipless body mounts (four rigid latches)",
-      "traxxas_pn": null,
-      "category": "body",
-      "notes": "PN not retrieved.",
-      "confidence": "none",
-      "src": "https://www.ebay.com/itm/146600665438"
-    }
-  ],
-  "upgrades": [
-    {
-      "slot": "tires_wheels",
-      "name": "3.0in gray wheels with belted Sledgehammer tires (2)",
-      "brand": "Traxxas",
-      "part_number": "9071-GRAY",
-      "approx_price_usd": null,
-      "what_it_changes": "Belted all-terrain bashing tire; tread holds shape at high speed.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/9071-gray-30-gray-wheels-w-belted-sledgehammer-tires-2",
-      "note": "Price not retrieved."
-    },
-    {
-      "slot": "tires_wheels",
-      "name": "3.0in gray wheels with Sledgehammer tires (non-belted) (2)",
-      "brand": "Traxxas",
-      "part_number": "9073",
-      "approx_price_usd": null,
-      "what_it_changes": "All-terrain tread, softer ride than belted.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
-      "note": "Price not retrieved."
-    },
-    {
-      "slot": "tires_wheels",
-      "name": "Response Pro tires on dished wheels, white (2)",
-      "brand": "Traxxas",
-      "part_number": "9074-WHT",
-      "approx_price_usd": null,
-      "what_it_changes": "Stock tire, different wheel colour for looks.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://worldofrcparts.com/products/traxxas-tra9074-wht-jato-4x4-vxl-tires-wheels-assembled-glued-white-dished-3-0-wheels-response-pro-3-0-tires-foam-inserts-2"
-    },
-    {
-      "slot": "tires_wheels",
-      "name": "Response Pro tires on dished wheels, yellow (2)",
-      "brand": "Traxxas",
-      "part_number": "9074-YLW",
-      "approx_price_usd": null,
-      "what_it_changes": "Stock tire, yellow wheels.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "tires_wheels",
-      "name": "Response Pro tires on dished wheels, green (2)",
-      "brand": "Traxxas",
-      "part_number": "9074-GRN",
-      "approx_price_usd": null,
-      "what_it_changes": "Stock tire, green wheels.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "tires_wheels",
-      "name": "Badlands MX 1/8 buggy tires pre-mounted, 17mm hex",
-      "brand": "Pro-Line",
-      "part_number": null,
-      "approx_price_usd": null,
-      "what_it_changes": "Larger 1/8 buggy tire (about 117 mm tall) with aggressive bashing tread.",
-      "fits_stock": "needs_check: taller than stock 3.0in tire; check wheel-well and body clearance",
-      "requires": [],
-      "src": "https://discountrcparts.com/index.php/product/proline-badlands-mx-m2-mounted-buggy-tires-w-17mm-hex-wheels/",
-      "note": "Exact Pro-Line SKU and Jato fit not confirmed."
-    },
-    {
-      "slot": "gearing",
-      "name": "Pinion 11T, 0.8 mod (32P), 5 mm bore",
-      "brand": "Traxxas",
-      "part_number": null,
-      "approx_price_usd": null,
-      "what_it_changes": "Lowest gearing: most punch, coolest motor, lowest top speed. Good for 4S bashing in grass/heat.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
-      "note": "PN not retrieved."
-    },
-    {
-      "slot": "gearing",
-      "name": "Pinion 13T, 0.8 mod",
-      "brand": "Traxxas",
-      "part_number": null,
-      "approx_price_usd": null,
-      "what_it_changes": "Slightly lower than stock: cooler running for 4S bashing.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
-      "note": "PN not retrieved."
-    },
-    {
-      "slot": "gearing",
-      "name": "Pinion 17T, 0.8 mod",
-      "brand": "Traxxas",
-      "part_number": null,
-      "approx_price_usd": null,
-      "what_it_changes": "Taller than stock: more top speed, hotter motor; monitor temps.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4/gearing/pinion-gears",
-      "note": "PN not retrieved."
-    },
-    {
-      "slot": "gearing",
-      "name": "Pinion 18T, 0.8 mod, hardened steel",
-      "brand": "Traxxas",
-      "part_number": null,
-      "approx_price_usd": null,
-      "what_it_changes": "Speed gearing for pavement runs; high heat risk on 4S.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
-      "note": "PN not retrieved; 14T/18T/20T noted as hardened steel."
-    },
-    {
-      "slot": "gearing",
-      "name": "Pinion 20T, 0.8 mod, hardened steel",
-      "brand": "Traxxas",
-      "part_number": "5646",
-      "approx_price_usd": null,
-      "what_it_changes": "Maximum listed pinion; speed runs only, short runs with temp checks.",
-      "fits_stock": "needs_check: confirm mesh/clearance with 50T spur",
-      "requires": [],
-      "src": "https://www.ebay.com/p/1368836553",
-      "note": "5646 cited by an eBay listing that also mentions Summit; verify."
-    },
-    {
-      "slot": "gearing",
-      "name": "Spur gear 54T, 0.8 mod",
-      "brand": "Traxxas",
-      "part_number": null,
-      "approx_price_usd": null,
-      "what_it_changes": "Lower overall gearing than the 50T spur (more torque, less speed).",
-      "fits_stock": "needs_check: 54T appears in parts list but centre-diff fit unconfirmed",
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "power",
-      "name": "Velineon VXL-4s power system (ESC + 540XL 2400kV)",
-      "brand": "Traxxas",
-      "part_number": "3440",
-      "approx_price_usd": 229.95,
-      "what_it_changes": "Direct stock replacement for a burned motor/ESC.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/3440-velineon-vxl-4s-brushless-power-system"
-    },
-    {
-      "slot": "power",
-      "name": "Velineon VXL-4s ESC",
-      "brand": "Traxxas",
-      "part_number": "3445",
-      "approx_price_usd": 129.95,
-      "what_it_changes": "Stock ESC replacement.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://hobby-sports.com/products/jato-4x4-vxl-4s-traxxas-90386-4",
-      "note": "Price is MAP per hobby-sports.com search extract."
-    },
-    {
-      "slot": "power",
-      "name": "Velineon 540XL 2400kV motor",
-      "brand": "Traxxas",
-      "part_number": "3461",
-      "approx_price_usd": 119.95,
-      "what_it_changes": "Stock motor replacement.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/3440-velineon-vxl-4s-brushless-power-system",
-      "note": "Price is MAP per retailer extract."
-    },
-    {
-      "slot": "power",
-      "name": "Motor cooling fan kit with shroud (fits 3351R and 3461)",
-      "brand": "Traxxas",
-      "part_number": null,
-      "approx_price_usd": null,
-      "what_it_changes": "Lowers motor temperature on long 4S runs.",
-      "fits_stock": "needs_x: heat sink 3458 per listing title; mounting space on Jato not confirmed",
-      "requires": [
-        "3458 heat sink (per listing)"
-      ],
-      "src": "https://accessmodels.co.uk/collections/new-rc-vehicle-engines-motors-and-accessories/products/traxxas-cooling-fan-kit-with-shroud-fits-3351r-and-3461-motors-requ-trx3456",
-      "note": "Listing slug suggests part 3456; not confirmed as fitting Jato."
-    },
-    {
-      "slot": "battery",
-      "name": "Traxxas 5000mAh 14.8V 4S 25C LiPo, iD (long)",
-      "brand": "Traxxas",
-      "part_number": "2889X",
-      "approx_price_usd": 99.95,
-      "what_it_changes": "Full 4S power, 60+ mph capable; Traxxas says the hold-down fits its 5000mAh 4S pack. Approx 155x45x34 mm (retailer), 476 g.",
-      "fits_stock": true,
-      "requires": [
-        "Traxxas iD charger e.g. EZ-Peak Live 2971"
-      ],
-      "src": "https://www.rcteam.com/en/products/traxxas-buggy-jato-4x4-vxl-4s-rtr-90386-4"
-    },
-    {
-      "slot": "battery",
-      "name": "Traxxas 6700mAh 14.8V 4S LiPo, iD",
-      "brand": "Traxxas",
-      "part_number": "2890X",
-      "approx_price_usd": null,
-      "what_it_changes": "Longer run time.",
-      "fits_stock": false,
-      "requires": [],
-      "src": "https://www.rcteam.com/en/products/traxxas-buggy-jato-4x4-vxl-4s-rtr-90386-4",
-      "note": "Retailer states it WILL NOT FIT."
-    },
-    {
-      "slot": "battery",
-      "name": "Traxxas EZ-Peak Live iD charger",
-      "brand": "Traxxas",
-      "part_number": "2971",
-      "approx_price_usd": null,
-      "what_it_changes": "Charges/balances Traxxas iD LiPos; recommended by Traxxas for this model.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
-      "note": "Price not retrieved."
-    },
-    {
-      "slot": "servo",
-      "name": "Digital High-Torque 330 servo (coreless)",
-      "brand": "Traxxas",
-      "part_number": "2250",
-      "approx_price_usd": 89.95,
-      "what_it_changes": "More steering torque (330 oz-in, 0.19 s/60) and precision.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/articles/servo-upgrade-guide",
-      "note": "Listed in Jato manual as compatible; price range $79.95-99.99."
-    },
-    {
-      "slot": "servo",
-      "name": "Digital High-Torque 400 brushless servo",
-      "brand": "Traxxas",
-      "part_number": "2255",
-      "approx_price_usd": 149.95,
-      "what_it_changes": "Big torque jump (400 oz-in, 0.15 s/60) for 4S steering under load.",
-      "fits_stock": true,
-      "requires": [
-        "Consider Traxxas BEC 2262 (sold as combo for other models) for full output"
-      ],
-      "src": "https://traxxas.com/2255-digital-high-torque-brushless-servo",
-      "note": "Listed in Jato manual. Prices $99.95-169.95; BEC need not confirmed for Jato."
-    },
-    {
-      "slot": "servo",
-      "name": "Digital High-Torque 347 servo, aluminium mid-case",
-      "brand": "Traxxas",
-      "part_number": "2275",
-      "approx_price_usd": 159.99,
-      "what_it_changes": "Stronger, tougher case servo in standard footprint.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://ozrc.com.au/products/traxxas-2275-servo-digital-high-torque"
-    },
-    {
-      "slot": "servo",
-      "name": "Digital servo 2280",
-      "brand": "Traxxas",
-      "part_number": "2280",
-      "approx_price_usd": null,
-      "what_it_changes": "Manual-listed compatible upgrade servo.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/2/90386-4-OM-EN-R01.pdf",
-      "note": "Specs and price not retrieved."
-    },
-    {
-      "slot": "suspension",
-      "name": "GTR XX-Long hard-anodised shocks, TiN shafts (2)",
-      "brand": "Traxxas",
-      "part_number": "7462X",
-      "approx_price_usd": 36.95,
-      "what_it_changes": "Smoother, longer-lasting shocks (PTFE-coated bodies, TiN shafts).",
-      "fits_stock": true,
-      "requires": [
-        "springs (sold without)"
-      ],
-      "src": "https://wrekd.com/products/traxxas-7462x-gtr-xx-long-hard-anodized-shocks-2-slash-4x4"
-    },
-    {
-      "slot": "suspension",
-      "name": "Aluminium caster blocks L&R (6061-T6)",
-      "brand": "Traxxas",
-      "part_number": "9063-ORNG",
-      "approx_price_usd": 39.95,
-      "what_it_changes": "Replaces plastic C-hubs; stiffer front end, colour match for orange.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://www.rcsuperstore.com/traxxas-orange-aluminum-caster-blocks-left-right/",
-      "note": "Designed for 9080 EHD parts, which the Jato VXL has from factory."
-    },
-    {
-      "slot": "suspension",
-      "name": "Aluminium steering blocks L&R (6061-T6)",
-      "brand": "Traxxas",
-      "part_number": "9064",
-      "approx_price_usd": 39.95,
-      "what_it_changes": "Stronger steering knuckles.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/9064-grn-green-aluminum-steering-blocks-lr",
-      "note": "Choose colour suffix, e.g. -ORNG if offered (not confirmed)."
-    },
-    {
-      "slot": "suspension",
-      "name": "Aluminium stub axle carriers L&R (6061-T6)",
-      "brand": "Traxxas",
-      "part_number": "9065",
-      "approx_price_usd": 44.95,
-      "what_it_changes": "Stronger rear hubs.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://www.rcsuperstore.com/cars-trucks-parts/traxxas/jato-4x4-vxl/?page=2"
-    },
-    {
-      "slot": "suspension",
-      "name": "Aluminium front shock tower brace (6061-T6)",
-      "brand": "Traxxas",
-      "part_number": "9061",
-      "approx_price_usd": 39.95,
-      "what_it_changes": "Ties front shock tower to chassis; reduces tower breakage.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://www.rcsuperstore.com/traxxas-jato-4x4-blue-aluminum-front-shock-tower-brace",
-      "note": "Orange version listed at $39.99 (Classic RC Shop)."
-    },
-    {
-      "slot": "suspension",
-      "name": "GTR spring set (7440-7449 series), e.g. 0.762 green / 1.004 blue rate",
-      "brand": "Traxxas",
-      "part_number": null,
-      "approx_price_usd": null,
-      "what_it_changes": "Stiffer or softer ride; tune rear bounce.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/products/models/electric/jato-4x4-vxl?page=10&t=accessories",
-      "note": "Exact spring PN per rate not confirmed."
-    },
-    {
-      "slot": "suspension",
-      "name": "Silicone shock oil 60 wt",
-      "brand": "Traxxas",
-      "part_number": "5035",
-      "approx_price_usd": null,
-      "what_it_changes": "Heavier damping; stock rear weight.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://beta.traxxas.com/news/traxxas-oils-lubricants-guide",
-      "note": "Traxxas map: 5033=40wt, 5034=50wt, 5035=60wt."
-    },
-    {
-      "slot": "suspension",
-      "name": "Silicone shock oil 50 wt",
-      "brand": "Traxxas",
-      "part_number": "5034",
-      "approx_price_usd": null,
-      "what_it_changes": "Stock front weight, for rebuilds.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://beta.traxxas.com/news/traxxas-oils-lubricants-guide"
-    },
-    {
-      "slot": "suspension",
-      "name": "Heavy-duty suspension arms L&R",
-      "brand": "Traxxas",
-      "part_number": "3655-BLK",
-      "approx_price_usd": null,
-      "what_it_changes": "Spare/replacement arms.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/3655-blk-black-heavy-duty-suspension-arms-lr",
-      "note": "Price not retrieved."
-    },
-    {
-      "slot": "suspension",
-      "name": "Front camber links, 7075 alloy",
-      "brand": "GPM Racing",
-      "part_number": "TJ054",
-      "approx_price_usd": null,
-      "what_it_changes": "Stiffer adjustable camber links.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://www.gpmparts.com/jato-4x4-vxl-front-camber-links-7075-alloy-precision-upgrade-tj054-by-gpm-p-40471.html"
-    },
-    {
-      "slot": "suspension",
-      "name": "Front shock tower, 7075-T6",
-      "brand": "GPM Racing",
-      "part_number": "TJ028",
-      "approx_price_usd": null,
-      "what_it_changes": "Aluminium front tower replaces plastic.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://www.gpmparts.com/tj028-7075t6-precision-front-shock-tower-for-traxxas-jato-4x4-vxl-by-gpm-p-43517.html",
-      "note": "Aluminium towers can transfer impact to bulkheads."
-    },
-    {
-      "slot": "driveline",
-      "name": "Extreme HD front driveshafts, steel-spline CV",
-      "brand": "Traxxas",
-      "part_number": "9051R",
-      "approx_price_usd": 115.98,
-      "what_it_changes": "Spare/replacement of stock EHD shafts.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://www.bigboyswithcooltoys.ca/products/tra9051r-traxxas-driveshafts-front-extreme-heavy-duty",
-      "note": "Price from Canadian retailer, may be CAD."
-    },
-    {
-      "slot": "driveline",
-      "name": "Extreme HD rear driveshafts, steel-spline CV",
-      "brand": "Traxxas",
-      "part_number": "9052R",
-      "approx_price_usd": null,
-      "what_it_changes": "Spare/replacement of stock EHD rear shafts.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "driveline",
-      "name": "EHD CV driveshaft rebuild kit",
-      "brand": "Traxxas",
-      "part_number": "9058X",
-      "approx_price_usd": null,
-      "what_it_changes": "Rebuilds worn CV joints.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "driveline",
-      "name": "Centre driveshaft, aluminium 214 mm (blue/green/red)",
-      "brand": "Traxxas",
-      "part_number": "6855",
-      "approx_price_usd": null,
-      "what_it_changes": "Stiffer centre shaft than plastic.",
-      "fits_stock": "needs_check: confirm which centre shaft is stock",
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "driveline",
-      "name": "Centre differential complete",
-      "brand": "Traxxas",
-      "part_number": "6814",
-      "approx_price_usd": null,
-      "what_it_changes": "Conventional centre diff (tunable with diff oil).",
-      "fits_stock": "needs_check: stock is TBCD; Parkflyers review swapped TBCD for 6814",
-      "requires": [],
-      "src": "https://www.parkflyers.com/blogs/r-c-car-reviews-by-marc-m-parkflyers-r-c/traxxas-jato-4x4-bl-2s-review-a-versatile-buggy-with-upgrade-potentia"
-    },
-    {
-      "slot": "driveline",
-      "name": "Differential oil kit 10K/30K/50K",
-      "brand": "Traxxas",
-      "part_number": "5136X",
-      "approx_price_usd": null,
-      "what_it_changes": "Tunes front/rear/centre diff behaviour.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://www.racedawgrc.com/products/traxxas-tra5136x-differential-oil-kit-1-each-10k-30k-50k-weights"
-    },
-    {
-      "slot": "driveline",
-      "name": "Center CVD driveshaft, 4140 carbon steel",
-      "brand": "PNW RC Madness (MAKX037S)",
-      "part_number": "MAKX037S",
-      "approx_price_usd": null,
-      "what_it_changes": "Steel centre shaft.",
-      "fits_stock": "needs_check",
-      "requires": [],
-      "src": "https://www.pnwrcmadness.com/product-page/4140-carbon-steel-center-cvd-driveshaft-makx037s",
-      "note": "Listing said Jato 4X4 VXL fit but cites Arrma OEM numbers; doubtful."
-    },
-    {
-      "slot": "armor_durability",
-      "name": "Extreme Heavy-Duty upgrade kit (outer driveline & suspension)",
-      "brand": "Traxxas",
-      "part_number": "9080",
-      "approx_price_usd": 119.95,
-      "what_it_changes": "EHD caster/steering blocks, carriers, towers, 6 mm stub driveshafts.",
-      "fits_stock": "already_stock: Jato VXL ships with EHD parts; only useful as a full spare set or colour change",
-      "requires": [],
-      "src": "https://traxxas.com/9080-black-extreme-heavy-duty-upgrade-kit",
-      "note": "Orange version is 9080T per retailer suffix list."
-    },
-    {
-      "slot": "armor_durability",
-      "name": "Front/rear bulkhead tie bars, aluminium",
-      "brand": "Traxxas",
-      "part_number": "6823",
-      "approx_price_usd": 9.99,
-      "what_it_changes": "Stiffens bulkheads.",
-      "fits_stock": "needs_check: Jato fit not confirmed by retailer",
-      "requires": [],
-      "src": "https://amainhobbies.com/traxxas-aluminum-bulkhead-front-rear-tie-bar-set-red-tra6823r/p236847"
-    },
-    {
-      "slot": "armor_durability",
-      "name": "Battery hold-down retainer, 7075 alloy",
-      "brand": "GPM Racing",
-      "part_number": null,
-      "approx_price_usd": null,
-      "what_it_changes": "Metal hold-down retainer.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://www.amazon.com/GPM-Retainer-Battery-Hold-Down-Brushless-90386-4/dp/B0FL7MLY2C",
-      "note": "GPM part number not shown in extract."
-    },
-    {
-      "slot": "armor_durability",
-      "name": "Taller battery hold-down",
-      "brand": "Traxxas",
-      "part_number": "7426X",
-      "approx_price_usd": null,
-      "what_it_changes": "Holds taller packs.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "body_aero",
-      "name": "Clear (unpainted) Jato 4X4 body",
-      "brand": "Traxxas",
-      "part_number": "9018",
-      "approx_price_usd": null,
-      "what_it_changes": "Paint your own scheme.",
-      "fits_stock": true,
-      "requires": [
-        "polycarbonate paint"
-      ],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "body_aero",
-      "name": "Painted body, blue",
-      "brand": "Traxxas",
-      "part_number": "9060-BLUE",
-      "approx_price_usd": null,
-      "what_it_changes": "Colour change.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "body_aero",
-      "name": "Low-profile race wing (black/white/yellow)",
-      "brand": "Traxxas",
-      "part_number": "9019",
-      "approx_price_usd": null,
-      "what_it_changes": "Less drag, less rear downforce than stock wing.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "body_aero",
-      "name": "Standard wing (colour variants)",
-      "brand": "Traxxas",
-      "part_number": "9517",
-      "approx_price_usd": null,
-      "what_it_changes": "Replacement wing.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "slot": "electronics_telemetry",
-      "name": "Traxxas Link Wireless Module (Bluetooth for TQi)",
-      "brand": "Traxxas",
-      "part_number": "6511",
-      "approx_price_usd": 34.95,
-      "what_it_changes": "Live telemetry and tuning in the Traxxas Link app.",
-      "fits_stock": "needs_check: may already be included with the RTR (some listings say 'w/ Link Module')",
-      "requires": [],
-      "src": "https://www.walmart.com/ip/45659842"
-    },
-    {
-      "slot": "electronics_telemetry",
-      "name": "Telemetry Expander 2.0",
-      "brand": "Traxxas",
-      "part_number": "6550X",
-      "approx_price_usd": null,
-      "what_it_changes": "Adds ports for up to six extra sensors.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://buy.traxxas.com/products/parts/6553X"
-    },
-    {
-      "slot": "electronics_telemetry",
-      "name": "GPS Module 2.0",
-      "brand": "Traxxas",
-      "part_number": "6551X",
-      "approx_price_usd": null,
-      "what_it_changes": "Accurate GPS/GLONASS top-speed readout.",
-      "fits_stock": true,
-      "requires": [
-        "6550X Telemetry Expander 2.0"
-      ],
-      "src": "https://buy.traxxas.com/products/parts/telemetry/6551X",
-      "note": "6553X is the expander+GPS bundle."
-    },
-    {
-      "slot": "electronics_telemetry",
-      "name": "RPM sensor (short)",
-      "brand": "Traxxas",
-      "part_number": "6522",
-      "approx_price_usd": 12.0,
-      "what_it_changes": "Speed/RPM telemetry.",
-      "fits_stock": true,
-      "requires": [],
-      "src": "https://rchobbyexplosion.com/traxxas-telemetry-rpm-sensor-short-6522"
-    },
-    {
-      "slot": "electronics_telemetry",
-      "name": "Temperature sensor, auto-detectable",
-      "brand": "Traxxas",
-      "part_number": "6526",
-      "approx_price_usd": null,
-      "what_it_changes": "Motor temperature on transmitter/app.",
-      "fits_stock": true,
-      "requires": [
-        "6550X"
-      ],
-      "src": "https://ozrc.com.au/products/traxxas-6526-temperature-sensor-auto-detectable"
-    },
-    {
-      "slot": "electronics_telemetry",
-      "name": "Voltage sensor, auto-detectable",
-      "brand": "Traxxas",
-      "part_number": "6527",
-      "approx_price_usd": null,
-      "what_it_changes": "Pack voltage telemetry.",
-      "fits_stock": true,
-      "requires": [
-        "6550X"
-      ],
-      "src": "https://buy.traxxas.com/products/parts/6553X"
-    },
-    {
-      "slot": "lights",
-      "name": "LED light kit",
-      "brand": null,
-      "part_number": null,
-      "approx_price_usd": null,
-      "what_it_changes": "No Jato-specific LED kit found.",
-      "fits_stock": false,
-      "requires": [],
-      "src": "https://beta.traxxas.com/news/bl2s",
-      "note": "Traxxas kits 6793/6795 are for Slash/Rustler 4X4 bodies, not Jato."
-    }
-  ],
-  "common_breaks": [
-    {
-      "part": "Suspension arms",
-      "symptom": "Snapped arm after hard landing/impact",
-      "fix": "Replace with Traxxas 3655 heavy-duty arms; forum also suggests RPM arms for bashing (Jato-4x4 fit of specific RPM SKUs unconfirmed).",
-      "frequency_evidence": "Single forum anecdote (arm broke on first run) plus older Jato thread recommending RPM arms",
-      "src": "https://www.arrmaforum.com/threads/traxxas-jato-4x4.73958/page-3",
-      "alt_src": "https://www.rctalk.com/forum/threads/jato-upgrades.99144/"
-    },
-    {
-      "part": "Driveshafts / stub axles / half shafts",
-      "symptom": "Bent or broken half shafts, stripped stub axles, especially on pavement",
-      "fix": "Replace with 9051R/9052R EHD shafts or rebuild with 9058X; check hub bearing shimming.",
-      "frequency_evidence": "RCTalk threads on Slash 4x4 VXL (shared driveline family) and used Jato reports",
-      "src": "https://www.rctalk.com/forum/threads/slash-4x4-vxl-axles.127114/"
-    },
-    {
-      "part": "Front shock tower",
-      "symptom": "Tower cracks on nose-first landings",
-      "fix": "Add Traxxas 9061 aluminium front shock tower brace or replace with 9033.",
-      "frequency_evidence": "Inferred from Traxxas marketing of 9061 as 'ultimate strength upgrade'; no direct failure stats",
-      "src": "https://www.rcsuperstore.com/traxxas-jato-4x4-blue-aluminum-front-shock-tower-brace"
-    },
-    {
-      "part": "Caster/steering blocks, rear carriers",
-      "symptom": "Plastic hubs crack after cartwheels",
-      "fix": "Spare 9032/9037/9050 EHD parts or Traxxas aluminium 9063/9064/9065.",
-      "frequency_evidence": "Commonly upgraded part family; aftermarket aluminium sets widely sold for Jato 4x4",
-      "src": "https://www.amazon.com/BRCatWPark-Aluminum-Steering-Carriers-Upgrades/dp/B0F8TB6MY2"
-    },
-    {
-      "part": "Rear suspension tune (not a break)",
-      "symptom": "Rear feels under-damped / bouncy",
-      "fix": "Heavier rear shock oil or stiffer springs; adjust ride height.",
-      "frequency_evidence": "Review blog",
-      "src": "https://chinahobbyline.com/blogs/news/traxxas-jato-4x4-vxl-track-review-and-battery-setup-guide"
-    }
-  ],
-  "maintenance": [
-    {
-      "item": "Shock oil",
-      "spec": "Stock 50 wt front, 60 wt rear silicone (Traxxas 5034 / 5035)",
-      "interval": "Check for leaks after every few runs; rebuild with 7463 kit when damping fades or oil leaks (no official interval retrieved)",
-      "src": "https://www.havocspeed.com/shock-oil-by-model/"
-    },
-    {
-      "item": "Front differential oil",
-      "spec": "30K silicone (Traxxas 5136) reported factory fill",
-      "interval": "Not retrieved; typical practice is check/refill when diff behaviour changes",
-      "src": "https://watsonshobbyshop.com/products/traxxas-jato-4x4-vxl-90386-4",
-      "note": "Retailer only."
-    },
-    {
-      "item": "Rear differential",
-      "spec": "Grease from factory; can be filled with silicone diff oil",
-      "interval": "Not retrieved",
-      "src": "https://watsonshobbyshop.com/products/traxxas-jato-4x4-vxl-90386-4",
-      "note": "Forum reports differ (some found no oil). Verify in manual."
-    },
-    {
-      "item": "Centre drive (TBCD)",
-      "spec": "Retailer claims '20 million weight' fill; unverified",
-      "interval": "Not retrieved",
-      "src": "https://watsonshobbyshop.com/products/traxxas-jato-4x4-vxl-90386-4"
-    },
-    {
-      "item": "Bearings and hubs",
-      "spec": "Check wheel bearings/hub play, spin for roughness; check stub axle shimming",
-      "interval": "Regularly, especially after wet runs (waterproof electronics do not protect bearings)",
-      "src": "https://www.rctalk.com/forum/threads/slash-4x4-vxl-axles.127114/",
-      "note": "No Traxxas interval retrieved."
-    },
-    {
-      "item": "Gear mesh and pinion set screw",
-      "spec": "0.8 mod pinion on 5 mm shaft",
-      "interval": "Every gearing change and periodically",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "item": "Screws and driveshafts",
-      "spec": "Inspect CV joints/half shafts for wear; rebuild with 9058X",
-      "interval": "Not retrieved",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
-    },
-    {
-      "item": "Full schedule",
-      "spec": "Official maintenance section is in the owner's manual",
-      "interval": "See manual",
-      "src": "https://traxxas.com/media/productattach/C-90386-4/2/90386-4-OM-EN-R01.pdf",
-      "note": "Manual PDF could not be fetched here."
-    }
-  ],
-  "manuals": {
-    "owners_manual_R01": "https://traxxas.com/media/productattach/C-90386-4/2/90386-4-OM-EN-R01.pdf",
-    "owners_manual_R00_mirror": "https://astramodel.cz/manualy/9/90386-4-OM-EN-R00.pdf",
-    "parts_list": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
-    "parts_list_mirrors": [
-      "https://www.astramodel.cz/manualy/traxxas/90386-4_parts.pdf",
-      "https://www.minicars.se/internt/artiklar/internal_documents/90386-4_Parts.pdf"
-    ],
-    "box_insert": "https://beta.traxxas.com/media/productattach/9/0/90386-4-jato-4x4-vxl-box.pdf",
-    "exploded_views": null,
-    "exploded_views_note": "Traxxas product page reportedly links exploded views (front, body, transmission) but their PDF URLs did not surface in search. Check the support tab of https://traxxas.com/90386-4-jato-4x4-vxl-4s?support=y",
-    "vxl_4s_esc_instructions": "https://www.astramodel.cz/manualy/K/KC2701-R00-3465-VXL-4s-Installation Instructions_WEB-EN.pdf",
-    "downloads": "None saved: curl through the proxy returned CONNECT 403 for traxxas.com, beta.traxxas.com and astramodel.cz (network policy)."
+  "length_mm": {
+   "value": 517,
+   "src": "https://traxxas.com/jato-4x4-vxl-4s-90386-4",
+   "confidence": "high",
+   "imperial": "20.4 in"
   },
-  "colors": {
-    "confirmed": [
-      "Blue (90386-4-BLUE)",
-      "Green (90386-4-GRN)",
-      "Orange (90386-4-ORNG)",
-      "Pink (90386-4-PINK)"
-    ],
-    "orange_sku": "90386-4-ORNG (retailers use TRA/TRX prefix)",
-    "orange_body_pn": "9060-ORNG",
-    "src": [
-      "https://limitlessrc.com/products/traxxas-jato%c2%ae-4x4-1-8-brushless-rtr-4wd-electric-racing-buggy-green-red-blue-or-black-w-tq%e2%84%a2-2-4ghz-radio-copy",
-      "https://www.nbhc.com.au/traxxas-jato-4x4-vxl-4s-18-brushless-rc-buggy-orange---90386-4org",
-      "https://www.applianceelectronics.co.uk/viewproduct/42713/trx90386-4-orng"
-    ],
-    "note": "Red and black were colours of the older Jato 4X4 BL-2s, not the VXL-4s."
+  "width_mm": {
+   "value": 305,
+   "src": "https://traxxas.com/jato-4x4-vxl-4s-90386-4",
+   "confidence": "high",
+   "imperial": "12.0 in"
+  },
+  "height_mm": {
+   "value": 179,
+   "src": "https://traxxas.com/jato-4x4-vxl-4s-90386-4",
+   "confidence": "high",
+   "imperial": "7.0 in",
+   "note": "Overall height, per Traxxas page as summarised by search."
+  },
+  "wheelbase_mm": {
+   "value": 320,
+   "src": "https://traxxas.com/jato-4x4-vxl-4s-90386-4",
+   "confidence": "high",
+   "imperial": "12.6 in"
+  },
+  "track_mm": {
+   "value": {
+    "front": 305,
+    "rear": 305
+   },
+   "src": "https://traxxas.com/jato-4x4-vxl-4s-90386-4",
+   "confidence": "high"
+  },
+  "weight": {
+   "value": {
+    "kg": 2.54,
+    "lb": 5.6,
+    "condition": "without battery"
+   },
+   "src": "https://traxxas.com/jato-4x4-vxl-4s-90386-4",
+   "confidence": "high"
+  },
+  "ground_clearance_mm": {
+   "value": 26,
+   "src": "https://www.smalladdictionsrc.com/traxxas-jato-4x4-vxl-green/",
+   "confidence": "low",
+   "imperial": "1.02 in (centre)",
+   "alt_src": "https://www.friendlyhobbies.com/products/traxxas-jato-4x4-vxl-tra90386-4-pre-order-only",
+   "note": "Retailer only (Small Addictions RC, Friendly Hobbies); not shown in Traxxas spec extract."
+  },
+  "drivetrain": {
+   "value": "Shaft-driven 4WD, sealed hardened-steel bevel-gear front/rear differentials, Torque-Biasing Center Drive (centre diff)",
+   "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
+   "confidence": "medium",
+   "note": "Traxxas lists the Torque-Biasing Center Drive as a 4s-version feature; forum notes the 4s version has a centre diff where the BL-2s has a slipper."
+  },
+  "motor": {
+   "value": {
+    "name": "Velineon 540XL brushless (sensorless, 4-pole)",
+    "kv": 2400,
+    "shaft_mm": 5,
+    "length_mm": 91,
+    "traxxas_pn": "3461"
+   },
+   "src": "https://traxxas.com/3440-velineon-vxl-4s-brushless-power-system",
+   "confidence": "high",
+   "note": "2400 kV and 5 mm shaft from Traxxas 3440 power-system page; part number 3461 from retailer listings (EuroRC/eBay)."
+  },
+  "esc": {
+   "value": {
+    "name": "Velineon VXL-4s waterproof brushless ESC",
+    "input": "2S-4S LiPo",
+    "connector": "Traxxas iD high-current",
+    "traxxas_pn": "3445",
+    "bec": "Selectable 6.0 or 7.4 V",
+    "thermal": "Two-stage thermal shutdown",
+    "weight_g": 119
+   },
+   "src": "https://www.atlantahobby.com/products/velineon-vxl-4s-brushless-power-system-waterproof",
+   "confidence": "medium",
+   "note": "3445 confirmed only by retailer listings; 3465 is the different High Output VXL-4s (Maxx). One retailer wrongly lists VXL-3s."
+  },
+  "servo": {
+   "value": {
+    "name": "Traxxas 2075 waterproof digital servo",
+    "torque_oz_in": 125,
+    "traxxas_pn": "2075"
+   },
+   "src": "https://traxxas.com/jato-4x4-vxl-4s-90386-4",
+   "confidence": "high",
+   "note": "Parts list names 2075X; 125 oz-in figure is for the 2075 family from search summary. Some retailers say plain 2075."
+  },
+  "radio": {
+   "value": {
+    "transmitter": "TQi 2.4GHz 2-channel with Traxxas Link Wireless Module support",
+    "receiver": "6533 micro TQi 5-channel with telemetry & TSM",
+    "transmitter_pn": null
+   },
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "confidence": "medium",
+   "note": "Transmitter PN 6528 appears only on a third-party listing; not confirmed from Traxxas."
+  },
+  "stock_gearing": {
+   "value": {
+    "pinion_teeth": 14,
+    "spur_teeth": 50,
+    "pitch": "32-pitch",
+    "pinion_bore_mm": 5
+   },
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010901/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Transmission%20Assembly.jpg",
+   "confidence": "high",
+   "note": "Exploded view shows 5640 (14T) pinion and 6842X (50T) spur; 3956X 54T is optional."
+  },
+  "final_drive_ratio": {
+   "value": "10.16:1",
+   "src": "https://traxxas.com/jato-4x4-vxl-4s-90386-4",
+   "confidence": "high",
+   "note": "Traxxas spec sheet, stock gearing."
+  },
+  "wheels": {
+   "value": {
+    "size": "3.0 in dished",
+    "hex": "17 mm splined (aluminium hex hubs)"
+   },
+   "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
+   "confidence": "high"
+  },
+  "tires": {
+   "value": {
+    "name": "Traxxas Response Pro, S1 compound, with foam inserts",
+    "size": "3.0 in"
+   },
+   "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
+   "confidence": "high"
+  },
+  "shocks": {
+   "value": {
+    "type": "GTR XX-Long, aluminium, oil-filled, all four corners",
+    "oil_front_wt": 50,
+    "oil_rear_wt": 60,
+    "length_mm": 101
+   },
+   "src": "https://www.havocspeed.com/shock-oil-by-model/",
+   "confidence": "medium",
+   "note": "Oil weights from Havoc Speed chart and a retailer listing (Watson's); shocks type from Traxxas description."
+  },
+  "differentials": {
+   "value": {
+    "front": "sealed steel-gear, factory 30K silicone (retailer)",
+    "rear": "sealed steel-gear, grease-filled from factory (retailer)",
+    "center": "Torque-Biasing Center Drive; retailer claims '20 million weight' fill (unverified)"
+   },
+   "src": "https://watsonshobbyshop.com/products/traxxas-jato-4x4-vxl-90386-4",
+   "confidence": "low",
+   "note": "Fill data only from one retailer description; forum reports vary. Verify in manual."
+  },
+  "slipper": {
+   "value": "No conventional slipper on the 4s model per available sources; the Torque-Biasing Center Drive takes its place",
+   "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
+   "confidence": "low",
+   "note": "Traxxas describes the TBCD as absorbing driveline shock; a Parkflyers review of the BL-2s version mentions a slipper. Verify in the transmission exploded view."
+  },
+  "battery_requirements": {
+   "value": {
+    "cells": "2S, 3S or 4S LiPo (4S for full performance)",
+    "connector": "Traxxas iD high-current",
+    "bay_mm": {
+     "length": 165,
+     "width": 50,
+     "height": 35
+    },
+    "hold_down": "Adjustable; fits Traxxas 5000mAh 4S pack; short post included for 2S/3S packs",
+    "known_not_to_fit": [
+     "Traxxas 2890X 6700mAh 4S"
+    ]
+   },
+   "src": "https://traxxas.com/jato-4x4-vxl-4s-90386-4",
+   "confidence": "high",
+   "alt_src": "https://traxxas.com/media/productattach/C-90386-4/2/90386-4-OM-EN-R01.pdf",
+   "note": "Traxxas product page: battery compartment 165 x 50 x 35 mm (L/W/H)."
+  },
+  "top_speed": {
+   "value": {
+    "claim_mph": "60+",
+    "condition": "4S LiPo, Traxxas claim"
+   },
+   "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
+   "confidence": "high"
+  },
+  "waterproof_electronics": {
+   "value": true,
+   "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
+   "confidence": "high"
+  },
+  "age": {
+   "value": "14+",
+   "src": "https://beta.traxxas.com/media/productattach/9/0/90386-4-jato-4x4-vxl-box.pdf",
+   "confidence": "high"
   }
+ },
+ "stock_parts": [
+  {
+   "id": "chassis",
+   "name": "Main chassis",
+   "traxxas_pn": "7422-DKGRAY",
+   "category": "chassis",
+   "notes": "Verified on the Traxxas Chassis Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010898/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Chassis%20Assembly.jpg"
+  },
+  {
+   "id": "chassis_brace",
+   "name": "Aluminium T-Bar chassis brace / stiffener",
+   "traxxas_pn": "9024-ORNG",
+   "category": "chassis",
+   "notes": "Verified on the Traxxas Chassis Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010898/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Chassis%20Assembly.jpg",
+   "price_usd": 19.95
+  },
+  {
+   "id": "bulkhead_rear",
+   "name": "Rear bulkhead",
+   "traxxas_pn": "7429",
+   "category": "chassis",
+   "notes": "Verified on the Traxxas Rear Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010900/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Rear%20Assembly.jpg",
+   "price_usd": 6.0
+  },
+  {
+   "id": "bulkhead_front",
+   "name": "Front bulkhead / bulkhead cover (has mounts for optional sway bar)",
+   "traxxas_pn": "7430X",
+   "category": "chassis",
+   "notes": "Verified on the Traxxas Front Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 6.0
+  },
+  {
+   "id": "bulkhead_tie_bars",
+   "name": "Bulkhead tie bars, aluminium",
+   "traxxas_pn": "6823",
+   "category": "chassis",
+   "notes": "Verified on the Traxxas Front Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 7.0
+  },
+  {
+   "id": "suspension_arms",
+   "name": "Suspension arms, heavy-duty (front/rear, L&R)",
+   "traxxas_pn": "3655-BLK",
+   "category": "suspension",
+   "notes": "Verified on the Traxxas Front Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 12.0
+  },
+  {
+   "id": "shock_tower_front",
+   "name": "Front shock tower, Extreme HD",
+   "traxxas_pn": "9033-GRAY",
+   "category": "suspension",
+   "notes": "Verified on the Traxxas Front Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 6.0
+  },
+  {
+   "id": "shock_tower_rear",
+   "name": "Rear shock tower, Extreme HD",
+   "traxxas_pn": "9034-GRAY",
+   "category": "suspension",
+   "notes": "Verified on the Traxxas Rear Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010900/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Rear%20Assembly.jpg",
+   "price_usd": 6.0
+  },
+  {
+   "id": "shocks",
+   "name": "GTR XX-Long shocks (assembled, no springs), orange anodised",
+   "traxxas_pn": "7462-ORNG",
+   "category": "suspension",
+   "notes": "Verified on the Traxxas Front Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 36.95
+  },
+  {
+   "id": "caster_blocks",
+   "name": "Caster blocks (C-hubs), Extreme HD, 6 mm axle",
+   "traxxas_pn": "9032-GRAY",
+   "category": "suspension",
+   "notes": "Verified on the Traxxas Front Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 7.0
+  },
+  {
+   "id": "steering_blocks",
+   "name": "Steering blocks, Extreme HD",
+   "traxxas_pn": "9037-GRAY",
+   "category": "steering",
+   "notes": "Verified on the Traxxas Front Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 6.0
+  },
+  {
+   "id": "hub_carriers",
+   "name": "Rear stub axle carriers, Extreme HD",
+   "traxxas_pn": "9050-GRAY",
+   "category": "suspension",
+   "notes": "Verified on the Traxxas Rear Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010900/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Rear%20Assembly.jpg",
+   "price_usd": 6.0
+  },
+  {
+   "id": "driveshaft_front",
+   "name": "Front driveshafts, Extreme HD (9051R steel CV is the upgrade)",
+   "traxxas_pn": "9051",
+   "category": "drivetrain",
+   "notes": "Verified on the Traxxas Front Assembly exploded view. (was 9051R)",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 14.0
+  },
+  {
+   "id": "driveshaft_rear",
+   "name": "Rear driveshafts, Extreme HD (9052R steel CV is the upgrade)",
+   "traxxas_pn": "9052",
+   "category": "drivetrain",
+   "notes": "Verified on the Traxxas Rear Assembly exploded view. (was 9052R)",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010900/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Rear%20Assembly.jpg",
+   "price_usd": 14.0
+  },
+  {
+   "id": "center_driveshaft",
+   "name": "Centre driveshaft, aluminium",
+   "traxxas_pn": "6855-ORNG",
+   "category": "drivetrain",
+   "notes": "Verified on the Traxxas Transmission Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010901/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Transmission%20Assembly.jpg"
+  },
+  {
+   "id": "diff_front_rear",
+   "name": "Front/rear differential, sealed steel gear",
+   "traxxas_pn": "6788 / 6789",
+   "category": "drivetrain",
+   "notes": "Verified on the Traxxas Front Assembly exploded view. (was 6882)",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg"
+  },
+  {
+   "id": "center_diff",
+   "name": "Torque-Biasing Center Drive / centre differential with 50T steel spur",
+   "traxxas_pn": "6814",
+   "category": "drivetrain",
+   "notes": "Verified on the Traxxas Transmission Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010901/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Transmission%20Assembly.jpg",
+   "price_usd": 39.95
+  },
+  {
+   "id": "slipper",
+   "name": "Slipper clutch",
+   "traxxas_pn": null,
+   "category": "drivetrain",
+   "notes": "No slipper: the exploded views show the Torque-Biasing centre diff (6814) in its place.",
+   "confidence": "high",
+   "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s"
+  },
+  {
+   "id": "spur",
+   "name": "Spur gear, steel, 50T, 32-pitch",
+   "traxxas_pn": "6842X",
+   "category": "drivetrain",
+   "notes": "Verified on the Traxxas Transmission Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010901/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Transmission%20Assembly.jpg",
+   "price_usd": 15.0
+  },
+  {
+   "id": "pinion",
+   "name": "Pinion gear, 14T, 32-pitch, 5 mm bore",
+   "traxxas_pn": "5640",
+   "category": "power",
+   "notes": "Verified on the Traxxas Transmission Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010901/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Transmission%20Assembly.jpg",
+   "price_usd": 5.0
+  },
+  {
+   "id": "motor",
+   "name": "Velineon 540XL brushless motor, 2400 kV",
+   "traxxas_pn": "3461",
+   "category": "power",
+   "notes": "Verified on the Traxxas Transmission Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010901/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Transmission%20Assembly.jpg",
+   "price_usd": 119.95
+  },
+  {
+   "id": "esc",
+   "name": "Velineon VXL-4s waterproof ESC",
+   "traxxas_pn": "3445",
+   "category": "electronics",
+   "notes": "Verified on the Traxxas Chassis Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010898/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Chassis%20Assembly.jpg",
+   "price_usd": 129.95
+  },
+  {
+   "id": "servo",
+   "name": "Steering servo 2075 (waterproof digital, 125 oz-in)",
+   "traxxas_pn": "2075",
+   "category": "electronics",
+   "notes": "Verified on the Traxxas Chassis Assembly exploded view. (was 2075X)",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010898/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Chassis%20Assembly.jpg",
+   "price_usd": 39.95
+  },
+  {
+   "id": "receiver",
+   "name": "TQi micro receiver, 5-ch, telemetry & TSM",
+   "traxxas_pn": "6533",
+   "category": "electronics",
+   "notes": "Verified on the Traxxas Chassis Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010898/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Chassis%20Assembly.jpg"
+  },
+  {
+   "id": "transmitter",
+   "name": "TQi 2.4GHz 2-ch transmitter",
+   "traxxas_pn": "6528X",
+   "category": "electronics",
+   "notes": "TQi 2-channel; 6528X is the Parts Finder replacement.",
+   "confidence": "medium",
+   "src": "https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4/electronics",
+   "price_usd": 69.95
+  },
+  {
+   "id": "body",
+   "name": "Body, Jato 4X4 VXL, orange, painted, clipless",
+   "traxxas_pn": "9060-ORNG",
+   "category": "body",
+   "notes": "Verified on the Traxxas Body Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010903/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Body%20Assembly.jpg",
+   "price_usd": 43.95
+  },
+  {
+   "id": "wing",
+   "name": "Rear wing",
+   "traxxas_pn": "9517",
+   "category": "body",
+   "notes": "Verified on the Traxxas Rear Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010900/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Rear%20Assembly.jpg",
+   "price_usd": 16.0
+  },
+  {
+   "id": "wing_mounts",
+   "name": "Wing mounts L&R",
+   "traxxas_pn": "9046",
+   "category": "body",
+   "notes": "Verified on the Traxxas Rear Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010900/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Rear%20Assembly.jpg",
+   "price_usd": 7.0
+  },
+  {
+   "id": "bumpers",
+   "name": "Front and rear skid plates",
+   "traxxas_pn": "9044",
+   "category": "chassis",
+   "notes": "Verified on the Traxxas Front Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 7.0
+  },
+  {
+   "id": "wheels_tires",
+   "name": "Tires & wheels assembled, 3.0in dished wheels, Response Pro S1, foam inserts (pair)",
+   "traxxas_pn": "9074-WHT",
+   "category": "wheels",
+   "notes": "Verified on the Traxxas Front Assembly exploded view. (was 9074-BLK)",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 39.95
+  },
+  {
+   "id": "wheel_hex",
+   "name": "17 mm splined aluminium wheel hex",
+   "traxxas_pn": "9086-ORNG",
+   "category": "wheels",
+   "notes": "Verified on the Traxxas Front Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg",
+   "price_usd": 35.95
+  },
+  {
+   "id": "battery_hold_down",
+   "name": "Battery hold-down and front/rear retainers",
+   "traxxas_pn": "7426X",
+   "category": "chassis",
+   "notes": "Verified on the Traxxas Chassis Assembly exploded view. (was 7426)",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010898/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Chassis%20Assembly.jpg",
+   "price_usd": 6.5
+  },
+  {
+   "id": "body_mounts",
+   "name": "Clipless body mounts (four rigid latches)",
+   "traxxas_pn": "9021",
+   "category": "body",
+   "notes": "Verified on the Traxxas Body Assembly exploded view.",
+   "confidence": "high",
+   "src": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010903/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Body%20Assembly.jpg",
+   "price_usd": 6.0
+  }
+ ],
+ "upgrades": [
+  {
+   "slot": "tires_wheels",
+   "name": "3.0in gray wheels with belted Sledgehammer tires (2)",
+   "brand": "Traxxas",
+   "part_number": "9071-GRAY",
+   "approx_price_usd": 49.95,
+   "what_it_changes": "Belted all-terrain bashing tire; tread holds shape at high speed.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/9071-gray-30-gray-wheels-w-belted-sledgehammer-tires-2",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "tires_wheels",
+   "name": "3.0in gray wheels with Sledgehammer tires (non-belted) (2)",
+   "brand": "Traxxas",
+   "part_number": "9073",
+   "approx_price_usd": 29.95,
+   "what_it_changes": "All-terrain tread, softer ride than belted.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "tires_wheels",
+   "name": "Response Pro tires on dished wheels, white (2)",
+   "brand": "Traxxas",
+   "part_number": "9074-WHT",
+   "approx_price_usd": 39.95,
+   "what_it_changes": "Stock tire, different wheel colour for looks.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://worldofrcparts.com/products/traxxas-tra9074-wht-jato-4x4-vxl-tires-wheels-assembled-glued-white-dished-3-0-wheels-response-pro-3-0-tires-foam-inserts-2",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "tires_wheels",
+   "name": "Response Pro tires on dished wheels, yellow (2)",
+   "brand": "Traxxas",
+   "part_number": "9074-YLW",
+   "approx_price_usd": 39.95,
+   "what_it_changes": "Stock tire, yellow wheels.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "tires_wheels",
+   "name": "Response Pro tires on dished wheels, green (2)",
+   "brand": "Traxxas",
+   "part_number": "9074-GRN",
+   "approx_price_usd": null,
+   "what_it_changes": "Stock tire, green wheels.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
+  },
+  {
+   "slot": "tires_wheels",
+   "name": "Badlands MX 1/8 buggy tires pre-mounted, 17mm hex",
+   "brand": "Pro-Line",
+   "part_number": null,
+   "approx_price_usd": null,
+   "what_it_changes": "Larger 1/8 buggy tire (about 117 mm tall) with aggressive bashing tread.",
+   "fits_stock": "needs_check: taller than stock 3.0in tire; check wheel-well and body clearance",
+   "requires": [],
+   "src": "https://discountrcparts.com/index.php/product/proline-badlands-mx-m2-mounted-buggy-tires-w-17mm-hex-wheels/",
+   "note": "Exact Pro-Line SKU and Jato fit not confirmed."
+  },
+  {
+   "slot": "gearing",
+   "name": "Pinion 11T, 0.8 mod (32P), 5 mm bore",
+   "brand": "Traxxas",
+   "part_number": "5641",
+   "approx_price_usd": 5.0,
+   "what_it_changes": "Lowest gearing: most punch, coolest motor, lowest top speed. Good for 4S bashing in grass/heat.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "note": "PN not retrieved.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "gearing",
+   "name": "Pinion 13T, 0.8 mod",
+   "brand": "Traxxas",
+   "part_number": "5642",
+   "approx_price_usd": 5.0,
+   "what_it_changes": "Slightly lower than stock: cooler running for 4S bashing.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "note": "PN not retrieved.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "gearing",
+   "name": "Pinion 17T, 0.8 mod",
+   "brand": "Traxxas",
+   "part_number": "5643",
+   "approx_price_usd": 5.0,
+   "what_it_changes": "Taller than stock: more top speed, hotter motor; monitor temps.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4/gearing/pinion-gears",
+   "note": "PN not retrieved.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "gearing",
+   "name": "Pinion 18T, 0.8 mod, hardened steel",
+   "brand": "Traxxas",
+   "part_number": "5644",
+   "approx_price_usd": 5.0,
+   "what_it_changes": "Speed gearing for pavement runs; high heat risk on 4S.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "note": "PN not retrieved; 14T/18T/20T noted as hardened steel.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "gearing",
+   "name": "Pinion 20T, 0.8 mod, hardened steel",
+   "brand": "Traxxas",
+   "part_number": "5646",
+   "approx_price_usd": 5.0,
+   "what_it_changes": "Maximum listed pinion; speed runs only, short runs with temp checks.",
+   "fits_stock": "needs_check: confirm mesh/clearance with 50T spur",
+   "requires": [],
+   "src": "https://www.ebay.com/p/1368836553",
+   "note": "5646 cited by an eBay listing that also mentions Summit; verify.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "gearing",
+   "name": "Spur gear 54T, 0.8 mod",
+   "brand": "Traxxas",
+   "part_number": "3956X",
+   "approx_price_usd": 15.0,
+   "what_it_changes": "Lower overall gearing than the 50T spur (more torque, less speed).",
+   "fits_stock": "needs_check: 54T appears in parts list but centre-diff fit unconfirmed",
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "power",
+   "name": "Velineon VXL-4s power system (ESC + 540XL 2400kV)",
+   "brand": "Traxxas",
+   "part_number": "3440",
+   "approx_price_usd": 229.95,
+   "what_it_changes": "Direct stock replacement for a burned motor/ESC.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/3440-velineon-vxl-4s-brushless-power-system",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "power",
+   "name": "Velineon VXL-4s ESC",
+   "brand": "Traxxas",
+   "part_number": "3445",
+   "approx_price_usd": 129.95,
+   "what_it_changes": "Stock ESC replacement.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://hobby-sports.com/products/jato-4x4-vxl-4s-traxxas-90386-4",
+   "note": "Price is MAP per hobby-sports.com search extract.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "power",
+   "name": "Velineon 540XL 2400kV motor",
+   "brand": "Traxxas",
+   "part_number": "3461",
+   "approx_price_usd": 119.95,
+   "what_it_changes": "Stock motor replacement.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/3440-velineon-vxl-4s-brushless-power-system",
+   "note": "Price is MAP per retailer extract.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "power",
+   "name": "Motor cooling fan kit with shroud (fits 3351R and 3461)",
+   "brand": "Traxxas",
+   "part_number": null,
+   "approx_price_usd": null,
+   "what_it_changes": "Lowers motor temperature on long 4S runs.",
+   "fits_stock": "needs_x: heat sink 3458 per listing title; mounting space on Jato not confirmed",
+   "requires": [
+    "3458 heat sink (per listing)"
+   ],
+   "src": "https://accessmodels.co.uk/collections/new-rc-vehicle-engines-motors-and-accessories/products/traxxas-cooling-fan-kit-with-shroud-fits-3351r-and-3461-motors-requ-trx3456",
+   "note": "Listing slug suggests part 3456; not confirmed as fitting Jato."
+  },
+  {
+   "slot": "battery",
+   "name": "Traxxas 5000mAh 14.8V 4S 25C LiPo, iD (long)",
+   "brand": "Traxxas",
+   "part_number": "2889X",
+   "approx_price_usd": 119.95,
+   "what_it_changes": "Full 4S power, 60+ mph capable; Traxxas says the hold-down fits its 5000mAh 4S pack. Approx 155x45x34 mm (retailer), 476 g.",
+   "fits_stock": true,
+   "requires": [
+    "Traxxas iD charger e.g. EZ-Peak Live 2971"
+   ],
+   "src": "https://www.rcteam.com/en/products/traxxas-buggy-jato-4x4-vxl-4s-rtr-90386-4",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "battery",
+   "name": "Traxxas 6700mAh 14.8V 4S LiPo, iD",
+   "brand": "Traxxas",
+   "part_number": "2890X",
+   "approx_price_usd": 159.95,
+   "what_it_changes": "Longer run time.",
+   "fits_stock": false,
+   "requires": [],
+   "src": "https://www.rcteam.com/en/products/traxxas-buggy-jato-4x4-vxl-4s-rtr-90386-4",
+   "note": "Retailer states it WILL NOT FIT.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "battery",
+   "name": "Traxxas EZ-Peak Live iD charger",
+   "brand": "Traxxas",
+   "part_number": "2971",
+   "approx_price_usd": 119.95,
+   "what_it_changes": "Charges/balances Traxxas iD LiPos; recommended by Traxxas for this model.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/90386-4-jato-4x4-vxl-4s",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "servo",
+   "name": "Digital High-Torque 330 servo (coreless)",
+   "brand": "Traxxas",
+   "part_number": "2250",
+   "approx_price_usd": 79.95,
+   "what_it_changes": "More steering torque (330 oz-in, 0.19 s/60) and precision.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/articles/servo-upgrade-guide",
+   "note": "Listed in Jato manual as compatible; price range $79.95-99.99.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "servo",
+   "name": "Digital High-Torque 400 brushless servo",
+   "brand": "Traxxas",
+   "part_number": "2255",
+   "approx_price_usd": 99.95,
+   "what_it_changes": "Big torque jump (400 oz-in, 0.15 s/60) for 4S steering under load.",
+   "fits_stock": true,
+   "requires": [
+    "Consider Traxxas BEC 2262 (sold as combo for other models) for full output"
+   ],
+   "src": "https://traxxas.com/2255-digital-high-torque-brushless-servo",
+   "note": "Listed in Jato manual. Prices $99.95-169.95; BEC need not confirmed for Jato.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "servo",
+   "name": "Digital High-Torque 347 servo, aluminium mid-case",
+   "brand": "Traxxas",
+   "part_number": "2275",
+   "approx_price_usd": 159.99,
+   "what_it_changes": "Stronger, tougher case servo in standard footprint.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://ozrc.com.au/products/traxxas-2275-servo-digital-high-torque"
+  },
+  {
+   "slot": "servo",
+   "name": "Digital servo 2280",
+   "brand": "Traxxas",
+   "part_number": "2280",
+   "approx_price_usd": 159.95,
+   "what_it_changes": "Manual-listed compatible upgrade servo.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/2/90386-4-OM-EN-R01.pdf",
+   "note": "Specs and price not retrieved.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "suspension",
+   "name": "GTR XX-Long hard-anodised shocks, TiN shafts (2)",
+   "brand": "Traxxas",
+   "part_number": "7462X",
+   "approx_price_usd": 36.95,
+   "what_it_changes": "Smoother, longer-lasting shocks (PTFE-coated bodies, TiN shafts).",
+   "fits_stock": true,
+   "requires": [
+    "springs (sold without)"
+   ],
+   "src": "https://wrekd.com/products/traxxas-7462x-gtr-xx-long-hard-anodized-shocks-2-slash-4x4",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "suspension",
+   "name": "Aluminium caster blocks L&R (6061-T6)",
+   "brand": "Traxxas",
+   "part_number": "9063-ORNG",
+   "approx_price_usd": 39.95,
+   "what_it_changes": "Replaces plastic C-hubs; stiffer front end, colour match for orange.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://www.rcsuperstore.com/traxxas-orange-aluminum-caster-blocks-left-right/",
+   "note": "Designed for 9080 EHD parts, which the Jato VXL has from factory.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "suspension",
+   "name": "Aluminium steering blocks L&R (6061-T6)",
+   "brand": "Traxxas",
+   "part_number": "9064",
+   "approx_price_usd": 39.95,
+   "what_it_changes": "Stronger steering knuckles.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/9064-grn-green-aluminum-steering-blocks-lr",
+   "note": "Choose colour suffix, e.g. -ORNG if offered (not confirmed).",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "suspension",
+   "name": "Aluminium stub axle carriers L&R (6061-T6)",
+   "brand": "Traxxas",
+   "part_number": "9065",
+   "approx_price_usd": 44.95,
+   "what_it_changes": "Stronger rear hubs.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://www.rcsuperstore.com/cars-trucks-parts/traxxas/jato-4x4-vxl/?page=2",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "suspension",
+   "name": "Aluminium front shock tower brace (6061-T6)",
+   "brand": "Traxxas",
+   "part_number": "9061",
+   "approx_price_usd": 39.95,
+   "what_it_changes": "Ties front shock tower to chassis; reduces tower breakage.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://www.rcsuperstore.com/traxxas-jato-4x4-blue-aluminum-front-shock-tower-brace",
+   "note": "Orange version listed at $39.99 (Classic RC Shop).",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "suspension",
+   "name": "GTR spring set (7440-7449 series), e.g. 0.762 green / 1.004 blue rate",
+   "brand": "Traxxas",
+   "part_number": "7440-7449",
+   "approx_price_usd": null,
+   "what_it_changes": "Stiffer or softer ride; tune rear bounce.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/products/models/electric/jato-4x4-vxl?page=10&t=accessories",
+   "note": "Exact spring PN per rate not confirmed."
+  },
+  {
+   "slot": "suspension",
+   "name": "Silicone shock oil 60 wt",
+   "brand": "Traxxas",
+   "part_number": "5035",
+   "approx_price_usd": 6.95,
+   "what_it_changes": "Heavier damping; stock rear weight.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://beta.traxxas.com/news/traxxas-oils-lubricants-guide",
+   "note": "Traxxas map: 5033=40wt, 5034=50wt, 5035=60wt.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "suspension",
+   "name": "Silicone shock oil 50 wt",
+   "brand": "Traxxas",
+   "part_number": "5034",
+   "approx_price_usd": 6.95,
+   "what_it_changes": "Stock front weight, for rebuilds.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://beta.traxxas.com/news/traxxas-oils-lubricants-guide",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "suspension",
+   "name": "Heavy-duty suspension arms L&R",
+   "brand": "Traxxas",
+   "part_number": "3655-BLK",
+   "approx_price_usd": 12.0,
+   "what_it_changes": "Spare/replacement arms.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/3655-blk-black-heavy-duty-suspension-arms-lr",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "suspension",
+   "name": "Front camber links, 7075 alloy",
+   "brand": "GPM Racing",
+   "part_number": "TJ054",
+   "approx_price_usd": null,
+   "what_it_changes": "Stiffer adjustable camber links.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://www.gpmparts.com/jato-4x4-vxl-front-camber-links-7075-alloy-precision-upgrade-tj054-by-gpm-p-40471.html"
+  },
+  {
+   "slot": "suspension",
+   "name": "Front shock tower, 7075-T6",
+   "brand": "GPM Racing",
+   "part_number": "TJ028",
+   "approx_price_usd": null,
+   "what_it_changes": "Aluminium front tower replaces plastic.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://www.gpmparts.com/tj028-7075t6-precision-front-shock-tower-for-traxxas-jato-4x4-vxl-by-gpm-p-43517.html",
+   "note": "Aluminium towers can transfer impact to bulkheads."
+  },
+  {
+   "slot": "driveline",
+   "name": "Extreme HD front driveshafts, steel-spline CV",
+   "brand": "Traxxas",
+   "part_number": "9051R",
+   "approx_price_usd": 79.95,
+   "what_it_changes": "Spare/replacement of stock EHD shafts.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://www.bigboyswithcooltoys.ca/products/tra9051r-traxxas-driveshafts-front-extreme-heavy-duty",
+   "note": "Price from Canadian retailer, may be CAD.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "driveline",
+   "name": "Extreme HD rear driveshafts, steel-spline CV",
+   "brand": "Traxxas",
+   "part_number": "9052R",
+   "approx_price_usd": 79.95,
+   "what_it_changes": "Spare/replacement of stock EHD rear shafts.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "driveline",
+   "name": "EHD CV driveshaft rebuild kit",
+   "brand": "Traxxas",
+   "part_number": "9058X",
+   "approx_price_usd": 5.0,
+   "what_it_changes": "Rebuilds worn CV joints.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "driveline",
+   "name": "Centre driveshaft, aluminium 214 mm (blue/green/red)",
+   "brand": "Traxxas",
+   "part_number": "6855",
+   "approx_price_usd": 10.0,
+   "what_it_changes": "Stiffer centre shaft than plastic.",
+   "fits_stock": "needs_check: confirm which centre shaft is stock",
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "driveline",
+   "name": "Centre differential complete",
+   "brand": "Traxxas",
+   "part_number": "6814",
+   "approx_price_usd": 39.95,
+   "what_it_changes": "Conventional centre diff (tunable with diff oil).",
+   "fits_stock": "needs_check: stock is TBCD; Parkflyers review swapped TBCD for 6814",
+   "requires": [],
+   "src": "https://www.parkflyers.com/blogs/r-c-car-reviews-by-marc-m-parkflyers-r-c/traxxas-jato-4x4-bl-2s-review-a-versatile-buggy-with-upgrade-potentia",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "driveline",
+   "name": "Differential oil kit 10K/30K/50K",
+   "brand": "Traxxas",
+   "part_number": "5136X",
+   "approx_price_usd": 21.0,
+   "what_it_changes": "Tunes front/rear/centre diff behaviour.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://www.racedawgrc.com/products/traxxas-tra5136x-differential-oil-kit-1-each-10k-30k-50k-weights",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "driveline",
+   "name": "Center CVD driveshaft, 4140 carbon steel",
+   "brand": "PNW RC Madness (MAKX037S)",
+   "part_number": "MAKX037S",
+   "approx_price_usd": null,
+   "what_it_changes": "Steel centre shaft.",
+   "fits_stock": "needs_check",
+   "requires": [],
+   "src": "https://www.pnwrcmadness.com/product-page/4140-carbon-steel-center-cvd-driveshaft-makx037s",
+   "note": "Listing said Jato 4X4 VXL fit but cites Arrma OEM numbers; doubtful."
+  },
+  {
+   "slot": "armor_durability",
+   "name": "Extreme Heavy-Duty upgrade kit (outer driveline & suspension)",
+   "brand": "Traxxas",
+   "part_number": "9080",
+   "approx_price_usd": 119.95,
+   "what_it_changes": "EHD caster/steering blocks, carriers, towers, 6 mm stub driveshafts.",
+   "fits_stock": "already_stock: Jato VXL ships with EHD parts; only useful as a full spare set or colour change",
+   "requires": [],
+   "src": "https://traxxas.com/9080-black-extreme-heavy-duty-upgrade-kit",
+   "note": "Orange version is 9080T per retailer suffix list.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "armor_durability",
+   "name": "Front/rear bulkhead tie bars, aluminium",
+   "brand": "Traxxas",
+   "part_number": "6823",
+   "approx_price_usd": 7.0,
+   "what_it_changes": "Stiffens bulkheads.",
+   "fits_stock": "needs_check: Jato fit not confirmed by retailer",
+   "requires": [],
+   "src": "https://amainhobbies.com/traxxas-aluminum-bulkhead-front-rear-tie-bar-set-red-tra6823r/p236847",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "armor_durability",
+   "name": "Battery hold-down retainer, 7075 alloy",
+   "brand": "GPM Racing",
+   "part_number": null,
+   "approx_price_usd": null,
+   "what_it_changes": "Metal hold-down retainer.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://www.amazon.com/GPM-Retainer-Battery-Hold-Down-Brushless-90386-4/dp/B0FL7MLY2C",
+   "note": "GPM part number not shown in extract."
+  },
+  {
+   "slot": "armor_durability",
+   "name": "Taller battery hold-down",
+   "brand": "Traxxas",
+   "part_number": "7426X",
+   "approx_price_usd": 6.5,
+   "what_it_changes": "Holds taller packs.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "body_aero",
+   "name": "Clear (unpainted) Jato 4X4 body",
+   "brand": "Traxxas",
+   "part_number": "9018",
+   "approx_price_usd": 29.95,
+   "what_it_changes": "Paint your own scheme.",
+   "fits_stock": true,
+   "requires": [
+    "polycarbonate paint"
+   ],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "body_aero",
+   "name": "Painted body, blue",
+   "brand": "Traxxas",
+   "part_number": "9060-BLUE",
+   "approx_price_usd": 43.95,
+   "what_it_changes": "Colour change.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "body_aero",
+   "name": "Low-profile race wing (black/white/yellow)",
+   "brand": "Traxxas",
+   "part_number": "9019",
+   "approx_price_usd": 15.0,
+   "what_it_changes": "Less drag, less rear downforce than stock wing.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "body_aero",
+   "name": "Standard wing (colour variants)",
+   "brand": "Traxxas",
+   "part_number": "9517",
+   "approx_price_usd": 16.0,
+   "what_it_changes": "Replacement wing.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "electronics_telemetry",
+   "name": "Traxxas Link Wireless Module (Bluetooth for TQi)",
+   "brand": "Traxxas",
+   "part_number": "6511",
+   "approx_price_usd": 34.95,
+   "what_it_changes": "Live telemetry and tuning in the Traxxas Link app.",
+   "fits_stock": "needs_check: may already be included with the RTR (some listings say 'w/ Link Module')",
+   "requires": [],
+   "src": "https://www.walmart.com/ip/45659842",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "electronics_telemetry",
+   "name": "Telemetry Expander 2.0",
+   "brand": "Traxxas",
+   "part_number": "6550X",
+   "approx_price_usd": 39.95,
+   "what_it_changes": "Adds ports for up to six extra sensors.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://buy.traxxas.com/products/parts/6553X",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "electronics_telemetry",
+   "name": "GPS Module 2.0",
+   "brand": "Traxxas",
+   "part_number": "6551X",
+   "approx_price_usd": 99.95,
+   "what_it_changes": "Accurate GPS/GLONASS top-speed readout.",
+   "fits_stock": true,
+   "requires": [
+    "6550X Telemetry Expander 2.0"
+   ],
+   "src": "https://buy.traxxas.com/products/parts/telemetry/6551X",
+   "note": "6553X is the expander+GPS bundle.",
+   "price_src": "Traxxas MSRP, https://traxxas.com/parts-finder/jato-4x4-vxl-4s-90386-4 (2026-11-19)"
+  },
+  {
+   "slot": "electronics_telemetry",
+   "name": "RPM sensor (short)",
+   "brand": "Traxxas",
+   "part_number": "6522",
+   "approx_price_usd": 12.0,
+   "what_it_changes": "Speed/RPM telemetry.",
+   "fits_stock": true,
+   "requires": [],
+   "src": "https://rchobbyexplosion.com/traxxas-telemetry-rpm-sensor-short-6522"
+  },
+  {
+   "slot": "electronics_telemetry",
+   "name": "Temperature sensor, auto-detectable",
+   "brand": "Traxxas",
+   "part_number": "6526",
+   "approx_price_usd": null,
+   "what_it_changes": "Motor temperature on transmitter/app.",
+   "fits_stock": true,
+   "requires": [
+    "6550X"
+   ],
+   "src": "https://ozrc.com.au/products/traxxas-6526-temperature-sensor-auto-detectable"
+  },
+  {
+   "slot": "electronics_telemetry",
+   "name": "Voltage sensor, auto-detectable",
+   "brand": "Traxxas",
+   "part_number": "6527",
+   "approx_price_usd": null,
+   "what_it_changes": "Pack voltage telemetry.",
+   "fits_stock": true,
+   "requires": [
+    "6550X"
+   ],
+   "src": "https://buy.traxxas.com/products/parts/6553X"
+  },
+  {
+   "slot": "lights",
+   "name": "LED light kit",
+   "brand": null,
+   "part_number": null,
+   "approx_price_usd": null,
+   "what_it_changes": "No Jato-specific LED kit found.",
+   "fits_stock": false,
+   "requires": [],
+   "src": "https://beta.traxxas.com/news/bl2s",
+   "note": "Traxxas kits 6793/6795 are for Slash/Rustler 4X4 bodies, not Jato."
+  }
+ ],
+ "common_breaks": [
+  {
+   "part": "Suspension arms",
+   "symptom": "Snapped arm after hard landing/impact",
+   "fix": "Replace with Traxxas 3655 heavy-duty arms; forum also suggests RPM arms for bashing (Jato-4x4 fit of specific RPM SKUs unconfirmed).",
+   "frequency_evidence": "Single forum anecdote (arm broke on first run) plus older Jato thread recommending RPM arms",
+   "src": "https://www.arrmaforum.com/threads/traxxas-jato-4x4.73958/page-3",
+   "alt_src": "https://www.rctalk.com/forum/threads/jato-upgrades.99144/"
+  },
+  {
+   "part": "Driveshafts / stub axles / half shafts",
+   "symptom": "Bent or broken half shafts, stripped stub axles, especially on pavement",
+   "fix": "Replace with 9051R/9052R EHD shafts or rebuild with 9058X; check hub bearing shimming.",
+   "frequency_evidence": "RCTalk threads on Slash 4x4 VXL (shared driveline family) and used Jato reports",
+   "src": "https://www.rctalk.com/forum/threads/slash-4x4-vxl-axles.127114/"
+  },
+  {
+   "part": "Front shock tower",
+   "symptom": "Tower cracks on nose-first landings",
+   "fix": "Add Traxxas 9061 aluminium front shock tower brace or replace with 9033.",
+   "frequency_evidence": "Inferred from Traxxas marketing of 9061 as 'ultimate strength upgrade'; no direct failure stats",
+   "src": "https://www.rcsuperstore.com/traxxas-jato-4x4-blue-aluminum-front-shock-tower-brace"
+  },
+  {
+   "part": "Caster/steering blocks, rear carriers",
+   "symptom": "Plastic hubs crack after cartwheels",
+   "fix": "Spare 9032/9037/9050 EHD parts or Traxxas aluminium 9063/9064/9065.",
+   "frequency_evidence": "Commonly upgraded part family; aftermarket aluminium sets widely sold for Jato 4x4",
+   "src": "https://www.amazon.com/BRCatWPark-Aluminum-Steering-Carriers-Upgrades/dp/B0F8TB6MY2"
+  },
+  {
+   "part": "Rear suspension tune (not a break)",
+   "symptom": "Rear feels under-damped / bouncy",
+   "fix": "Heavier rear shock oil or stiffer springs; adjust ride height.",
+   "frequency_evidence": "Review blog",
+   "src": "https://chinahobbyline.com/blogs/news/traxxas-jato-4x4-vxl-track-review-and-battery-setup-guide"
+  }
+ ],
+ "maintenance": [
+  {
+   "item": "Shock oil",
+   "spec": "Stock 50 wt front, 60 wt rear silicone (Traxxas 5034 / 5035)",
+   "interval": "Check for leaks after every few runs; rebuild with 7463 kit when damping fades or oil leaks (no official interval retrieved)",
+   "src": "https://www.havocspeed.com/shock-oil-by-model/"
+  },
+  {
+   "item": "Front differential oil",
+   "spec": "30K silicone (Traxxas 5136) reported factory fill",
+   "interval": "Not retrieved; typical practice is check/refill when diff behaviour changes",
+   "src": "https://watsonshobbyshop.com/products/traxxas-jato-4x4-vxl-90386-4",
+   "note": "Retailer only."
+  },
+  {
+   "item": "Rear differential",
+   "spec": "Grease from factory; can be filled with silicone diff oil",
+   "interval": "Not retrieved",
+   "src": "https://watsonshobbyshop.com/products/traxxas-jato-4x4-vxl-90386-4",
+   "note": "Forum reports differ (some found no oil). Verify in manual."
+  },
+  {
+   "item": "Centre drive (TBCD)",
+   "spec": "Retailer claims '20 million weight' fill; unverified",
+   "interval": "Not retrieved",
+   "src": "https://watsonshobbyshop.com/products/traxxas-jato-4x4-vxl-90386-4"
+  },
+  {
+   "item": "Bearings and hubs",
+   "spec": "Check wheel bearings/hub play, spin for roughness; check stub axle shimming",
+   "interval": "Regularly, especially after wet runs (waterproof electronics do not protect bearings)",
+   "src": "https://www.rctalk.com/forum/threads/slash-4x4-vxl-axles.127114/",
+   "note": "No Traxxas interval retrieved."
+  },
+  {
+   "item": "Gear mesh and pinion set screw",
+   "spec": "0.8 mod pinion on 5 mm shaft",
+   "interval": "Every gearing change and periodically",
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
+  },
+  {
+   "item": "Screws and driveshafts",
+   "spec": "Inspect CV joints/half shafts for wear; rebuild with 9058X",
+   "interval": "Not retrieved",
+   "src": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf"
+  },
+  {
+   "item": "Full schedule",
+   "spec": "Official maintenance section is in the owner's manual",
+   "interval": "See manual",
+   "src": "https://traxxas.com/media/productattach/C-90386-4/2/90386-4-OM-EN-R01.pdf",
+   "note": "Manual PDF could not be fetched here."
+  }
+ ],
+ "manuals": {
+  "owners_manual_R01": "https://traxxas.com/media/productattach/C-90386-4/2/90386-4-OM-EN-R01.pdf",
+  "owners_manual_R00_mirror": "https://astramodel.cz/manualy/9/90386-4-OM-EN-R00.pdf",
+  "parts_list": "https://traxxas.com/media/productattach/C-90386-4/3/90386-4_parts.pdf",
+  "parts_list_mirrors": [
+   "https://www.astramodel.cz/manualy/traxxas/90386-4_parts.pdf",
+   "https://www.minicars.se/internt/artiklar/internal_documents/90386-4_Parts.pdf"
+  ],
+  "box_insert": "https://beta.traxxas.com/media/productattach/9/0/90386-4-jato-4x4-vxl-box.pdf",
+  "exploded_views": [
+   {
+    "name": "Front Assembly",
+    "url": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010899/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Front%20Assembly.jpg"
+   },
+   {
+    "name": "Rear Assembly",
+    "url": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010900/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Rear%20Assembly.jpg"
+   },
+   {
+    "name": "Transmission Assembly",
+    "url": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010901/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Transmission%20Assembly.jpg"
+   },
+   {
+    "name": "Driveshafts Assembly",
+    "url": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010902/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Driveshafts%20Assembly.jpg"
+   },
+   {
+    "name": "Chassis Assembly",
+    "url": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010898/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Chassis%20Assembly.jpg"
+   },
+   {
+    "name": "Body Assembly",
+    "url": "https://traxxas.com/media/Traxxas/Mapfile/ExplodeView/10010903/90386-4_Jato%204X4%20Brushless_explodedviews_261023_90386-4%20Body%20Assembly.jpg"
+   }
+  ],
+  "exploded_views_note": "All six exploded views (rev 261023-R06) are embedded on the Traxxas Data page.",
+  "vxl_4s_esc_instructions": "https://www.astramodel.cz/manualy/K/KC2701-R00-3465-VXL-4s-Installation Instructions_WEB-EN.pdf",
+  "downloads": "None saved: curl through the proxy returned CONNECT 403 for traxxas.com, beta.traxxas.com and astramodel.cz (network policy)."
+ },
+ "colors": {
+  "confirmed": [
+   "Blue (90386-4-BLUE)",
+   "Green (90386-4-GRN)",
+   "Orange (90386-4-ORNG)",
+   "Pink (90386-4-PINK)"
+  ],
+  "orange_sku": "90386-4-ORNG (retailers use TRA/TRX prefix)",
+  "orange_body_pn": "9060-ORNG",
+  "src": [
+   "https://limitlessrc.com/products/traxxas-jato%c2%ae-4x4-1-8-brushless-rtr-4wd-electric-racing-buggy-green-red-blue-or-black-w-tq%e2%84%a2-2-4ghz-radio-copy",
+   "https://www.nbhc.com.au/traxxas-jato-4x4-vxl-4s-18-brushless-rc-buggy-orange---90386-4org",
+   "https://www.applianceelectronics.co.uk/viewproduct/42713/trx90386-4-orng"
+  ],
+  "note": "Red and black were colours of the older Jato 4X4 BL-2s, not the VXL-4s."
+ }
 }
