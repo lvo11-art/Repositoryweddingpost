@@ -3,6 +3,13 @@ const D=JATO,SP=D.specs;
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const I=n=>'<svg class="i"><use href="#i-'+n+'"/></svg>';
 const KEY='jato-lab-v1';
+/* Traxxas product photos (from the Traxxas Data page), loaded from parts-img.json beside this page */
+const PIX=/*IMGIDX*/;let PIMG=null;
+const skuU=u=>u&&PIX['u:'+u.key],skuP=id=>PIX['p:'+id];
+const pimg=(sku,cls)=>sku?'<img class="pimg '+(cls||'')+'" data-sku="'+esc(sku)+'" alt="Traxxas '+esc(sku)+'" loading="lazy">':'';
+function fillImgs(root){if(!PIMG)return;(root||document).querySelectorAll('img.pimg:not([src])').forEach(im=>{const s=PIMG[im.dataset.sku];if(s)im.src=s;else im.remove();});}
+fetch('parts-img.json').then(r=>r.ok?r.json():null).then(j=>{if(j){PIMG=j;fillImgs();}}).catch(()=>{});
+new MutationObserver(()=>fillImgs()).observe(document.documentElement,{childList:true,subtree:true});
 const S=Object.assign({screen:'garage',sel:null,hover:null,body:'on',exT:0,labels:true,ptab:'over',paintMode:false,paint:{},installed:[],wish:[],gear:{pin:14,sp:50,cells:4},maint:{},builds:[],filter:'all',sort:'fit',fits:true,q:''},(()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};}})());
 S.sel=null;S.hover=null;S.paintMode=false;S.exT=0;
 function save(){try{const {screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal}=S;localStorage.setItem(KEY,JSON.stringify({screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal}));}catch(e){}}
@@ -132,7 +139,7 @@ function breaksFor(p){const words=(p.name+' '+p.id).toLowerCase().replace(/[_()]
 function maintFor(p){const words=(p.name+' '+p.id).toLowerCase().replace(/[_()]/g,' ').split(/\W+/).filter(w=>w.length>3).map(w=>w.replace(/s$/,''));
   return D.maintenance.filter(m=>words.some(w=>(m.item+' '+m.spec).toLowerCase().includes(w)));}
 function upCard(u,compact){const [fk,ft]=fitInfo(u),pr=price(u),k=esc(u.key);
-  return '<div class="up'+(isInst(u.key)?' inst':'')+'"><div class="t"><b>'+esc(u.name)+'</b><span>'+(pr||'')+'</span></div><div class="tags"><span class="tag">'+esc(u.brand||'—')+(u.part_number?' · '+esc(u.part_number):'')+'</span><span class="tag '+fk+'">'+esc(ft)+'</span>'+(isInst(u.key)?'<span class="tag vi">On your Jato</span>':'')+'</div>'+
+  const sk=skuU(u);return '<div class="up'+(isInst(u.key)?' inst':'')+(sk?' hasimg':'')+'">'+pimg(sk,'up-img')+'<div class="t"><b>'+esc(u.name)+'</b><span>'+(pr||'')+'</span></div><div class="tags"><span class="tag">'+esc(u.brand||'—')+(u.part_number?' · '+esc(u.part_number):'')+'</span><span class="tag '+fk+'">'+esc(ft)+'</span>'+(isInst(u.key)?'<span class="tag vi">On your Jato</span>':'')+'</div>'+
     '<p>'+esc(u.what_it_changes)+'</p><div class="a"><button type="button" class="btn sm '+(inWish(u.key)?'':'pri')+'" data-wish="'+k+'">'+(inWish(u.key)?I('check')+'In wishlist':I('plus')+'Wishlist')+'</button><button type="button" class="btn sm" data-inst="'+k+'">'+(isInst(u.key)?'Remove from build':'Mark installed')+'</button></div>'+
     (compact?'':'<div class="a">'+stores(u)+'</div>')+'</div>';}
 function wireUps(el){el.querySelectorAll('[data-wish]').forEach(b=>b.onclick=()=>toggleWish(b.dataset.wish));el.querySelectorAll('[data-inst]').forEach(b=>b.onclick=()=>toggleInst(b.dataset.inst));}
@@ -148,7 +155,7 @@ function renderCtx(){const H=$('#ctxHead'),B=$('#ctxBody'),p=S.sel;
     '<div class="ptabs" role="tablist"><button type="button" role="tab" data-t="over">Overview</button><button type="button" role="tab" data-t="ups">Upgrades '+(ups.length?'('+ups.length+')':'')+'</button><button type="button" role="tab" data-t="fix">Fix & care</button><button type="button" role="tab" data-t="ask">Ask AI</button></div>';
   H.querySelectorAll('[data-t]').forEach(b=>{b.setAttribute('aria-selected',b.dataset.t===S.ptab);b.onclick=()=>{S.ptab=b.dataset.t;renderCtx();};});
   let h='';
-  if(S.ptab==='over'){h+='<div class="sec"><h3>'+I('cube')+'What it is</h3><p class="fine" style="color:#d4dceb">'+esc(d.notes||'Part of the stock Jato.')+'</p>'+
+  if(S.ptab==='over'){h+='<div class="sec">'+(skuP(p.id)?pimg(skuP(p.id),'part-img'):'')+'<h3>'+I('cube')+'What it is</h3><p class="fine" style="color:#d4dceb">'+esc(d.notes||'Part of the stock Jato.')+'</p>'+
       '<dl class="kv"><dt>Category</dt><dd>'+esc((CATS.find(c=>c[0]===p.cat)||[,p.cat])[1])+'</dd><dt>Traxxas #</dt><dd>'+esc(d.traxxas_pn||'not confirmed yet')+'</dd><dt>Upgrades</dt><dd>'+ups.length+' that fit here</dd></dl>'+
       (d.src?'<a class="btn sm" href="'+esc(d.src)+'" target="_blank" rel="noopener">Source'+I('ext')+'</a>':'')+'</div>'+
       '<div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="btn sm" id="cFocus">Zoom to part</button><button type="button" class="btn sm" id="cClear">Close</button></div>';}
@@ -205,7 +212,7 @@ function renderShop(){const chips=['all',...Object.keys(SLOT).filter(s=>UP.some(
   const fr=u=>u.fits_stock===true?0:String(u.fits_stock).startsWith('needs')?1:2;
   L.sort(S.sort==='price'?(a,b)=>(+a.approx_price_usd||1e9)-(+b.approx_price_usd||1e9):(a,b)=>fr(a)-fr(b)||(!!b.approx_price_usd-!!a.approx_price_usd));
   $('#shopCount').textContent=L.length+' of '+UP.length;
-  $('#shopGrid').innerHTML=L.length?L.map(u=>{const [fk,ft]=fitInfo(u),pr=price(u),k=esc(u.key);return '<article class="prod"><div class="t"><i>'+I((SLOT[u.slot]||[,'cube'])[1])+'</i><div><b>'+esc(u.name)+'</b><small>'+esc(u.brand||'')+(u.part_number?' · #'+esc(u.part_number):'')+'</small></div></div>'+
+  $('#shopGrid').innerHTML=L.length?L.map(u=>{const [fk,ft]=fitInfo(u),pr=price(u),k=esc(u.key);const sk=skuU(u);return '<article class="prod"><div class="t">'+(sk?pimg(sk,'prod-img'):'<i>'+I((SLOT[u.slot]||[,'cube'])[1])+'</i>')+'<div><b>'+esc(u.name)+'</b><small>'+esc(u.brand||'')+(u.part_number?' · #'+esc(u.part_number):'')+'</small></div></div>'+
     '<div style="display:flex;gap:5px;flex-wrap:wrap"><span class="tag '+fk+'">'+esc(ft)+'</span>'+(isInst(u.key)?'<span class="tag vi">On your Jato</span>':'')+'</div><p>'+esc(u.what_it_changes)+'</p>'+
     '<div class="f">'+(pr?'<strong>'+pr+'</strong>':'<strong class="na">Price not listed</strong>')+'<button type="button" class="btn sm '+(inWish(u.key)?'':'pri')+'" data-wish="'+k+'">'+(inWish(u.key)?I('check')+'Saved':I('plus')+'Wishlist')+'</button></div>'+
     '<div class="f"><button type="button" class="btn sm" data-inst="'+k+'">'+(isInst(u.key)?'Remove from build':'Mark installed')+'</button><button type="button" class="btn sm" data-see="'+k+'">'+I('cube')+'See on 3D</button></div><div class="stores">'+stores(u)+'</div></article>';}).join(''):
@@ -215,7 +222,7 @@ function renderShop(){const chips=['all',...Object.keys(SLOT).filter(s=>UP.some(
 $('#shopQ').addEventListener('input',e=>{S.q=e.target.value;renderShop();});$('#shopFits').addEventListener('change',e=>{S.fits=e.target.checked;save();renderShop();});
 function renderWish(){const L=S.wish.map(k=>UPK[k]).filter(Boolean);const tot=L.reduce((a,u)=>a+(+u.approx_price_usd||0),0),unk=L.filter(u=>!u.approx_price_usd).length;
   $('#wishN').textContent=L.length?L.length+' item'+(L.length>1?'s':''):'';$('#wishTotal').textContent='$'+tot.toFixed(2).replace(/\.00$/,'');$('#wishUnk').textContent=unk?'+ '+unk+' without a listed price':'';
-  $('#wishItems').innerHTML=L.length?L.map(u=>'<div class="wi"><div class="t"><b>'+esc(u.name)+'</b><span>'+(price(u)||'—')+'</span></div><div class="a">'+stores(u)+'</div><div class="a"><button type="button" class="btn sm" data-inst="'+esc(u.key)+'">'+I('check')+'Bought & installed</button><button type="button" class="btn sm" data-wish="'+esc(u.key)+'">Remove</button></div></div>').join(''):
+  $('#wishItems').innerHTML=L.length?L.map(u=>'<div class="wi"><div class="t">'+pimg(skuU(u),'wi-img')+'<b>'+esc(u.name)+'</b><span>'+(price(u)||'—')+'</span></div><div class="a">'+stores(u)+'</div><div class="a"><button type="button" class="btn sm" data-inst="'+esc(u.key)+'">'+I('check')+'Bought & installed</button><button type="button" class="btn sm" data-wish="'+esc(u.key)+'">Remove</button></div></div>').join(''):
     '<p class="empty">Tap "Wishlist" on any upgrade to plan a build and see the total.</p>';wireUps($('#wishItems'));
   const n=$('#navWish');n.hidden=!L.length;n.textContent=L.length;}
 

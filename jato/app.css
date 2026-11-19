@@ -422,3 +422,14 @@ dl.kv dd{margin:0;font-family:var(--f-m);font-size:12.5px}
 .gmsg.ok{background:rgba(34,197,94,.12);color:#8af0b0}.gmsg.warn{background:rgba(255,176,32,.12);color:#ffd27a}.gmsg.bad{background:rgba(255,93,82,.12);color:#ffb0aa}
 .grec{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
 .grec>h3,.grec>div:last-child{grid-column:1/-1}
+
+/* Traxxas product photos (white studio backgrounds) */
+.pimg{background:#fff;border-radius:9px;object-fit:contain;display:block}
+.up.hasimg{display:grid;grid-template-columns:84px minmax(0,1fr);column-gap:12px;row-gap:7px}
+.up.hasimg>*{grid-column:2}
+.up.hasimg>.up-img{grid-column:1;grid-row:1/span 6;width:84px;height:84px;padding:4px;align-self:start}
+.prod-img{width:72px;height:72px;padding:4px;flex:none}
+.wi .t .wi-img{width:46px;height:46px;padding:3px;flex:none}
+.part-img{width:100%;max-height:170px;padding:8px}
+.uc-img{width:100%;height:84px;padding:4px}
+.ucard{width:210px}

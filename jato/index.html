@@ -427,6 +427,17 @@ dl.kv dd{margin:0;font-family:var(--f-m);font-size:12.5px}
 .gmsg.ok{background:rgba(34,197,94,.12);color:#8af0b0}.gmsg.warn{background:rgba(255,176,32,.12);color:#ffd27a}.gmsg.bad{background:rgba(255,93,82,.12);color:#ffb0aa}
 .grec{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
 .grec>h3,.grec>div:last-child{grid-column:1/-1}
+
+/* Traxxas product photos (white studio backgrounds) */
+.pimg{background:#fff;border-radius:9px;object-fit:contain;display:block}
+.up.hasimg{display:grid;grid-template-columns:84px minmax(0,1fr);column-gap:12px;row-gap:7px}
+.up.hasimg>*{grid-column:2}
+.up.hasimg>.up-img{grid-column:1;grid-row:1/span 6;width:84px;height:84px;padding:4px;align-self:start}
+.prod-img{width:72px;height:72px;padding:4px;flex:none}
+.wi .t .wi-img{width:46px;height:46px;padding:3px;flex:none}
+.part-img{width:100%;max-height:170px;padding:8px}
+.uc-img{width:100%;height:84px;padding:4px}
+.ucard{width:210px}
 </style>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6v10H3z"/><path d="M8 20v-6h8v6"/></symbol>
@@ -796,6 +807,13 @@ const D=JATO,SP=D.specs;
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const I=n=>'<svg class="i"><use href="#i-'+n+'"/></svg>';
 const KEY='jato-lab-v1';
+/* Traxxas product photos (from the Traxxas Data page), loaded from parts-img.json beside this page */
+const PIX={"u:9071-GRAY": "9071-GRAY","u:9073": "9073","u:9074-WHT": "9074-WHT","u:9074-YLW": "9074-YLW","u:9074-GRN": "9074","u:5641": "5641","u:5642": "5642","u:5643": "5643","u:5644": "5644","u:5646": "5646","u:3956X": "3956X","u:3440": "3440","u:3445": "3445","u:3461": "3461","u:2889X": "2889X","u:2890X": "2890X","u:2971": "2971","u:2250": "2250","u:2255": "2255","u:2280": "2280","u:7462X": "7462X","u:9063-ORNG": "9063-ORNG","u:9064": "9064","u:9065": "9065","u:9061": "9061","u:5035": "5035","u:5034": "5034","u:3655-BLK": "3655-BLK","u:9051R": "9051R","u:9052R": "9052R","u:9058X": "9058X","u:6855": "6855","u:6814": "6814","u:5136X": "5136X","u:9080": "9080","u:6823": "6823","u:7426X": "7426X","u:9018": "9018","u:9060-BLUE": "9060-BLUE","u:9019": "9019","u:9517": "9517","u:6511": "6511","u:6550X": "6550X","u:6551X": "6551X","p:chassis_brace": "9024-ORNG","p:bulkhead_rear": "7429","p:bulkhead_front": "7430X","p:bulkhead_tie_bars": "6823","p:suspension_arms": "3655-BLK","p:shock_tower_front": "9033-GRAY","p:shock_tower_rear": "9034-GRAY","p:shocks": "7462-ORNG","p:caster_blocks": "9032-GRAY","p:steering_blocks": "9037-GRAY","p:hub_carriers": "9050-GRAY","p:driveshaft_front": "9051","p:driveshaft_rear": "9052","p:center_driveshaft": "6855","p:diff_front_rear": "6788","p:center_diff": "6814","p:spur": "6842X","p:pinion": "5640","p:motor": "3461","p:esc": "3445","p:servo": "2075","p:receiver": "6533X","p:transmitter": "6528X","p:body": "9060-ORNG","p:wing": "9517","p:wing_mounts": "9046","p:bumpers": "9044","p:wheels_tires": "9074-WHT","p:wheel_hex": "9086-ORNG","p:battery_hold_down": "7426X","p:body_mounts": "9021"};let PIMG=null;
+const skuU=u=>u&&PIX['u:'+u.key],skuP=id=>PIX['p:'+id];
+const pimg=(sku,cls)=>sku?'<img class="pimg '+(cls||'')+'" data-sku="'+esc(sku)+'" alt="Traxxas '+esc(sku)+'" loading="lazy">':'';
+function fillImgs(root){if(!PIMG)return;(root||document).querySelectorAll('img.pimg:not([src])').forEach(im=>{const s=PIMG[im.dataset.sku];if(s)im.src=s;else im.remove();});}
+fetch('parts-img.json').then(r=>r.ok?r.json():null).then(j=>{if(j){PIMG=j;fillImgs();}}).catch(()=>{});
+new MutationObserver(()=>fillImgs()).observe(document.documentElement,{childList:true,subtree:true});
 const S=Object.assign({screen:'garage',sel:null,hover:null,body:'on',exT:0,labels:true,ptab:'over',paintMode:false,paint:{},installed:[],wish:[],gear:{pin:14,sp:50,cells:4},maint:{},builds:[],filter:'all',sort:'fit',fits:true,q:''},(()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};}})());
 S.sel=null;S.hover=null;S.paintMode=false;S.exT=0;
 function save(){try{const {screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal}=S;localStorage.setItem(KEY,JSON.stringify({screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune,goal}));}catch(e){}}
@@ -925,7 +943,7 @@ function breaksFor(p){const words=(p.name+' '+p.id).toLowerCase().replace(/[_()]
 function maintFor(p){const words=(p.name+' '+p.id).toLowerCase().replace(/[_()]/g,' ').split(/\W+/).filter(w=>w.length>3).map(w=>w.replace(/s$/,''));
   return D.maintenance.filter(m=>words.some(w=>(m.item+' '+m.spec).toLowerCase().includes(w)));}
 function upCard(u,compact){const [fk,ft]=fitInfo(u),pr=price(u),k=esc(u.key);
-  return '<div class="up'+(isInst(u.key)?' inst':'')+'"><div class="t"><b>'+esc(u.name)+'</b><span>'+(pr||'')+'</span></div><div class="tags"><span class="tag">'+esc(u.brand||'—')+(u.part_number?' · '+esc(u.part_number):'')+'</span><span class="tag '+fk+'">'+esc(ft)+'</span>'+(isInst(u.key)?'<span class="tag vi">On your Jato</span>':'')+'</div>'+
+  const sk=skuU(u);return '<div class="up'+(isInst(u.key)?' inst':'')+(sk?' hasimg':'')+'">'+pimg(sk,'up-img')+'<div class="t"><b>'+esc(u.name)+'</b><span>'+(pr||'')+'</span></div><div class="tags"><span class="tag">'+esc(u.brand||'—')+(u.part_number?' · '+esc(u.part_number):'')+'</span><span class="tag '+fk+'">'+esc(ft)+'</span>'+(isInst(u.key)?'<span class="tag vi">On your Jato</span>':'')+'</div>'+
     '<p>'+esc(u.what_it_changes)+'</p><div class="a"><button type="button" class="btn sm '+(inWish(u.key)?'':'pri')+'" data-wish="'+k+'">'+(inWish(u.key)?I('check')+'In wishlist':I('plus')+'Wishlist')+'</button><button type="button" class="btn sm" data-inst="'+k+'">'+(isInst(u.key)?'Remove from build':'Mark installed')+'</button></div>'+
     (compact?'':'<div class="a">'+stores(u)+'</div>')+'</div>';}
 function wireUps(el){el.querySelectorAll('[data-wish]').forEach(b=>b.onclick=()=>toggleWish(b.dataset.wish));el.querySelectorAll('[data-inst]').forEach(b=>b.onclick=()=>toggleInst(b.dataset.inst));}
@@ -941,7 +959,7 @@ function renderCtx(){const H=$('#ctxHead'),B=$('#ctxBody'),p=S.sel;
     '<div class="ptabs" role="tablist"><button type="button" role="tab" data-t="over">Overview</button><button type="button" role="tab" data-t="ups">Upgrades '+(ups.length?'('+ups.length+')':'')+'</button><button type="button" role="tab" data-t="fix">Fix & care</button><button type="button" role="tab" data-t="ask">Ask AI</button></div>';
   H.querySelectorAll('[data-t]').forEach(b=>{b.setAttribute('aria-selected',b.dataset.t===S.ptab);b.onclick=()=>{S.ptab=b.dataset.t;renderCtx();};});
   let h='';
-  if(S.ptab==='over'){h+='<div class="sec"><h3>'+I('cube')+'What it is</h3><p class="fine" style="color:#d4dceb">'+esc(d.notes||'Part of the stock Jato.')+'</p>'+
+  if(S.ptab==='over'){h+='<div class="sec">'+(skuP(p.id)?pimg(skuP(p.id),'part-img'):'')+'<h3>'+I('cube')+'What it is</h3><p class="fine" style="color:#d4dceb">'+esc(d.notes||'Part of the stock Jato.')+'</p>'+
       '<dl class="kv"><dt>Category</dt><dd>'+esc((CATS.find(c=>c[0]===p.cat)||[,p.cat])[1])+'</dd><dt>Traxxas #</dt><dd>'+esc(d.traxxas_pn||'not confirmed yet')+'</dd><dt>Upgrades</dt><dd>'+ups.length+' that fit here</dd></dl>'+
       (d.src?'<a class="btn sm" href="'+esc(d.src)+'" target="_blank" rel="noopener">Source'+I('ext')+'</a>':'')+'</div>'+
       '<div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="btn sm" id="cFocus">Zoom to part</button><button type="button" class="btn sm" id="cClear">Close</button></div>';}
@@ -998,7 +1016,7 @@ function renderShop(){const chips=['all',...Object.keys(SLOT).filter(s=>UP.some(
   const fr=u=>u.fits_stock===true?0:String(u.fits_stock).startsWith('needs')?1:2;
   L.sort(S.sort==='price'?(a,b)=>(+a.approx_price_usd||1e9)-(+b.approx_price_usd||1e9):(a,b)=>fr(a)-fr(b)||(!!b.approx_price_usd-!!a.approx_price_usd));
   $('#shopCount').textContent=L.length+' of '+UP.length;
-  $('#shopGrid').innerHTML=L.length?L.map(u=>{const [fk,ft]=fitInfo(u),pr=price(u),k=esc(u.key);return '<article class="prod"><div class="t"><i>'+I((SLOT[u.slot]||[,'cube'])[1])+'</i><div><b>'+esc(u.name)+'</b><small>'+esc(u.brand||'')+(u.part_number?' · #'+esc(u.part_number):'')+'</small></div></div>'+
+  $('#shopGrid').innerHTML=L.length?L.map(u=>{const [fk,ft]=fitInfo(u),pr=price(u),k=esc(u.key);const sk=skuU(u);return '<article class="prod"><div class="t">'+(sk?pimg(sk,'prod-img'):'<i>'+I((SLOT[u.slot]||[,'cube'])[1])+'</i>')+'<div><b>'+esc(u.name)+'</b><small>'+esc(u.brand||'')+(u.part_number?' · #'+esc(u.part_number):'')+'</small></div></div>'+
     '<div style="display:flex;gap:5px;flex-wrap:wrap"><span class="tag '+fk+'">'+esc(ft)+'</span>'+(isInst(u.key)?'<span class="tag vi">On your Jato</span>':'')+'</div><p>'+esc(u.what_it_changes)+'</p>'+
     '<div class="f">'+(pr?'<strong>'+pr+'</strong>':'<strong class="na">Price not listed</strong>')+'<button type="button" class="btn sm '+(inWish(u.key)?'':'pri')+'" data-wish="'+k+'">'+(inWish(u.key)?I('check')+'Saved':I('plus')+'Wishlist')+'</button></div>'+
     '<div class="f"><button type="button" class="btn sm" data-inst="'+k+'">'+(isInst(u.key)?'Remove from build':'Mark installed')+'</button><button type="button" class="btn sm" data-see="'+k+'">'+I('cube')+'See on 3D</button></div><div class="stores">'+stores(u)+'</div></article>';}).join(''):
@@ -1008,7 +1026,7 @@ function renderShop(){const chips=['all',...Object.keys(SLOT).filter(s=>UP.some(
 $('#shopQ').addEventListener('input',e=>{S.q=e.target.value;renderShop();});$('#shopFits').addEventListener('change',e=>{S.fits=e.target.checked;save();renderShop();});
 function renderWish(){const L=S.wish.map(k=>UPK[k]).filter(Boolean);const tot=L.reduce((a,u)=>a+(+u.approx_price_usd||0),0),unk=L.filter(u=>!u.approx_price_usd).length;
   $('#wishN').textContent=L.length?L.length+' item'+(L.length>1?'s':''):'';$('#wishTotal').textContent='$'+tot.toFixed(2).replace(/\.00$/,'');$('#wishUnk').textContent=unk?'+ '+unk+' without a listed price':'';
-  $('#wishItems').innerHTML=L.length?L.map(u=>'<div class="wi"><div class="t"><b>'+esc(u.name)+'</b><span>'+(price(u)||'—')+'</span></div><div class="a">'+stores(u)+'</div><div class="a"><button type="button" class="btn sm" data-inst="'+esc(u.key)+'">'+I('check')+'Bought & installed</button><button type="button" class="btn sm" data-wish="'+esc(u.key)+'">Remove</button></div></div>').join(''):
+  $('#wishItems').innerHTML=L.length?L.map(u=>'<div class="wi"><div class="t">'+pimg(skuU(u),'wi-img')+'<b>'+esc(u.name)+'</b><span>'+(price(u)||'—')+'</span></div><div class="a">'+stores(u)+'</div><div class="a"><button type="button" class="btn sm" data-inst="'+esc(u.key)+'">'+I('check')+'Bought & installed</button><button type="button" class="btn sm" data-wish="'+esc(u.key)+'">Remove</button></div></div>').join(''):
     '<p class="empty">Tap "Wishlist" on any upgrade to plan a build and see the total.</p>';wireUps($('#wishItems'));
   const n=$('#navWish');n.hidden=!L.length;n.textContent=L.length;}
 
@@ -1168,9 +1186,9 @@ function renderCards(){const el=$('#upCards'),hd=$('#upCardsH');el.classList.tog
   hd.innerHTML='<b>'+esc(nm)+'</b><small>'+(acc?'Add-ons stack: fit as many as you like.':'One option fits at a time. Preview, then install.')+'</small>';
   const cur=statsFor(S.installed,S.gear);let h='';
   if(!acc){const isStock=!S.installed.some(k=>UPK[k]&&(UPK[k].grp===g||(EXCL[g]||[]).includes(UPK[k].grp)));
-    h+='<button type="button" class="ucard'+(isStock?' inst':'')+'" data-k="__stock" style="--tc:'+TIER.stock[1]+'"><span class="tier">Stock</span><b>'+esc(STOCKNAME[g]||'Stock part')+'</b><small>Comes on your Jato</small><span class="uf">'+(isStock?'<em>'+I('check')+'Installed</em>':'<span>Free</span>')+'</span></button>';}
+    const sp0=(c.slots.find(x=>x[0]===g)||[])[2];h+='<button type="button" class="ucard'+(isStock?' inst':'')+'" data-k="__stock" style="--tc:'+TIER.stock[1]+'"><span class="tier">Stock</span>'+pimg(skuP(sp0),'uc-img')+'<b>'+esc(STOCKNAME[g]||'Stock part')+'</b><small>Comes on your Jato</small><span class="uf">'+(isStock?'<em>'+I('check')+'Installed</em>':'<span>Free</span>')+'</span></button>';}
   opts.forEach(u=>{const on=isInst(u.key),[fk,ft]=fitInfo(u),pr=price(u);const nx=statsFor(withOpt(S.installed,u),gearOf(withOpt(S.installed,u)));const d=nx.pi-cur.pi;
-    h+='<button type="button" class="ucard'+(on?' inst':'')+(u.fits_stock===false?' nofit':'')+'" data-k="'+esc(u.key)+'" style="--tc:'+TIER[u.tier][1]+'"><span class="tier">'+TIER[u.tier][0]+'</span><b>'+esc(u.name)+'</b><small>'+esc(u.brand||'')+(u.part_number?' · #'+esc(u.part_number):'')+'</small>'+
+    h+='<button type="button" class="ucard'+(on?' inst':'')+(u.fits_stock===false?' nofit':'')+'" data-k="'+esc(u.key)+'" style="--tc:'+TIER[u.tier][1]+'"><span class="tier">'+TIER[u.tier][0]+'</span>'+pimg(skuU(u),'uc-img')+'<b>'+esc(u.name)+'</b><small>'+esc(u.brand||'')+(u.part_number?' · #'+esc(u.part_number):'')+'</small>'+
       '<span class="ufit tag '+fk+'">'+esc(ft)+'</span><span class="uf">'+(on?'<em>'+I('check')+'Installed</em>':'<span>'+(pr||'Price n/a')+'</span>')+(d?'<i class="'+(d>0?'up':'dn')+'">'+(d>0?'+':'')+d+' PI</i>':'')+'</span></button>';});
   el.innerHTML=h;
   el.querySelectorAll('.ucard').forEach(b=>{const pv=()=>{const k=b.dataset.k;const u=k==='__stock'?null:UPK[k];
@@ -1202,7 +1220,7 @@ function quickHtml(){const cur=statsFor(S.installed,S.gear);const ci=CLASSES.fin
   const q=U.quick;if(!q.target)q.target=(CLASSES[ci+1]||CLASSES[ci])[0];const plan=quickPlan(q.target,q.focus);
   return '<div class="uq"><div class="seg" role="radiogroup" aria-label="Target class">'+tgts.map(c=>'<button type="button" role="radio" data-t="'+c[0]+'" aria-checked="'+(q.target===c[0])+'" style="color:'+c[2]+'">Class '+c[0]+'</button>').join('')+'</div>'+
     '<div class="seg" role="radiogroup" aria-label="Focus">'+[['balanced','Balanced'],['speed','Speed'],['bash','Bashing']].map(([k,l])=>'<button type="button" role="radio" data-f="'+k+'" aria-checked="'+(q.focus===k)+'">'+l+'</button>').join('')+'</div></div>'+
-    (plan.keys.length?'<div class="uqlist">'+plan.keys.map(k=>{const u=UPK[k];return '<div class="ucard inst" style="--tc:'+TIER[u.tier][1]+'"><span class="tier">'+TIER[u.tier][0]+'</span><b>'+esc(u.name)+'</b><small>'+esc(u.brand||'')+(u.part_number?' · #'+esc(u.part_number):'')+'</small><span class="uf"><span>'+(price(u)||'Price n/a')+'</span></span></div>';}).join('')+'</div>'+
+    (plan.keys.length?'<div class="uqlist">'+plan.keys.map(k=>{const u=UPK[k];return '<div class="ucard inst" style="--tc:'+TIER[u.tier][1]+'"><span class="tier">'+TIER[u.tier][0]+'</span>'+pimg(skuU(u),'uc-img')+'<b>'+esc(u.name)+'</b><small>'+esc(u.brand||'')+(u.part_number?' · #'+esc(u.part_number):'')+'</small><span class="uf"><span>'+(price(u)||'Price n/a')+'</span></span></div>';}).join('')+'</div>'+
       '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px"><button type="button" class="btn pri" id="uqGo">'+I('check')+'Install all '+plan.keys.length+'</button><span class="fine">'+piBadge(cur)+' → '+piBadge(plan.after,true)+' · ≈ $'+plan.cost.toFixed(0)+(plan.unk?' + '+plan.unk+' unpriced':'')+(plan.reached?'':' · the stock-fit parts can\'t quite reach Class '+q.target)+'</span></div>':
       '<p class="fine">Nothing to add: your build is already at Class '+q.target+' for this focus.</p>');}
 function quickPlan(target,focus){const want=CLASSES.find(c=>c[0]===target);const minPi=(CLASSES[CLASSES.indexOf(want)-1]||[0,99])[1]+1;let inst=S.installed.slice(),gear={...S.gear};const added=[];
@@ -1290,7 +1308,7 @@ function renderGoal(){const out=$('#goalOut');if(!out)return;$('#goalIn').value=
   if(tex&&(gps||tmp))rec.push({u:tex,why:'Needed to plug the GPS and temperature sensors in.'});
   if(lnk)rec.push({u:lnk,why:'Lets the Traxxas Link app on your phone log speed and temps.'});
   const bat=UP.find(u=>u.part_number==='2889X');if(bat&&C===4)rec.push({u:bat,why:'A fresh, fully charged 4S pack: voltage sag costs top speed.'});
-  h+='<div class="grec"><h3>Also helps you reach '+T+' mph</h3>'+rec.map(r=>{const u=r.u,[fk,ft]=fitInfo(u),pr=price(u);return '<div class="up'+(isInst(u.key)?' inst':'')+'"><div class="t"><b>'+esc(u.name)+'</b><span>'+(pr||'')+'</span></div><div class="tags"><span class="tag">'+esc(u.brand||'')+(u.part_number?' · '+esc(u.part_number):'')+'</span><span class="tag '+fk+'">'+esc(ft)+'</span>'+(isInst(u.key)?'<span class="tag vi">On your Jato</span>':'')+'</div><p>'+esc(r.why)+'</p>'+
+  h+='<div class="grec"><h3>Also helps you reach '+T+' mph</h3>'+rec.map(r=>{const u=r.u,[fk,ft]=fitInfo(u),pr=price(u);const sk=skuU(u);return '<div class="up'+(isInst(u.key)?' inst':'')+(sk?' hasimg':'')+'">'+pimg(sk,'up-img')+'<div class="t"><b>'+esc(u.name)+'</b><span>'+(pr||'')+'</span></div><div class="tags"><span class="tag">'+esc(u.brand||'')+(u.part_number?' · '+esc(u.part_number):'')+'</span><span class="tag '+fk+'">'+esc(ft)+'</span>'+(isInst(u.key)?'<span class="tag vi">On your Jato</span>':'')+'</div><p>'+esc(r.why)+'</p>'+
     '<div class="a"><button type="button" class="btn sm '+(inWish(u.key)?'':'pri')+'" data-wish="'+esc(u.key)+'">'+(inWish(u.key)?I('check')+'In wishlist':I('plus')+'Wishlist')+'</button><button type="button" class="btn sm" data-inst="'+esc(u.key)+'">'+(isInst(u.key)?'Remove from build':'Mark installed')+'</button>'+stores(u)+'</div></div>';}).join('')+
     '<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" id="goalWishAll">'+I('plus')+'Add all to wishlist</button><button type="button" class="btn sm ai" id="goalAsk">'+I('chat')+'Ask the mechanic for a '+T+' mph plan</button></div></div>';
   out.innerHTML=h;wireUps(out);
