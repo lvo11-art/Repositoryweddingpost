@@ -1,0 +1,143 @@
+<title>Jato 4X4 Garage</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>/*CSS*/</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6v10H3z"/><path d="M8 20v-6h8v6"/></symbol>
+  <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11h11l2-8H6.2"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 10h7M8.5 13h4"/></symbol>
+  <symbol id="i-speed" viewBox="0 0 24 24"><path d="M4.5 17a8.5 8.5 0 1 1 15 0"/><path d="M12 13l4-5"/><circle cx="12" cy="13" r="1.3"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+  <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+  <symbol id="i-shaft" viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="12" r="3"/><path d="M9 12h6"/></symbol>
+  <symbol id="i-spring" viewBox="0 0 24 24"><path d="M8 3h8M8 21h8M8 6l8 2-8 2 8 2-8 2 8 2-8 2"/></symbol>
+  <symbol id="i-steer" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M12 14.5V21M9.6 11.2L3.4 9.6M14.4 11.2l6.2-1.6"/></symbol>
+  <symbol id="i-tire" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 3v4.5M12 16.5V21M3 12h4.5M16.5 12H21"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M3 15l2-5 5-2h5l4 4 2 3v2H3z"/><circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></symbol>
+  <symbol id="i-batt" viewBox="0 0 24 24"><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10v4M7 10v4M11 10v4"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3c3.5 4.2 6 7.4 6 10.5a6 6 0 0 1-12 0C6 10.4 8.5 7.2 12 3z"/></symbol>
+  <symbol id="i-rot" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M20 4v5h-5"/></symbol>
+  <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+  <symbol id="i-explode" viewBox="0 0 24 24"><path d="M12 12l-6-6M12 12l6-6M12 12l-6 6M12 12l6 6"/><path d="M4 4h4M4 4v4M20 4h-4M20 4v4M4 20h4M4 20v-4M20 20h-4M20 20v-4"/></symbol>
+  <symbol id="i-label" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 0-2-2z"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></symbol>
+</defs></svg>
+<div class="app">
+  <header class="top">
+    <div class="brand"><b>RC LAB<em>PRO</em></b><span>Traxxas Jato 4X4 VXL 4S · #90386-4 · orange</span></div>
+    <nav class="nav" aria-label="Sections">
+      <button type="button" data-s="garage" aria-current="page"><svg class="i"><use href="#i-home"/></svg>Garage</button>
+      <button type="button" data-s="build"><svg class="i"><use href="#i-cube"/></svg>3D Build</button>
+      <button type="button" data-s="shop"><svg class="i"><use href="#i-cart"/></svg>Shop <span class="tag blue" id="navWish" hidden></span></button>
+      <button type="button" data-s="tune"><svg class="i"><use href="#i-gear"/></svg>Tune</button>
+      <button type="button" data-s="mech"><svg class="i"><use href="#i-chat"/></svg>AI Mechanic</button>
+      <a href="speed-dash.html"><svg class="i"><use href="#i-speed"/></svg>Speed Run</a>
+    </nav>
+  </header>
+  <main class="screens">
+    <!-- GARAGE -->
+    <section class="scr garage" id="s-garage" aria-label="Garage">
+      <div class="col">
+        <div class="hero"><img id="heroImg" alt="Your Jato, drawn from its published size and parts"><div class="badges"><span class="tag ok">Stock, ready to run</span><span class="tag blue" id="heroCls"></span></div>
+          <div class="name"><h1>Jato 4X4 VXL</h1><span>1/8 4WD buggy · 4S brushless · 60+ mph claimed</span></div>
+          <div class="go"><button type="button" class="btn pri" data-go="build"><svg class="i"><use href="#i-cube"/></svg>Open in 3D</button><button type="button" class="btn" data-go="shop"><svg class="i"><use href="#i-cart"/></svg>Shop upgrades</button></div></div>
+        <div class="specs" id="gSpecs"></div>
+        <div class="card pad"><div class="h2row"><h2>Build performance</h2><small>estimated</small></div><div class="bars" id="gBars"></div></div>
+      </div>
+      <div class="col scroll">
+        <div class="card pad"><div class="h2row"><h2>Quick actions</h2></div><div class="list" id="gQuick"></div></div>
+        <div class="card pad"><div class="h2row"><h2>Your upgrades</h2><small id="gUpCount"></small></div><div class="list" id="gUps"></div></div>
+        <div class="card pad"><div class="h2row"><h2>Maintenance</h2><small>tick when done</small></div><div id="gMaint"></div></div>
+        <div class="card pad"><div class="h2row"><h2>Saved builds</h2></div>
+          <form id="gSaveF" style="display:flex;gap:6px;margin-bottom:8px"><input id="gSaveN" maxlength="40" placeholder="Name this setup" aria-label="Build name" style="flex:1;min-width:0;border:1px solid var(--line);background:rgba(8,13,22,.75);border-radius:10px;padding:8px 10px;color:var(--ink)"><button class="btn pri sm" type="submit"><svg class="i"><use href="#i-save"/></svg>Save</button></form>
+          <div class="list" id="gBuilds"></div></div>
+      </div>
+    </section>
+    <!-- BUILD -->
+    <section class="scr build" id="s-build" aria-label="3D build" hidden>
+      <aside class="card parts" aria-label="Parts"><div class="search"><input type="search" id="pFilter" placeholder="Search parts…" aria-label="Search parts"></div><div class="cats" id="cats"></div></aside>
+      <div class="viewer">
+        <div class="vbar"><div class="seg" id="views" role="group" aria-label="Camera view"><button type="button" data-v="iso" aria-pressed="true">3/4</button><button type="button" data-v="left">Side</button><button type="button" data-v="front">Front</button><button type="button" data-v="rear">Rear</button><button type="button" data-v="top">Top</button><button type="button" data-v="bottom">Bottom</button></div>
+          <span class="sp"></span><div class="seg" id="bodyMode" role="group" aria-label="Body"><button type="button" data-b="on" aria-pressed="true">Body on</button><button type="button" data-b="ghost">See-through</button><button type="button" data-b="off">Off</button></div></div>
+        <div class="stage" id="stage"><div class="loading" id="loading">Loading 3D…</div><div class="call" id="call"><svg aria-hidden="true"></svg></div><div class="tip" id="tip" hidden></div>
+          <span class="note3d">Drawn from Traxxas specs · your scan will replace it</span>
+          <div class="dock" role="toolbar" aria-label="3D tools">
+            <button type="button" data-k="spin" title="Spin slowly"><svg class="i"><use href="#i-rot"/></svg><span class="lbl">Rotate</span></button>
+            <button type="button" data-k="fit" title="Fit the whole buggy"><svg class="i"><use href="#i-fit"/></svg><span class="lbl">Fit</span></button>
+            <button type="button" data-k="explode" title="Pull the parts apart"><svg class="i"><use href="#i-explode"/></svg><span class="lbl">Explode</span></button>
+            <button type="button" data-k="labels" aria-pressed="true" title="Category labels"><svg class="i"><use href="#i-label"/></svg><span class="lbl">Labels</span></button>
+            <button type="button" data-k="paint" title="Paint and colours"><svg class="i"><use href="#i-drop"/></svg><span class="lbl">Paint</span></button>
+          </div></div>
+      </div>
+      <aside class="card ctx" aria-label="Details"><div class="head" id="ctxHead"></div><div class="body" id="ctxBody"></div></aside>
+    </section>
+    <!-- SHOP -->
+    <section class="scr shop" id="s-shop" aria-label="Shop" hidden>
+      <div class="main">
+        <div class="card pad"><div class="h2row" style="margin-bottom:8px"><h2>Upgrades & accessories</h2><small id="shopCount"></small></div>
+          <div class="filters"><input type="search" id="shopQ" placeholder="Search by name or part number…" aria-label="Search upgrades" style="flex:1;min-width:200px">
+            <div class="seg" role="group" aria-label="Sort"><button type="button" data-sort="fit" aria-pressed="true">Best fit</button><button type="button" data-sort="price">Price</button></div>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="shopFits" checked style="accent-color:var(--blue)">Fits stock only</label></div>
+          <div class="chips" id="shopChips" style="margin-top:8px"></div></div>
+        <div class="grid scroll" id="shopGrid"></div>
+      </div>
+      <aside class="card wish" aria-label="Wishlist"><div class="pad" style="padding-bottom:8px"><div class="h2row" style="margin:0"><h2>Wishlist</h2><small id="wishN"></small></div><p class="fine">Prices are rough US street prices. Tap a store to search it for that part.</p></div>
+        <div class="items" id="wishItems"></div><div class="total"><span>Total <small class="fine" id="wishUnk"></small></span><b id="wishTotal">$0</b></div></aside>
+    </section>
+    <!-- TUNE -->
+    <section class="scr tune" id="s-tune" aria-label="Tune" hidden>
+      <div class="card pad" style="display:flex;flex-direction:column;gap:12px">
+        <div class="h2row" style="margin:0"><h2>Gearing & speed</h2><small>0.8 mod (32P) gears</small></div>
+        <div class="gauge"><svg viewBox="0 0 220 130" aria-hidden="true"><defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#00B8FF"/><stop offset="1" stop-color="#A855F7"/></linearGradient></defs><path class="bg" d="M20 120 A90 90 0 0 1 200 120"/><path class="v" id="gArc" d="M20 120 A90 90 0 0 1 200 120"/></svg>
+          <div class="val"><span>Estimated top speed</span><b id="tMph">0</b><span>mph</span></div></div>
+        <div class="step"><span>Pinion</span><button type="button" data-g="pin" data-d="-1" aria-label="Fewer pinion teeth">−</button><b id="tPin">14T</b><button type="button" data-g="pin" data-d="1" aria-label="More pinion teeth">+</button></div>
+        <div class="step"><span>Spur</span><button type="button" data-g="sp" data-d="-1" aria-label="Fewer spur teeth">−</button><b id="tSp">50T</b><button type="button" data-g="sp" data-d="1" aria-label="More spur teeth">+</button></div>
+        <div class="seg" id="tCells" role="radiogroup" aria-label="Battery" style="align-self:flex-start"><button type="button" role="radio" data-c="2">2S</button><button type="button" role="radio" data-c="3">3S</button><button type="button" role="radio" data-c="4">4S</button></div>
+        <div class="outs"><div><small>Gear ratio</small><b id="tRat">-</b></div><div><small>Punch</small><b id="tPunch">-</b></div><div><small>Motor heat</small><b id="tHeat">-</b></div></div>
+        <p class="fine" id="tWarn"></p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn pri" id="tSave">Save as my gearing</button><button type="button" class="btn" id="tShop">Shop pinions</button></div>
+        <p class="fine">Speed is scaled from Traxxas's "60+ mph on 4S" claim at the stock 14T/50T gearing, so treat it as a guide. Your speed dash gives the real number. The stock 14T/50T comes from one retailer: count your teeth to confirm.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card pad" style="display:flex;flex-direction:column;gap:10px"><div class="h2row" style="margin:0"><h2>Will this battery fit?</h2></div>
+          <p class="fine">Enter your pack's size in millimetres. The Traxxas manual lists a 160 mm long bay, some retailers say 165 × 50 × 35 mm, and Traxxas's own 2889X pack (about 45 mm tall) fits, so height is checked loosely.</p>
+          <div class="fit"><label>Length<input id="bL" inputmode="decimal" value="155"></label><label>Width<input id="bW" inputmode="decimal" value="46"></label><label>Height<input id="bH" inputmode="decimal" value="45"></label></div>
+          <div class="verdict" id="bV"></div>
+          <div class="list" id="bPacks"></div></div>
+        <div class="card pad"><div class="h2row"><h2>Setup notes</h2></div><div id="tNotes"></div></div>
+      </div>
+    </section>
+    <!-- MECHANIC -->
+    <section class="scr mech" id="s-mech" aria-label="AI mechanic" hidden>
+      <div class="card chat"><div class="pad" style="border-bottom:1px solid var(--line)"><div class="h2row" style="margin:0"><h2>AI mechanic</h2><small id="mMode">Connecting…</small></div><p class="fine" id="mCtx"></p></div>
+        <div class="log" id="mLog" aria-live="polite"></div>
+        <div class="sugg" id="mSugg"></div>
+        <form class="ask" id="mForm"><textarea id="mIn" placeholder="Ask about repairs, setup or what to buy…" aria-label="Your question"></textarea><button class="btn ai" type="submit">Ask</button></form></div>
+      <aside class="card pad scroll"><div class="h2row"><h2>Common problems</h2></div><div class="list" id="mBreaks"></div></aside>
+    </section>
+  </main>
+</div>
+<nav class="tabs" aria-label="Sections">
+  <button type="button" data-s="garage" aria-current="page"><svg class="i"><use href="#i-home"/></svg>Garage</button>
+  <button type="button" data-s="build"><svg class="i"><use href="#i-cube"/></svg>3D Build</button>
+  <button type="button" data-s="shop"><svg class="i"><use href="#i-cart"/></svg>Shop</button>
+  <button type="button" data-s="tune"><svg class="i"><use href="#i-gear"/></svg>Tune</button>
+  <button type="button" data-s="mech"><svg class="i"><use href="#i-chat"/></svg>Mechanic</button>
+</nav>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/environments/RoomEnvironment.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
+<script>const JATO=/*DATA*/;</script>
+<script>/*JS*/</script>
