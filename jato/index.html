@@ -452,6 +452,29 @@ dl.kv dd{margin:0;font-family:var(--f-m);font-size:12.5px}
 .tqit td small{display:block;color:var(--mute);font-size:11.5px;margin-top:4px}
 .tqit .on{background:rgba(0,184,255,.09)}
 .tqit thead .on{color:var(--ink);box-shadow:inset 0 -2px 0 var(--blue)}
+
+/* mechanic chat */
+.log{gap:10px}
+.msg{max-width:min(78%,640px);padding:10px 14px;border-radius:16px;line-height:1.5;font-size:14.5px}
+.msg.you{align-self:flex-end;background:linear-gradient(135deg,rgba(0,184,255,.28),rgba(0,184,255,.16));border:1px solid rgba(0,184,255,.35);border-bottom-right-radius:5px}
+.msg.me{align-self:flex-start;background:rgba(20,27,40,.95);border:1px solid rgba(168,85,247,.28);border-bottom-left-radius:5px}
+.msg p{margin:0 0 8px}.msg p:last-child{margin-bottom:0}
+.msg ol,.msg ul{margin:4px 0 8px;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.msg b{color:#fff}
+.msg .err{color:#ffb0aa;margin:0 0 6px}
+.mlinks{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mlinks:empty{display:none}
+.chip3d,.chipw{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:rgba(8,13,22,.7);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:600}
+.chip3d svg,.chipw svg{width:14px;height:14px}
+.chip3d:hover,.chipw:hover{border-color:rgba(0,184,255,.6)}
+.typing{display:flex;gap:5px;padding:14px 16px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--vi);animation:tp 1.1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tp{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.ask textarea{min-height:44px;border-radius:22px;padding:11px 16px}
+.ask .btn{border-radius:22px;padding:0 18px}
+@media (max-width:980px){.msg{max-width:88%}}
+@media (prefers-reduced-motion:reduce){.typing i{animation:none}}
 </style>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6v10H3z"/><path d="M8 20v-6h8v6"/></symbol>
@@ -598,10 +621,10 @@ dl.kv dd{margin:0;font-family:var(--f-m);font-size:12.5px}
     </section>
     <!-- MECHANIC -->
     <section class="scr mech" id="s-mech" aria-label="AI mechanic" hidden>
-      <div class="card chat"><div class="pad" style="border-bottom:1px solid var(--line)"><div class="h2row" style="margin:0"><h2>AI mechanic</h2><small id="mMode">Connecting…</small></div><p class="fine" id="mCtx"></p></div>
+      <div class="card chat"><div class="pad" style="border-bottom:1px solid var(--line)"><div class="h2row" style="margin:0"><h2>AI mechanic</h2><small id="mMode">Connecting…</small><button type="button" class="btn sm" id="mClear" hidden>New chat</button></div><p class="fine" id="mCtx"></p></div>
         <div class="log" id="mLog" aria-live="polite"></div>
         <div class="sugg" id="mSugg"></div>
-        <form class="ask" id="mForm"><textarea id="mIn" placeholder="Ask about repairs, setup or what to buy…" aria-label="Your question"></textarea><button class="btn ai" type="submit">Ask</button></form></div>
+        <form class="ask" id="mForm"><textarea id="mIn" rows="1" placeholder="Message your mechanic…" aria-label="Your question"></textarea><button class="btn ai" type="submit" id="mSend">Send</button><button class="btn" type="button" id="mStop" hidden>Stop</button></form></div>
       <aside class="card pad scroll"><div class="h2row"><h2>Common problems</h2></div><div class="list" id="mBreaks"></div></aside>
     </section>
   </main>
@@ -1068,42 +1091,86 @@ function fitCheck(){const L=+$('#bL').value,W=+$('#bW').value,H=+$('#bH').value,
   else{v.className='verdict ok';v.textContent='Should fit. It is within the 160 × 50 mm bay and no taller than the 2889X pack.';}}
 ['bL','bW','bH'].forEach(id=>$('#'+id).addEventListener('input',fitCheck));
 
-/* ---------- mechanic ---------- */
-const QA={turns:[],sample:null,busy:false};
-try{QA.turns=JSON.parse(localStorage.getItem('jato-qa-v1')||'[]').slice(-12);}catch(e){}
-const qaSave=()=>{try{localStorage.setItem('jato-qa-v1',JSON.stringify(QA.turns.slice(-12)));}catch(e){}};
+/* ---------- mechanic: a conversation, not a form ----------
+   Answers stream in as plain chat text: the direct answer first, short, with a numbered list only when the job has steps. */
+const QA={turns:[],sample:null,busy:false,ctl:null};
+try{QA.turns=JSON.parse(localStorage.getItem('jato-qa-v2')||'[]').slice(-20);}catch(e){}
+const qaSave=()=>{try{localStorage.setItem('jato-qa-v2',JSON.stringify(QA.turns.filter(t=>t.a).slice(-20)));}catch(e){}};
 function truckFile(){const sp=Object.fromEntries(Object.entries(SP).map(([k,v])=>[k,v&&v.value!==undefined?v.value:v]));
-  return JSON.stringify({vehicle:'Traxxas Jato 4X4 VXL 4S (#90386-4), orange, 1/8 4WD buggy, otherwise stock',specs:sp,stock_parts:D.stock_parts.map(p=>({id:p.id,name:p.name,pn:p.traxxas_pn})),
-    installed_upgrades:S.installed.map(k=>UPK[k]&&UPK[k].name),wishlist:S.wish.map(k=>UPK[k]&&UPK[k].name),gearing:S.gear,selected_part:S.sel?S.sel.name:null,common_breaks:D.common_breaks.map(b=>b.part+': '+b.symptom+' -> '+b.fix),maintenance:D.maintenance.map(m=>m.item+': '+m.spec)});}
-function rules(){return 'You are an experienced RC mechanic helping the owner of ONE Traxxas Jato 4X4 VXL 4S. Use the TRUCK FILE first, then solid Traxxas knowledge. Say plainly when a fact (oil weight, part number, gear ratio) is not confirmed and how to check it. Give beginner-friendly numbered steps, the tools and parts with Traxxas part numbers when known, and safety warnings for LiPo, spinning wheels and hot motors where relevant. Stay on RC topics.\nReply with ONLY one JSON object: {"title":string,"summary":string,"difficulty":"easy"|"medium"|"hard","time":string,"tools":[string],"parts":[{"name":string,"pn":string|null}],"steps":[{"title":string,"detail":string,"warning":string|null}],"tips":[string],"followup":string|null}\n\nTRUCK FILE:\n'+truckFile();}
+  return JSON.stringify({vehicle:'Traxxas Jato 4X4 VXL 4S (#90386-4), orange, 1/8 4WD buggy, otherwise stock',specs:sp,stock_parts:D.stock_parts.map(p=>({name:p.name,pn:p.traxxas_pn})),
+    installed_upgrades:S.installed.map(k=>UPK[k]&&UPK[k].name),wishlist:S.wish.map(k=>UPK[k]&&UPK[k].name),gearing:S.gear,looking_at:S.sel?S.sel.name:null,
+    upgrade_catalog:UP.map(u=>u.name+(u.part_number?' #'+u.part_number:'')+(u.approx_price_usd?' $'+u.approx_price_usd:'')),common_breaks:D.common_breaks.map(b=>b.part+': '+b.symptom+' -> '+b.fix),maintenance:D.maintenance.map(m=>m.item+': '+m.spec)});}
+function rules(){return `You are the owner's RC mechanic buddy: a straight-talking expert who has worked on a lot of Traxxas trucks. You're chatting with the owner of ONE Traxxas Jato 4X4 VXL 4S. Their truck's details are in the TRUCK FILE below; use it first, then solid Traxxas and RC knowledge.
+
+How to answer:
+- Talk like a person texting a friend who asked for help. Plain words, no jargon without a quick explanation.
+- Lead with the direct answer in the first sentence. No preamble, no restating the question, no "Great question".
+- Keep it short: usually 2-6 sentences. Go longer only for a real step-by-step job or when they ask for detail.
+- Use a short numbered list only when there are real steps to follow in order. Use "- " bullets only for a few options. No headings, no tables, no bold labels like "Tools:".
+- Mention a Traxxas part number when it helps them buy or find the part. If a number, oil weight or ratio isn't confirmed, say so in a few words and how to check.
+- Give a safety note only when it really matters (LiPo charging, spinning wheels, hot motor), in one sentence.
+- If you need one fact to answer well (surface, battery, what it's doing), answer as best you can, then ask that one question at the end.
+- Never invent prices or parts that aren't in the catalog without saying they're from outside it.
+
+TRUCK FILE:
+`+truckFile();}
+/* tiny safe formatter: paragraphs, - bullets, 1. lists, **bold** */
+function fmt(t){const lines=esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').split(/\n/);let h='',list=null;
+  const close=()=>{if(list){h+='</'+list+'>';list=null;}};
+  lines.forEach(l=>{const s=l.trim();let m;
+    if((m=/^(\d+)[.)]\s+(.*)/.exec(s))){if(list!=='ol'){close();h+='<ol>';list='ol';}h+='<li>'+m[2]+'</li>';}
+    else if((m=/^[-•*]\s+(.*)/.exec(s))){if(list!=='ul'){close();h+='<ul>';list='ul';}h+='<li>'+m[1]+'</li>';}
+    else if(!s){close();}else{close();h+='<p>'+s+'</p>';}});close();return h;}
+/* buttons for parts and upgrades the answer mentions */
+function links(t){const low=t.toLowerCase();const out=[];
+  UP.forEach(u=>{if(u.part_number&&new RegExp('\\b'+u.part_number.replace(/[-]/g,'\\-')+'\\b','i').test(t)&&!out.some(o=>o.u===u))out.push({u});});
+  const parts=parts_mentioned(low);
+  return (parts.map(p=>'<button type="button" class="chip3d" data-show="'+p.id+'">'+I('cube')+'Show '+esc(p.name.replace(/\s*\(.*\)/,''))+'</button>').join('')+
+    out.slice(0,4).map(o=>'<button type="button" class="chipw" data-wish="'+esc(o.u.key)+'">'+(inWish(o.u.key)?I('check')+'Saved: ':I('plus')+'Wishlist: ')+esc(o.u.name.split(',')[0].slice(0,34))+'</button>').join(''));}
+function parts_mentioned(low){const KEYS={servo:'servo',esc:'esc',motor:'motor',battery:'battery',shocks:'shock',spur:'spur',pinion:'pinion',center_diff:'centre diff|center diff',diff_front_rear:'front diff|rear diff|differential',
+  suspension_arms:'arm',caster_blocks:'caster',steering_blocks:'steering block',hub_carriers:'carrier|hub',driveshaft_front:'driveshaft|cvd',wheels_tires:'tire|tyre|wheel',body:'body',wing:'wing',receiver:'receiver'};
+  return Object.entries(KEYS).filter(([id,re])=>byId[id]&&new RegExp('\\b('+re+')','i').test(low)).slice(0,3).map(([id])=>byId[id]);}
 function offline(q){const w=q.toLowerCase().split(/\W+/).filter(x=>x.length>3);const hit=t=>w.filter(x=>t.toLowerCase().includes(x)).length;
-  const br=D.common_breaks.map(b=>[hit(b.part+' '+b.symptom+' '+b.fix),b]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,3).map(x=>x[1]);
-  const mt=D.maintenance.map(m=>[hit(m.item+' '+m.spec),m]).filter(x=>x[0]).slice(0,3).map(x=>x[1]);
-  const up=UP.map(u=>[hit(u.name+' '+u.what_it_changes),u]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,3).map(x=>x[1]);
-  if(!br.length&&!mt.length&&!up.length)return null;
-  return {title:'From your Jato file',summary:'Live answers are not available in this view, so here is what your Jato file says. Open this page in Claude for full answers.',steps:[...br.map(b=>({title:b.symptom,detail:b.fix})),...mt.map(m=>({title:m.item,detail:m.spec+(m.interval?' · '+m.interval:'')})),...up.map(u=>({title:u.name+(u.part_number?' (#'+u.part_number+')':''),detail:u.what_it_changes}))],tools:[],parts:[],tips:[]};}
-function ansHtml(a){return '<article class="ans"><h3>'+esc(a.title||'Answer')+'</h3><div class="meta">'+(a.difficulty?'<span class="tag">'+esc(a.difficulty)+'</span>':'')+(a.time?'<span class="tag">'+esc(a.time)+'</span>':'')+'</div>'+(a.summary?'<p>'+esc(a.summary)+'</p>':'')+
-  ((a.tools||[]).length?'<p class="fine"><b>Tools:</b> '+a.tools.map(esc).join(', ')+'</p>':'')+((a.parts||[]).length?'<p class="fine"><b>Parts:</b> '+a.parts.map(x=>esc(x.name)+(x.pn?' #'+esc(x.pn):'')).join(', ')+'</p>':'')+
-  '<ol>'+(a.steps||[]).map(s=>'<li><b>'+esc(s.title)+'</b>'+esc(s.detail)+(s.warning?'<div class="w">'+esc(s.warning)+'</div>':'')+'</li>').join('')+'</ol>'+((a.tips||[]).length?'<p class="fine"><b>Tips:</b> '+a.tips.map(esc).join(' · ')+'</p>':'')+
-  (a.followup?'<div class="sugg" style="padding:0"><button type="button" data-q="'+esc(a.followup)+'">'+esc(a.followup)+'</button></div>':'')+'</article>';}
+  const br=D.common_breaks.map(b=>[hit(b.part+' '+b.symptom+' '+b.fix),b]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,2).map(x=>x[1]);
+  const mt=D.maintenance.map(m=>[hit(m.item+' '+m.spec),m]).filter(x=>x[0]).slice(0,2).map(x=>x[1]);
+  const up=UP.map(u=>[hit(u.name+' '+u.what_it_changes),u]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,2).map(x=>x[1]);
+  if(!br.length&&!mt.length&&!up.length)return 'I can\'t reach Claude from this view, and nothing in your Jato file matches that. Open this page in Claude and ask again, or tap a common problem on the right.';
+  let t='I can\'t reach Claude from this view, so here\'s what your Jato file says:\n\n';
+  br.forEach(b=>t+='- '+b.part+': '+b.fix+'\n');mt.forEach(m=>t+='- '+m.item+': '+m.spec+'\n');up.forEach(u=>t+='- '+u.name+(u.part_number?' (#'+u.part_number+')':'')+': '+u.what_it_changes+'\n');
+  return t+'\nOpen this page in Claude for a real answer to your question.';}
+function bubble(t,i){if(t.err)return '<div class="msg me"><p class="err">'+esc(t.err)+'</p><button type="button" class="chipw" data-retry="'+i+'">Try again</button></div>';
+  if(!t.a)return '<div class="msg me typing"><i></i><i></i><i></i></div>';
+  return '<div class="msg me">'+fmt(t.a)+(t.done?'<div class="mlinks">'+links(t.a)+'</div>':'')+'</div>';}
 function renderMech(){$('#mCtx').textContent='Knows your Jato: stock parts, '+S.installed.length+' installed upgrades, gearing '+S.gear.pin+'T/'+S.gear.sp+'T'+(S.sel?', and that you were looking at the '+S.sel.name:'')+'.';
-  $('#mLog').innerHTML=QA.turns.length?QA.turns.map(t=>'<div class="q">'+esc(t.q)+'</div>'+(t.a?ansHtml(t.a):t.err?'<p class="err">'+esc(t.err)+'</p>':'<p class="wait">Thinking it through…</p>')).join(''):'<p class="empty">Ask anything about your Jato: a repair, gearing, which battery fits, what to upgrade first. Answers come as numbered steps with the parts and tools.</p>';
-  $('#mLog').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>ask(b.dataset.q));$('#mLog').scrollTop=1e9;
-  const sg=(S.sel?['How do I replace the '+S.sel.name+'?']:[]).concat(['What should I upgrade first for bashing?','Which 4S batteries fit the Jato?','How do I set gear mesh on the Jato?','My Jato pulls to one side. What do I check?']);
+  $('#mLog').innerHTML=QA.turns.length?QA.turns.map((t,i)=>'<div class="msg you">'+esc(t.q)+'</div>'+bubble(t,i)).join(''):
+    '<div class="msg me"><p>Hey! I know your Jato inside out: every stock part, your upgrades and your gearing. Ask me anything: a repair, a setup question, or what to buy next.</p></div>';
+  wireMech();$('#mLog').scrollTop=1e9;$('#mStop').hidden=!QA.busy;$('#mSend').hidden=QA.busy;$('#mClear').hidden=!QA.turns.length||QA.busy;
+  const sg=(S.sel?['What usually goes wrong with the '+S.sel.name.replace(/\s*\(.*\)/,'')+'?']:[]).concat(['What should I upgrade first?','Which 4S batteries fit?','How do I set gear mesh?','It pulls to one side. Why?']);
   $('#mSugg').innerHTML=sg.slice(0,4).map(q=>'<button type="button">'+esc(q)+'</button>').join('');$('#mSugg').querySelectorAll('button').forEach(b=>b.onclick=()=>ask(b.textContent));
   $('#mBreaks').innerHTML=D.common_breaks.map(b=>'<button type="button" class="row" data-b="'+esc(b.part)+'"><i class="ri">'+I('wrench')+'</i><span><b>'+esc(b.part)+'</b><small>'+esc(b.symptom)+'</small></span></button>').join('');
-  $('#mBreaks').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>ask('How do I fix this on my Jato: '+b.dataset.b+' — '+b.querySelector('small').textContent+'?'));}
-async function ask(q){q=(q||'').trim();if(!q||QA.busy)return;if(S.screen!=='mech')go('mech');const t={q};QA.turns.push(t);$('#mIn').value='';renderMech();
-  if(!QA.sample){const a=offline(q);if(a)t.a=a;else t.err='Live answers are not available in this view. Open this page in Claude to ask, or check Common problems on the right.';qaSave();renderMech();return;}
-  QA.busy=true;try{const hist=[];QA.turns.slice(0,-1).filter(x=>x.a).slice(-3).forEach(x=>{hist.push({role:'user',content:x.q});hist.push({role:'assistant',content:JSON.stringify(x.a)});});
-    const a=await QA.sample.json([{role:'user',content:rules()},{role:'assistant',content:'{"title":"Ready","summary":"Ask your question.","steps":[]}'},...hist,{role:'user',content:q}],{cache:false});
-    if(!a||!Array.isArray(a.steps))throw {code:'invalid'};t.a=a;}
-  catch(e){const c=e&&e.code;if(c==='not_granted'||c==='capability_disabled'){QA.sample=null;const a=offline(q);if(a)t.a=a;else t.err='Claude is not allowed for this page, so live answers are off.';}
-    else if(c==='rate_limited')t.err='Too many questions in a short time. Wait a minute, then ask again.';else t.err='The answer did not come through. Ask again.';}
-  finally{QA.busy=false;qaSave();renderMech();}}
+  $('#mBreaks').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>ask('My '+b.dataset.b.toLowerCase()+': '+b.querySelector('small').textContent.toLowerCase()+'. What do I do?'));}
+function wireMech(){const L=$('#mLog');L.querySelectorAll('[data-show]').forEach(b=>b.onclick=()=>{go('build');select(byId[b.dataset.show],true);});
+  L.querySelectorAll('[data-wish]').forEach(b=>b.onclick=()=>{toggleWish(b.dataset.wish);renderMech();});
+  L.querySelectorAll('[data-retry]').forEach(b=>b.onclick=()=>{const t=QA.turns.splice(+b.dataset.retry,1)[0];ask(t.q);});}
+function updateLast(){const t=QA.turns[QA.turns.length-1];const nodes=$('#mLog').querySelectorAll('.msg.me');const el=nodes[nodes.length-1];if(!el)return renderMech();
+  el.outerHTML=bubble(t,QA.turns.length-1);wireMech();const L=$('#mLog');if(L.scrollHeight-L.scrollTop-L.clientHeight<160)L.scrollTop=1e9;}
+async function ask(q){q=(q||'').trim();if(!q||QA.busy)return;if(S.screen!=='mech')go('mech');const t={q};QA.turns.push(t);$('#mIn').value='';
+  if(!QA.sample){t.a=offline(q);t.done=true;qaSave();renderMech();return;}
+  QA.busy=true;QA.ctl=new AbortController();renderMech();
+  try{const hist=[];QA.turns.slice(0,-1).filter(x=>x.a&&x.done).slice(-6).forEach(x=>{hist.push({role:'user',content:x.q});hist.push({role:'assistant',content:x.a});});
+    const r=await QA.sample([{role:'user',content:rules()+'\n\nReply "Ready." to start.'},{role:'assistant',content:'Ready.'},...hist,{role:'user',content:q}],
+      {cache:false,signal:QA.ctl.signal,onText:({text})=>{if(text){t.a=text;updateLast();}}});
+    t.a=(r&&r.text)||t.a||'';if(!t.a)throw {code:'empty'};t.done=true;}
+  catch(e){const c=e&&e.code;if(c==='cancelled'||c==='aborted'||(e&&e.name==='AbortError')){if(t.a){t.a+='\n\n(Stopped.)';t.done=true;}else QA.turns.pop();}
+    else if(c==='not_granted'||c==='capability_disabled'){QA.sample=null;$('#mMode').textContent='Offline: answers from your Jato file';t.a=offline(q);t.done=true;}
+    else if(c==='rate_limited')t.err='Too many questions in a short time. Give it a minute, then try again.';
+    else if(t.a&&e&&e.text){t.a=e.text;t.done=true;}else t.err='That answer didn\'t come through.';}
+  finally{QA.busy=false;QA.ctl=null;qaSave();renderMech();}}
 $('#mForm').onsubmit=e=>{e.preventDefault();ask($('#mIn').value);};
 $('#mIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask($('#mIn').value);}});
-(async()=>{try{const s=window.claude&&await window.claude.use('sample');QA.sample=s||null;}catch(e){QA.sample=null;}$('#mMode').textContent=QA.sample?'Live answers from Claude':'Offline: answers from your Jato file';})();
+$('#mStop').onclick=()=>{if(QA.ctl)QA.ctl.abort();};
+$('#mClear').onclick=()=>{QA.turns=[];qaSave();renderMech();};
+(async()=>{try{const s=window.claude&&await window.claude.use('sample');QA.sample=s||null;}catch(e){QA.sample=null;}$('#mMode').textContent=QA.sample?'Live · Claude':'Offline: answers from your Jato file';})();
 
 /* ---------- start ---------- */
 function refreshAll(){renderCats();if(S.screen!=='up')renderCtx();if(S.screen==='garage')renderGarage();if(S.screen==='shop')renderShop();if(S.screen==='tune')renderTune();renderWish();heroDirty=true;}

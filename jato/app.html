@@ -149,10 +149,10 @@
     </section>
     <!-- MECHANIC -->
     <section class="scr mech" id="s-mech" aria-label="AI mechanic" hidden>
-      <div class="card chat"><div class="pad" style="border-bottom:1px solid var(--line)"><div class="h2row" style="margin:0"><h2>AI mechanic</h2><small id="mMode">Connecting…</small></div><p class="fine" id="mCtx"></p></div>
+      <div class="card chat"><div class="pad" style="border-bottom:1px solid var(--line)"><div class="h2row" style="margin:0"><h2>AI mechanic</h2><small id="mMode">Connecting…</small><button type="button" class="btn sm" id="mClear" hidden>New chat</button></div><p class="fine" id="mCtx"></p></div>
         <div class="log" id="mLog" aria-live="polite"></div>
         <div class="sugg" id="mSugg"></div>
-        <form class="ask" id="mForm"><textarea id="mIn" placeholder="Ask about repairs, setup or what to buy…" aria-label="Your question"></textarea><button class="btn ai" type="submit">Ask</button></form></div>
+        <form class="ask" id="mForm"><textarea id="mIn" rows="1" placeholder="Message your mechanic…" aria-label="Your question"></textarea><button class="btn ai" type="submit" id="mSend">Send</button><button class="btn" type="button" id="mStop" hidden>Stop</button></form></div>
       <aside class="card pad scroll"><div class="h2row"><h2>Common problems</h2></div><div class="list" id="mBreaks"></div></aside>
     </section>
   </main>
