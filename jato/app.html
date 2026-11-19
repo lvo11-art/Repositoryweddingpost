@@ -38,6 +38,7 @@
     <nav class="nav" aria-label="Sections">
       <button type="button" data-s="garage" aria-current="page"><svg class="i"><use href="#i-home"/></svg>Garage</button>
       <button type="button" data-s="build"><svg class="i"><use href="#i-cube"/></svg>3D Build</button>
+      <button type="button" data-s="up"><svg class="i"><use href="#i-bolt"/></svg>Upgrades</button>
       <button type="button" data-s="shop"><svg class="i"><use href="#i-cart"/></svg>Shop <span class="tag blue" id="navWish" hidden></span></button>
       <button type="button" data-s="tune"><svg class="i"><use href="#i-gear"/></svg>Tune</button>
       <button type="button" data-s="mech"><svg class="i"><use href="#i-chat"/></svg>AI Mechanic</button>
@@ -81,6 +82,17 @@
       </div>
       <aside class="card ctx" aria-label="Details"><div class="head" id="ctxHead"></div><div class="body" id="ctxBody"></div></aside>
     </section>
+    <!-- UPGRADES -->
+    <section class="scr ups" id="s-up" aria-label="Upgrades" hidden>
+      <aside class="card uleft" id="upLeft"></aside>
+      <div class="umid">
+        <div class="ustage" id="upStage"><div class="ubanner" id="upBanner" role="status" hidden></div>
+          <div class="utools"><button type="button" class="btn sm" id="upStore"><svg class="i"><use href="#i-cart"/></svg>Store & wishlist</button><button type="button" class="btn sm" id="upSnd" aria-pressed="false" title="Menu sounds">Sound</button></div>
+          <span class="ukeys">← → choose · Enter install · Esc back</span></div>
+        <div class="card ucards"><div class="uch" id="upCardsH"></div><div class="urow" id="upCards"></div><div id="upDetail"></div></div>
+      </div>
+      <aside class="card uright" id="upRight"></aside>
+    </section>
     <!-- SHOP -->
     <section class="scr shop" id="s-shop" aria-label="Shop" hidden>
       <div class="main">
@@ -116,6 +128,11 @@
           <div class="list" id="bPacks"></div></div>
         <div class="card pad"><div class="h2row"><h2>Setup notes</h2></div><div id="tNotes"></div></div>
       </div>
+      <div class="card pad tuning" style="grid-column:1/-1"><div class="h2row"><h2>Tuning setup</h2><small>changes how it drives, not its RC PI</small></div>
+        <div class="seg" id="tPre" role="group" aria-label="Presets"></div>
+        <div class="tgrid" id="tSliders"></div>
+        <div class="tfeel" id="tFeel"></div>
+        <p class="fine">Stock oils are 50 wt front and 60 wt rear shocks (from a shop chart), about 30K in the front diff and grease in the rear (from one retailer). Camber and toe are typical starting points, not Traxxas figures. Check the manual before you rebuild.</p></div>
     </section>
     <!-- MECHANIC -->
     <section class="scr mech" id="s-mech" aria-label="AI mechanic" hidden>
@@ -130,7 +147,7 @@
 <nav class="tabs" aria-label="Sections">
   <button type="button" data-s="garage" aria-current="page"><svg class="i"><use href="#i-home"/></svg>Garage</button>
   <button type="button" data-s="build"><svg class="i"><use href="#i-cube"/></svg>3D Build</button>
-  <button type="button" data-s="shop"><svg class="i"><use href="#i-cart"/></svg>Shop</button>
+  <button type="button" data-s="up"><svg class="i"><use href="#i-bolt"/></svg>Upgrades</button>
   <button type="button" data-s="tune"><svg class="i"><use href="#i-gear"/></svg>Tune</button>
   <button type="button" data-s="mech"><svg class="i"><use href="#i-chat"/></svg>Mechanic</button>
 </nav>

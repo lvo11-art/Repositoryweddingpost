@@ -5,7 +5,7 @@ const I=n=>'<svg class="i"><use href="#i-'+n+'"/></svg>';
 const KEY='jato-lab-v1';
 const S=Object.assign({screen:'garage',sel:null,hover:null,body:'on',exT:0,labels:true,ptab:'over',paintMode:false,paint:{},installed:[],wish:[],gear:{pin:14,sp:50,cells:4},maint:{},builds:[],filter:'all',sort:'fit',fits:true,q:''},(()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};}})());
 S.sel=null;S.hover=null;S.paintMode=false;S.exT=0;
-function save(){try{const {screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits}=S;localStorage.setItem(KEY,JSON.stringify({screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits}));}catch(e){}}
+function save(){try{const {screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune}=S;localStorage.setItem(KEY,JSON.stringify({screen,body,labels,paint,installed,wish,gear,maint,builds,filter,sort,fits,tune}));}catch(e){}}
 function toast(h){const t=$('#toast');t.innerHTML=h;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2400);}
 
 /* ---------- catalogue ---------- */
@@ -47,7 +47,9 @@ function perf(){const g=S.gear;const ratio=g.sp/g.pin,ratio0=50/14;const heat=Ma
 /* ---------- navigation ---------- */
 function go(s){S.screen=s;document.querySelectorAll('.scr').forEach(e=>e.hidden=e.id!=='s-'+s);
   document.querySelectorAll('.nav [data-s],.tabs [data-s]').forEach(b=>b.toggleAttribute('aria-current',b.dataset.s===s));document.querySelectorAll('.nav [data-s],.tabs [data-s]').forEach(b=>{if(b.dataset.s===s)b.setAttribute('aria-current','page');});
-  if(s==='build'){requestAnimationFrame(resize);}if(s==='garage')renderGarage();if(s==='shop')renderShop();if(s==='tune')renderTune();if(s==='mech')renderMech();save();window.scrollTo(0,0);}
+  const was=go.last;go.last=s;if(was==='up'&&s!=='up'){applyPaint(look());S.sel=null;highlight();setBody('on');}
+  if(s==='build'){$('#stage').prepend(renderer.domElement);requestAnimationFrame(resize);renderCats();renderCtx();}
+  if(s==='up'){$('#upStage').prepend(renderer.domElement);requestAnimationFrame(resize);renderUp();}if(s==='garage')renderGarage();if(s==='shop')renderShop();if(s==='tune')renderTune();if(s==='mech')renderMech();save();window.scrollTo(0,0);}
 document.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.s)));
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
 
@@ -70,7 +72,7 @@ function pick(x,y){const r=renderer.domElement.getBoundingClientRect();ndc.set((
     const p=byId[o.userData.part];if(!p)continue;if(p.id==='body'&&S.body==='ghost')continue;return p;}return null;}
 let down=null;
 renderer.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
-renderer.domElement.addEventListener('pointerup',e=>{if(down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)<5){const p=pick(e.clientX,e.clientY);select(p,false);}down=null;});
+renderer.domElement.addEventListener('pointerup',e=>{if(down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)<5){const p=pick(e.clientX,e.clientY);if(S.screen==='up')upPick(p);else select(p,false);}down=null;});
 renderer.domElement.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const p=pick(e.clientX,e.clientY);if(p!==S.hover){S.hover=p;highlight();}
   const t=$('#tip');if(p){const r=stage.getBoundingClientRect();t.hidden=false;t.textContent=p.name;t.style.left=(e.clientX-r.left)+'px';t.style.top=(e.clientY-r.top)+'px';}else t.hidden=true;});
 renderer.domElement.addEventListener('pointerleave',()=>{S.hover=null;highlight();$('#tip').hidden=true;});
@@ -97,12 +99,12 @@ function placeCallouts(){const show=S.labels&&!S.sel&&!S.paintMode&&S.exT===0&&S
   els.forEach(el=>{const [lx,ly]=el._r,[ax,ay]=el._a;el.style.left=lx+'px';el.style.top=ly+'px';svg+='<line x1="'+ax+'" y1="'+ay+'" x2="'+lx+'" y2="'+ly+'"/><circle cx="'+ax+'" cy="'+ay+'" r="3.5"/>';});
   call.querySelector('svg').innerHTML=svg;}
 /* loop */
-function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+function resize(){const host=renderer.domElement.parentElement||stage;const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
 new ResizeObserver(resize).observe(stage);
 let exNow=0;
 function frame(now){requestAnimationFrame(frame);if(fly){const k=Math.min(1,(now-fly.t0)/650),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;camera.position.lerpVectors(fly.p0,fly.p1,e);controls.target.lerpVectors(fly.c0,fly.c1,e);if(k>=1)fly=null;}
   exNow+=(S.exT-exNow)*0.12;if(Math.abs(S.exT-exNow)<0.002)exNow=S.exT;parts.forEach(p=>p.g.position.copy(p.ex).multiplyScalar(exNow));
-  controls.update();if(S.screen==='build'){renderer.render(scene,camera);placeCallouts();}}
+  controls.update();if(S.screen==='build'||S.screen==='up'){renderer.render(scene,camera);if(S.screen==='build')placeCallouts();}}
 /* garage picture */
 function snapshot(){const w=1400,h=820;const cp=camera.position.clone(),ct=controls.target.clone(),asp=camera.aspect;const bodyVis=byId.body.g.visible;
   renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.position.set(520,250,-470);camera.lookAt(0,62,0);
@@ -173,13 +175,13 @@ function wirePaint(B){B.querySelectorAll('.sw').forEach(b=>b.onclick=()=>setPain
 /* ---------- garage ---------- */
 let heroDirty=true;
 function renderGarage(){const P=perf();if(heroDirty){heroDirty=false;try{$('#heroImg').src=snapshot();}catch(e){}}
-  $('#heroCls').textContent='≈ '+P.mph.toFixed(0)+' mph · '+S.gear.cells+'S';
+  {const x=statsFor(S.installed,S.gear);$('#heroCls').innerHTML='Class '+x.cls[0]+' · RC PI '+x.pi+' · ≈ '+P.mph.toFixed(0)+' mph';$('#heroCls').style.color=x.cls[2];}
   const sv=(k,d)=>(SP[k]&&SP[k].value!=null)?SP[k].value:d;
   const sp=[[sv('length_mm')+' mm','Length'],[sv('wheelbase_mm')+' mm','Wheelbase'],['2.54 kg','Weight, no pack'],['2400 kV','Velineon 540XL'],['VXL-4s','ESC, 2S–4S'],[S.gear.pin+'T/'+S.gear.sp+'T','Pinion / spur'],['3.0"','Response Pro tyres'],['TBCD','Centre diff']];
   $('#gSpecs').innerHTML=sp.map(([b,s])=>'<div><b>'+esc(b)+'</b><span>'+esc(s)+'</span></div>').join('');
   const bar=(l,v,max,t)=>'<div class="bar"><span>'+l+'</span><i><b style="width:'+Math.max(3,Math.min(100,v/max*100))+'%"></b></i><span>'+t+'</span></div>';
   $('#gBars').innerHTML=bar('Top speed',P.mph,80,P.mph.toFixed(0)+' mph')+bar('Punch',P.punch,120,P.punch)+bar('Runtime',P.minutes,20,P.minutes.toFixed(0)+' min')+bar('Durability',P.dura,100,P.dura)+bar('Motor heat',P.heat*50,100,Math.round(P.heat*100)+'%');
-  const Q=[['build','See every part in 3D','Tap a part for specs, upgrades and fixes','cube',''],['shop','Shop upgrades','Part numbers, prices, what fits','cart',''],['tune','Gearing & battery fit','Speed vs heat, will my pack fit?','gear',''],
+  const Q=[['up','Upgrade the Jato','Forza-style: preview parts, watch the class change','bolt',''],['build','See every part in 3D','Tap a part for specs, upgrades and fixes','cube',''],['shop','Shop upgrades','Part numbers, prices, what fits','cart',''],['tune','Gearing & battery fit','Speed vs heat, will my pack fit?','gear',''],
     ['mech','Ask the AI mechanic','Repairs, setup, what to buy','chat','ai'],['speed','Speed run','GPS speed dash (opens a new page)','speed','']];
   $('#gQuick').innerHTML=Q.map(([k,t,s,ic,c])=>'<button type="button" class="row" data-q="'+k+'"><i class="ri '+c+'">'+I(ic)+'</i><span><b>'+t+'</b><small>'+s+'</small></span></button>').join('');
   $('#gQuick').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{if(b.dataset.q==='speed')location.href='speed-dash.html';else go(b.dataset.q);});
@@ -189,9 +191,9 @@ function renderGarage(){const P=perf();if(heroDirty){heroDirty=false;try{$('#her
   $('#gMaint').innerHTML=D.maintenance.map((m,i)=>{const d=S.maint[m.item];return '<label class="chk"><input type="checkbox" data-m="'+esc(m.item)+'"'+(d?' checked':'')+'><span><b>'+esc(m.item)+'</b><small>'+esc(m.spec)+'</small>'+(d?'<em>Done '+esc(new Date(d).toLocaleDateString())+'</em>':'')+'</span></label>';}).join('');
   $('#gMaint').querySelectorAll('input').forEach(c=>c.onchange=()=>{if(c.checked)S.maint[c.dataset.m]=Date.now();else delete S.maint[c.dataset.m];save();renderGarage();});
   $('#gBuilds').innerHTML=S.builds.length?S.builds.map((b,i)=>'<div class="row"><i class="ri">'+I('save')+'</i><span><b>'+esc(b.name)+'</b><small>'+b.installed.length+' upgrades · '+b.gear.pin+'T/'+b.gear.sp+'T '+b.gear.cells+'S</small></span><button type="button" class="btn sm" data-bl="'+i+'">Load</button><button type="button" class="btn sm" data-bx="'+i+'" aria-label="Delete '+esc(b.name)+'">'+I('x')+'</button></div>').join(''):'<p class="empty">Save a setup to switch between bashing and speed runs.</p>';
-  $('#gBuilds').querySelectorAll('[data-bl]').forEach(b=>b.onclick=()=>{const x=S.builds[+b.dataset.bl];S.installed=[...x.installed];S.gear={...x.gear};S.paint={...x.paint};save();applyPaint(look());heroDirty=true;refreshAll();toast('<b>Loaded</b> '+esc(x.name));});
+  $('#gBuilds').querySelectorAll('[data-bl]').forEach(b=>b.onclick=()=>{const x=S.builds[+b.dataset.bl];S.installed=[...x.installed];S.gear={...x.gear};S.paint={...x.paint};S.tune={...(x.tune||{})};save();applyPaint(look());heroDirty=true;refreshAll();toast('<b>Loaded</b> '+esc(x.name));});
   $('#gBuilds').querySelectorAll('[data-bx]').forEach(b=>b.onclick=()=>{const [x]=S.builds.splice(+b.dataset.bx,1);save();renderGarage();toast('Deleted '+esc(x.name));});}
-$('#gSaveF').onsubmit=e=>{e.preventDefault();const n=$('#gSaveN').value.trim()||'Setup '+(S.builds.length+1);S.builds.unshift({name:n,installed:[...S.installed],gear:{...S.gear},paint:{...S.paint}});$('#gSaveN').value='';save();renderGarage();toast('<b>Saved</b> '+esc(n));};
+$('#gSaveF').onsubmit=e=>{e.preventDefault();const n=$('#gSaveN').value.trim()||'Setup '+(S.builds.length+1);S.builds.unshift({name:n,installed:[...S.installed],gear:{...S.gear},paint:{...S.paint},tune:{...(S.tune||{})}});$('#gSaveN').value='';save();renderGarage();toast('<b>Saved</b> '+esc(n));};
 
 /* ---------- shop ---------- */
 function renderShop(){const chips=['all',...Object.keys(SLOT).filter(s=>UP.some(u=>u.slot===s))];
@@ -275,6 +277,6 @@ $('#mIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.prev
 (async()=>{try{const s=window.claude&&await window.claude.use('sample');QA.sample=s||null;}catch(e){QA.sample=null;}$('#mMode').textContent=QA.sample?'Live answers from Claude':'Offline: answers from your Jato file';})();
 
 /* ---------- start ---------- */
-function refreshAll(){renderCats();renderCtx();if(S.screen==='garage')renderGarage();if(S.screen==='shop')renderShop();if(S.screen==='tune')renderTune();renderWish();heroDirty=true;}
+function refreshAll(){renderCats();if(S.screen!=='up')renderCtx();if(S.screen==='garage')renderGarage();if(S.screen==='shop')renderShop();if(S.screen==='tune')renderTune();renderWish();heroDirty=true;}
 applyPaint(look());setBody(S.body||'on');resize();setView('iso');camera.position.copy(fly.p1);controls.target.copy(fly.c1);fly=null;
-$('#loading').remove();renderCats();renderCtx();renderWish();dockSync();go(S.screen||'garage');requestAnimationFrame(frame);
+$('#loading').remove();renderCats();renderCtx();renderWish();dockSync();
