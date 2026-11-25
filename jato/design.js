@@ -191,5 +191,52 @@ $('#dzShot').onclick=async()=>{if(!DZ.ready)return;const c=document.createElemen
   const u=URL.createObjectURL(blob);$('#dzShotImg').src=u;$('#dzShotBox').hidden=false;};
 $('#dzShotX').onclick=()=>$('#dzShotBox').hidden=true;
 async function dzOpen(){if(!DZ.undo.length)DZ.undo.push(JSON.stringify(dzd));renderDz();try{await dzLoad();dzRender();$('#dzLoading').hidden=true;}catch(e){$('#dzLoading').textContent='Could not load your photo. Reload the page and try again.';}}
+/* ---------- theme typer: describe a look, get a full design ---------- */
+let dzAI=null;(async()=>{try{dzAI=window.claude&&await window.claude.use('sample');}catch(e){dzAI=null;}const m=$('#dzThemeMode');if(m)m.textContent=dzAI?'Designed by Claude':'Built-in themes (open in Claude for any idea)';})();
+const C={black:'#0d0e10',white:'#f4f4f2',red:'#c8102e',orange:'#ff6a1a',yellow:'#ffd21a',gold:'#b4975a',green:'#2e8b3a',lime:'#7ac142',blue:'#1f5fd6',navy:'#14244f',teal:'#0fa3a3',purple:'#552583',pink:'#ff4fb8',silver:'#a5acaf',grey:'#333f48',gray:'#333f48',brown:'#7a4a24',chrome:'#c9ced3'};
+const THEMES=[
+ [/golden knights|vegas|vgk/,'Vegas Golden Knights',{mode:'custom',base:'#333f48',finish:'metallic',tint:'dark',layers:[{t:'stripes',color:'#b4975a',w:30,gap:12,off:0,oc:'#0d0e10',ow:3},{t:'pinstripe',color:'#c8102e',inset:8,w:3},{t:'number',num:'71',plate:'#0d0e10',ink:'#b4975a',size:72,x:50,y:78,shape:'circle'},{t:'text',text:'KNIGHTS',color:'#f4f4f2',size:38,x:50,y:12,rot:0,font:'bold italic',mirror:false}]}],
+ [/raiders/,'Raiders',{mode:'custom',base:'#0d0e10',finish:'gloss',tint:'dark',layers:[{t:'stripes',color:'#a5acaf',w:26,gap:10,off:0,oc:'#0d0e10',ow:0},{t:'pinstripe',color:'#a5acaf',inset:8,w:3}]}],
+ [/lakers/,'Lakers',{mode:'custom',base:'#552583',finish:'pearl',tint:'factory',layers:[{t:'stripes',color:'#fdb927',w:34,gap:12,off:0,oc:'#0d0e10',ow:2},{t:'number',num:'24',plate:'#fdb927',ink:'#552583',size:72,x:50,y:78,shape:'circle'}]}],
+ [/gulf/,'Gulf racing',{mode:'custom',base:'#8ec7e8',finish:'gloss',tint:'factory',layers:[{t:'stripes',color:'#ff7f1a',w:60,gap:0,off:0,oc:'#0d0e10',ow:0},{t:'number',num:'9',plate:'#f4f4f2',ink:'#0d0e10',size:70,x:50,y:78,shape:'circle'}]}],
+ [/martini/,'Martini racing',{mode:'custom',base:'#f4f4f2',finish:'gloss',tint:'dark',layers:[{t:'stripes',color:'#c8102e',w:14,gap:44,off:0,oc:'#14244f',ow:7},{t:'stripes',color:'#5fb4e8',w:10,gap:18,off:0,oc:'#14244f',ow:0}]}],
+ [/police|cop/,'Police',{mode:'custom',base:'#0d0e10',finish:'gloss',tint:'dark',layers:[{t:'split',color:'#f4f4f2',pos:52,ang:0,side:'front'},{t:'text',text:'POLICE',color:'#0d0e10',size:46,x:50,y:20,rot:0,font:'bold',mirror:false}]}],
+ [/halloween|pumpkin/,'Halloween',{mode:'custom',base:'#0d0e10',finish:'matte',tint:'dark',layers:[{t:'flames',color:'#ff6a1a',tip:'#7b2fd0',len:58,count:9,seed:13}]}],
+ [/usa|america|patriot|4th of july|flag/,'Stars & stripes',{mode:'custom',base:'#14244f',finish:'gloss',tint:'factory',layers:[{t:'stripes',color:'#c8102e',w:18,gap:22,off:0,oc:'#f4f4f2',ow:6},{t:'text',text:'★ ★ ★',color:'#f4f4f2',size:40,x:50,y:82,rot:0,font:'bold',mirror:false}]}],
+ [/monster|energy/,'Energy drink',{mode:'custom',base:'#0d0e10',finish:'gloss',tint:'dark',layers:[{t:'shards',color:'#7ac142',count:16,size:110,seed:8},{t:'pinstripe',color:'#7ac142',inset:6,w:3}]}],
+ [/army|military|camo/,'Camo',{mode:'custom',base:'#6b7a4a',finish:'matte',tint:'dark',layers:[{t:'camo',c1:'#3b4a2f',c2:'#8a8a5a',c3:'#1d2418',scale:44,seed:7}]}],
+ [/christmas|xmas/,'Christmas',{mode:'custom',base:'#c8102e',finish:'pearl',tint:'factory',layers:[{t:'stripes',color:'#f4f4f2',w:24,gap:14,off:0,oc:'#1f7a3a',ow:4},{t:'checker',color:'#1f7a3a',color2:'#f4f4f2',y:15,rows:1,size:20}]}],
+ [/stealth|murdered|blackout/,'Blackout',{mode:'custom',base:'#141518',finish:'matte',tint:'dark',layers:[{t:'stripes',color:'#0d0e10',w:30,gap:12,off:0,oc:'#0d0e10',ow:0}]}]];
+function offlineTheme(q){const s=q.toLowerCase();const t=THEMES.find(([re])=>re.test(s));if(t)return {name:t[1],summary:'A built-in '+t[1]+' look.',design:JSON.parse(JSON.stringify(t[2]))};
+  const cols=Object.keys(C).filter(k=>new RegExp('\\b'+k+'\\b').test(s));if(!cols.length)return null;
+  const d={mode:'custom',base:C[cols[0]],finish:/matte|flat/.test(s)?'matte':/metal/.test(s)?'metallic':/chrome/.test(s)?'chrome':/candy/.test(s)?'candy':/pearl/.test(s)?'pearl':'gloss',tint:'factory',layers:[]};
+  if(cols[1])d.layers.push({t:/flame/.test(s)?'flames':/fade/.test(s)?'fade':/camo/.test(s)?'camo':'stripes',color:C[cols[1]],tip:C[cols[2]||cols[1]],w:30,gap:12,off:0,oc:C[cols[2]||'black'],ow:cols[2]?3:0,len:60,count:8,seed:5,from:95,to:35,dir:'front',c1:C[cols[1]],c2:C[cols[2]||cols[0]],c3:'#1d2418',scale:40});
+  else if(cols[2])d.layers.push({t:'pinstripe',color:C[cols[2]],inset:8,w:3});
+  return {name:cols.map(c=>c[0].toUpperCase()+c.slice(1)).join(' & '),summary:'Built from the colours you named.',design:d};}
+const HEX=/^#[0-9a-f]{6}$/i;
+function cleanDesign(d){if(!d||typeof d!=='object')return null;const o={mode:d.mode==='factory'?'factory':'custom',base:HEX.test(d.base)?d.base:'#f4f4f2',finish:FINISHES[d.finish]?d.finish:'gloss',tint:['factory','light','dark','blue','gold'].includes(d.tint)?d.tint:'factory',layers:[]};
+  ['fo','fb','fd'].forEach(k=>{o[k]=HEX.test(d[k]||'')?d[k]:null;});
+  (Array.isArray(d.layers)?d.layers:[]).slice(0,8).forEach(l=>{if(!l||!LT[l.t]||l.t==='brush')return;const L={t:l.t,op:Math.max(5,Math.min(100,+l.op||100))};
+    LT[l.t].f.forEach(([k,,type,def,a,b])=>{let v=l[k];if(type==='color')v=HEX.test(v||'')?v:def;else if(type==='range'){v=+v;v=isFinite(v)?Math.max(a,Math.min(b,v)):def;}
+      else if(type==='select')v=a.includes(v)?v:def;else if(type==='check')v=!!v;else v=String(v==null?def:v).slice(0,24);L[k]=v;});o.layers.push(L);});return o;}
+function schemaText(){return Object.entries(LT).filter(([k])=>k!=='brush').map(([k,v])=>'- '+k+' ('+v.n+'): '+v.f.map(([f,l,type,def,a,b])=>f+(type==='range'?' '+a+'..'+b:type==='select'?' one of '+a.join('/'):type==='color'?' #hex':type==='check'?' true/false':' text')).join(', ')).join('\n');}
+async function makeTheme(q){q=(q||'').trim();if(!q)return;const out=$('#dzThemeOut'),btn=$('#dzThemeGo');btn.disabled=true;out.innerHTML='<p class="fine">Designing “'+esc(q)+'”…</p>';
+  let r=null,err='';
+  if(dzAI){try{r=await dzAI.json([{role:'user',content:`You design paint schemes for a 1/8 RC buggy shell (Traxxas Jato), seen from above in a photo: nose at the bottom, rear at the top. Turn the owner's idea into a design using ONLY these tools.
+
+Design JSON: {"name":string,"summary":string (one plain sentence on what you did),"design":{"mode":"custom","base":"#hex","finish":"gloss|metallic|pearl|candy|matte|chrome","tint":"factory|light|dark|blue|gold","layers":[...]}}
+Layers are drawn bottom to top. Positions: x 0..100 is left to right, y 0..100 is nose to rear. Each layer is {"t":type, ...fields, "op":opacity 5..100}. Types and fields:
+${schemaText()}
+
+Rules: use the real, recognisable colours of the theme (team, brand, film, holiday or idea) as exact hex values. Use 2-5 layers that make it unmistakable but tasteful. Text layers may spell a name or a short word (max 12 characters); never try to draw logos. Return ONLY the JSON object.
+
+Idea: ${q}`}],{cache:false});}catch(e){err=e&&e.code||'';}}
+  if(!r||!r.design){r=offlineTheme(q);if(!r){btn.disabled=false;out.innerHTML='<p class="fine">'+(dzAI?'That one didn\'t come through. Try again or reword it.':'No built-in theme matches that. Try a team or colours like “red and black flames”, or open this page in Claude for any idea.')+'</p>';return;}}
+  const d=cleanDesign(r.design);btn.disabled=false;if(!d){out.innerHTML='<p class="fine">That design came back unusable. Try again.</p>';return;}
+  dzd=d;DZ.sel=null;commit();renderDz();dzRender();
+  out.innerHTML='<div class="dztheme"><b>'+esc(r.name||q)+'</b><p class="fine">'+esc(r.summary||'')+'</p><p class="fine">Every part is now a normal layer you can tweak. Undo goes back.</p></div>';}
+$('#dzThemeF').onsubmit=e=>{e.preventDefault();makeTheme($('#dzThemeIn').value);};
+document.querySelectorAll('#dzThemeEx button').forEach(b=>b.onclick=()=>{$('#dzThemeIn').value=b.textContent;makeTheme(b.textContent);});
+
 const _goDz=go;go=function(s){_goDz(s);if(s==='design')dzOpen();};
 })();
