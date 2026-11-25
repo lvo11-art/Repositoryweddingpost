@@ -40,6 +40,7 @@
       <button type="button" data-s="build"><svg class="i"><use href="#i-cube"/></svg>3D Build</button>
       <button type="button" data-s="up"><svg class="i"><use href="#i-bolt"/></svg>Upgrades</button>
       <button type="button" data-s="shop"><svg class="i"><use href="#i-cart"/></svg>Shop <span class="tag blue" id="navWish" hidden></span></button>
+      <button type="button" data-s="design"><svg class="i"><use href="#i-drop"/></svg>Design Center</button>
       <button type="button" data-s="tune"><svg class="i"><use href="#i-gear"/></svg>Tune</button>
       <button type="button" data-s="mech"><svg class="i"><use href="#i-chat"/></svg>AI Mechanic</button>
       <a href="speed-dash.html"><svg class="i"><use href="#i-speed"/></svg>Speed Run</a>
@@ -93,6 +94,27 @@
         <div class="card ucards"><div class="uch" id="upCardsH"></div><div class="urow" id="upCards"></div><div id="upDetail"></div></div>
       </div>
       <aside class="card uright" id="upRight"></aside>
+    </section>
+    <!-- DESIGN CENTER -->
+    <section class="scr dz" id="s-design" aria-label="Design Center" hidden>
+      <aside class="card dzleft">
+        <div class="h2row" style="margin:0"><h2>Design Center</h2></div>
+        <div id="dzBase" class="dzgroup"></div>
+        <div class="dzgroup"><h3>Layers <small>top of the list is on top</small></h3><div id="dzLayers" class="dzlayers"></div><div id="dzAdd" class="dzadd"></div></div>
+      </aside>
+      <div class="dzmid">
+        <div class="dzbar"><button type="button" class="btn sm" id="dzUndo">Undo</button><button type="button" class="btn sm" id="dzRedo">Redo</button>
+          <label class="dzcmp">Before / after<input type="range" id="dzCompare" min="0" max="100" value="0" aria-label="Show the original photo"></label>
+          <span class="sp"></span><button type="button" class="btn sm" id="dzShot"><svg class="i"><use href="#i-save"/></svg>Save picture</button><button type="button" class="btn sm pri" id="dzTo3d"><svg class="i"><use href="#i-cube"/></svg>Use on 3D</button></div>
+        <div class="dzstage" id="dzStage"><canvas id="dzCv" aria-label="Your Jato with the design applied"></canvas><img id="dzBefore" alt="" aria-hidden="true"><i id="dzSplitLine" hidden></i><div class="dzload" id="dzLoading">Loading your photo…</div></div>
+        <p class="fine">Your own photo, repainted: paint takes the shell's real lighting and gloss, and the windscreen, roof vent and clip holes stay as photographed.</p>
+      </div>
+      <aside class="card dzright">
+        <div class="dzgroup" id="dzProps"></div>
+        <div class="dzgroup"><h3>Start from</h3><div class="dzadd" id="dzPresets"></div></div>
+        <div class="dzgroup"><h3>My designs</h3><form class="dzsave" id="dzSaveF"><input id="dzName" maxlength="40" placeholder="Name this design" aria-label="Design name"><button class="btn sm pri" type="submit">Save</button></form><div class="list" id="dzSaved"></div></div>
+      </aside>
+      <div class="dzshot" id="dzShotBox" hidden><div class="card pad"><img id="dzShotImg" alt="Your design"><p class="fine">Long-press or right-click the picture to save it.</p><button type="button" class="btn" id="dzShotX">Close</button></div></div>
     </section>
     <!-- SHOP -->
     <section class="scr shop" id="s-shop" aria-label="Shop" hidden>
@@ -163,7 +185,7 @@
   <button type="button" data-s="up"><svg class="i"><use href="#i-bolt"/></svg>Upgrades</button>
   <button type="button" data-s="tune"><svg class="i"><use href="#i-gear"/></svg>Tune</button>
   <button type="button" data-s="mech"><svg class="i"><use href="#i-chat"/></svg>Mechanic</button>
-  <a href="traxxas.html"><svg class="i"><use href="#i-wrench"/></svg>Parts</a>
+  <button type="button" data-s="design"><svg class="i"><use href="#i-drop"/></svg>Design</button>
 </nav>
 <div class="toast" id="toast" role="status" hidden></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
